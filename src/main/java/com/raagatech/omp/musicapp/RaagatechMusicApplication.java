@@ -2,11 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.omp.raagatech.musicapp;
+package com.raagatech.omp.musicapp;
 
-import com.admin.raagatech.datasource.CommonUtilitiesInterface;
-import com.admin.raagatech.datasource.EmailUtilityInterface;
-import com.admin.raagatech.datasource.OracleDatabaseInterface;
+import com.raagatech.common.datasource.CommonUtilitiesInterface;
+import com.raagatech.common.datasource.EmailUtilityInterface;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,15 +21,20 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/resources/register")
-public class RaagatechMusicAppServices {
+public class RaagatechMusicApplication {
 
     @Autowired
-    private OracleDatabaseInterface dataSource;
+    private RaagatechMusicDataSource musicDataSource;
     @Autowired
     private CommonUtilitiesInterface commonUtilities;
     @Autowired
     private EmailUtilityInterface emailUtility;
 
+    @RequestMapping
+    public String home() {
+        return "<h1>Spring Boot Hello World!</h1><br/> This service is about Raagatech Music Application";
+    }
+    
     @RequestMapping(value = "/doregister", method = RequestMethod.GET)
     public String doRegister(@RequestParam("username") String username, @RequestParam("password") String password,
             @RequestParam("email") String email, @RequestParam("mobile") String mobileNo) {
@@ -49,10 +53,11 @@ public class RaagatechMusicAppServices {
         int result = 3;
         if (commonUtilities.isNotNull(username) && commonUtilities.isNotNull(password) && commonUtilities.isNotNull(email)) {
             try {
-                if (dataSource.insertUser(username, password, email, mobileNo)) {
+                if (musicDataSource.insertUser(username, password, email, mobileNo)) {
                     result = 0;
                 }
             } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         return result;
@@ -79,7 +84,7 @@ public class RaagatechMusicAppServices {
         int result = 3;
         if (commonUtilities.isNotNull(inquiryname) && commonUtilities.isNotNull(email)) {
             try {
-                if (dataSource.insertInquiry(inquiryname, inspirationid, email, mobileNo,
+                if (musicDataSource.insertInquiry(inquiryname, inspirationid, email, mobileNo,
                         levelid, address, followupDetails, "", "", "", "", 0, null,
                         "", "", "", "")) {
                     result = 0;
@@ -97,7 +102,7 @@ public class RaagatechMusicAppServices {
     @RequestMapping(value = "/doselectlevel", method = RequestMethod.GET)
     public String doSelectLevel() throws Exception {
         String response;
-        LinkedHashMap<Integer, String> levelMap = dataSource.selectLevel();
+        LinkedHashMap<Integer, String> levelMap = musicDataSource.selectLevel();
         if (!levelMap.isEmpty()) {
             response = commonUtilities.constructJSON("selectlevel", levelMap);
         } else {
@@ -109,7 +114,7 @@ public class RaagatechMusicAppServices {
     @RequestMapping(value = "/doselectinspiration", method = RequestMethod.GET)
     public String doSelectInspiration() throws Exception {
         String response;
-        LinkedHashMap<Integer, String> inspirationMap = dataSource.selectInspiration();
+        LinkedHashMap<Integer, String> inspirationMap = musicDataSource.selectInspiration();
         if (!inspirationMap.isEmpty()) {
             response = commonUtilities.constructJSON("selectinspiration", inspirationMap);
         } else {
@@ -121,7 +126,7 @@ public class RaagatechMusicAppServices {
     @RequestMapping(value = "/dolistinquiry", method = RequestMethod.GET)
     public String doListInquiry() throws Exception {
         String response;
-        ArrayList<InquiryBean> inquiryList = dataSource.listInquiry();
+        ArrayList<InquiryBean> inquiryList = musicDataSource.listInquiry();
         if (!inquiryList.isEmpty()) {
             response = commonUtilities.constructJSON("listinquiry", inquiryList);
         } else {
@@ -151,7 +156,7 @@ public class RaagatechMusicAppServices {
         int result = 3;
         if (inquiry_id > 0 && commonUtilities.isNotNull(inquiryname) && commonUtilities.isNotNull(email)) {
             try {
-                if (dataSource.updateInquiry(inquiry_id, inquiryname, inspirationid, email, mobileNo,
+                if (musicDataSource.updateInquiry(inquiry_id, inquiryname, inspirationid, email, mobileNo,
                         levelid, address, followupDetails, "", "", "", "", 0, null,
                         "", "", "", "")) {
                     result = 0;
@@ -170,7 +175,7 @@ public class RaagatechMusicAppServices {
     @RequestMapping(value = "/doselectinquirystatus", method = RequestMethod.GET)
     public String doSelectInquiryStatus() throws Exception {
         String response;
-        LinkedHashMap<Integer, String> inquiryStatusMap = dataSource.selectInquiryStatus();
+        LinkedHashMap<Integer, String> inquiryStatusMap = musicDataSource.selectInquiryStatus();
         if (!inquiryStatusMap.isEmpty()) {
             response = commonUtilities.constructJSON("selectlevel", inquiryStatusMap);
         } else {
@@ -197,11 +202,11 @@ public class RaagatechMusicAppServices {
         int result = 3;
         if (inquiry_id > 0 && commonUtilities.isNotNull(followupDetails) && inquirystatus_id > 0) {
             try {
-                if (dataSource.updateFollowup(inquiry_id, inquirystatus_id, followupDetails)) {
+                if (musicDataSource.updateFollowup(inquiry_id, inquirystatus_id, followupDetails)) {
                     result = 0;
                 }
 
-                InquiryBean inquiryBean = dataSource.getInquiryById(inquiry_id);
+                InquiryBean inquiryBean = musicDataSource.getInquiryById(inquiry_id);
                 if (inquiryBean != null) {
                     if (!inquiryBean.getEmail().equalsIgnoreCase("raksha@raagatech.com")) {
                         emailUtility.sendGoogleMail(inquiryBean.getEmail(), inquiryBean.getFirstname(), followupDetails);

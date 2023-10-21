@@ -1,4 +1,4 @@
-package com.ogp.raagatech.games;
+package com.raagatech.ogp.gamesapp;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

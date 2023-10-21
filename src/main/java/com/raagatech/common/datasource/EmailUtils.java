@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.admin.raagatech.datasource;
+package com.raagatech.common.datasource;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -13,12 +13,14 @@ import javax.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.stereotype.Service;
 
 /**
  * https://www.codejava.net/frameworks/spring-boot/email-sending-tutorial
  * https://mkyong.com/spring-boot/spring-boot-how-to-send-email-via-smtp/
  * @author sarve
  */
+@Service
 public class EmailUtils implements EmailUtilityInterface {
 
     @Autowired

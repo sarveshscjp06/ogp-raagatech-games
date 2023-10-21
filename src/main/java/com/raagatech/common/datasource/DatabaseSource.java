@@ -1,5 +1,10 @@
-package com.ogp.raagatech.games;
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package com.raagatech.common.datasource;
 
+import com.raagatech.ogp.gamesapp.RaagatechGamesApplication;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -12,43 +17,24 @@ import oracle.jdbc.OracleConnection;
 import oracle.jdbc.pool.OracleDataSource;
 import oracle.ucp.jdbc.PoolDataSource;
 import oracle.ucp.jdbc.PoolDataSourceFactory;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Service;
 
-@SpringBootApplication
-@RestController
-public class RaagatechGamesApplication {
+/**
+ *
+ * @author sarve
+ */
+@Service
+public class DatabaseSource implements OracleDatabaseInterface {
 
     final static String DB_URL = "jdbc:oracle:thin:@(description= (retry_count=20)(retry_delay=3)(address=(protocol=tcps)(port=1521)(host=adb.ap-mumbai-1.oraclecloud.com))(connect_data=(service_name=ge9bf8133738252_raagatechdb_high.adb.oraclecloud.com))(security=(ssl_server_dn_match=yes)))";
     final static String DB_USER = "ADMIN";
     final static String DB_PASSWORD = "Sarvesh12345";
-    final static String CONN_FACTORY_CLASS_NAME = "oracle.jdbc.pool.OracleDataSource";
     protected char delimiter = ' ';
+    final static String CONN_FACTORY_CLASS_NAME = "oracle.jdbc.pool.OracleDataSource";
 
-    public static void main(String[] args) {
-        SpringApplication.run(RaagatechGamesApplication.class, args);
-    }
+    @Override
+    public OracleDataSource getOracleDataSource() throws SQLException {
 
-    @RequestMapping
-    public String home() throws SQLException, Exception {
-
-        String test_table_users = "";
-
-        try {
-            test_table_users = getOracleDataSource();
-            //other way to get db connection
-//            getUCPoolDataSource();
-        } catch (SQLException ex) {
-            Logger.getLogger(RaagatechGamesApplication.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return "<h1>Spring Boot Hello World!</h1><br/>" + test_table_users;
-    }
-
-    public String getOracleDataSource() throws SQLException {
-
-        StringBuilder out = new StringBuilder();
         Properties info = new Properties();
         info.put(OracleConnection.CONNECTION_PROPERTY_USER_NAME, DB_USER);
         info.put(OracleConnection.CONNECTION_PROPERTY_PASSWORD, DB_PASSWORD);
@@ -57,9 +43,45 @@ public class RaagatechGamesApplication {
         var ods = new OracleDataSource();
         ods.setURL(DB_URL);
         ods.setConnectionProperties(info);
+        return ods;
+    }
+
+    @Override
+    public int generateNextPrimaryKey(String tableName, String columnName) throws Exception {
+
+        int nextInt = 0;
+        try ( OracleConnection connection = (OracleConnection) getOracleDataSource().getConnection()) {
+            Statement statement = connection.createStatement();
+            String selectQuery = "select COALESCE(max(" + columnName + "), 0) + 1 as primary_key from " + tableName;
+            ResultSet rs = statement.executeQuery(selectQuery);
+            while (rs.next()) {
+                nextInt = rs.getInt("primary_key");
+            }
+        }
+        return nextInt;
+    }
+
+    @Override
+    public String databaseConnectionTest() throws SQLException, Exception {
+
+        String test_table_users = "";
+
+        try {
+            test_table_users = getOracleDatabaseSource();
+            //other way to get db connection
+//            getUCPoolDataSource();
+        } catch (SQLException ex) {
+            Logger.getLogger(RaagatechGamesApplication.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return test_table_users;
+    }
+
+    public String getOracleDatabaseSource() throws SQLException {
+
+        StringBuilder out = new StringBuilder();
 
         // With AutoCloseable, the connection is closed automatically.
-        try ( OracleConnection connection = (OracleConnection) ods.getConnection()) {
+        try ( OracleConnection connection = (OracleConnection) getOracleDataSource().getConnection()) {
             // Get the JDBC driver name and version 
             DatabaseMetaData dbmd = connection.getMetaData();
             String driverName = "\nDriver Name: " + dbmd.getDriverName() + this.delimiter;
@@ -99,7 +121,7 @@ public class RaagatechGamesApplication {
         }
         return employeeDetail;
     }
-    
+
     public PoolDataSource getUCPoolDataSource() throws Exception {
         // Get the PoolDataSource for UCP
         PoolDataSource pds = PoolDataSourceFactory.getPoolDataSource();
@@ -151,7 +173,7 @@ public class RaagatechGamesApplication {
 
         return pds;
     }
-    
+
     /*
     * Creates an EMP table and does an insert, update and select operations on
     * the new table created.

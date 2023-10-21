@@ -2,9 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
  */
-package com.admin.raagatech.datasource;
+package com.raagatech.common.datasource;
 
-import com.omp.raagatech.musicapp.InquiryBean;
+import com.raagatech.omp.musicapp.InquiryBean;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 

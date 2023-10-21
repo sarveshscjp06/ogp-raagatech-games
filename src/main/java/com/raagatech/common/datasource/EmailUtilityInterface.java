@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
  */
-package com.admin.raagatech.datasource;
+package com.raagatech.common.datasource;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;

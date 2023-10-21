@@ -2,21 +2,16 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
  */
-package com.admin.raagatech.datasource;
+package com.raagatech.omp.musicapp;
 
-import com.omp.raagatech.musicapp.InquiryBean;
-import com.omp.raagatech.musicapp.SliderImageBean;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import oracle.jdbc.pool.OracleDataSource;
 
 /**
  *
  * @author sarve
  */
-public interface OracleDatabaseInterface {
-
-    public OracleDataSource getOracleDataSource() throws Exception;
+public interface RaagatechMusicDataSourceInterface {
 
     public boolean insertUser(String username, String password, String email, long mobileNo) throws Exception;
 
