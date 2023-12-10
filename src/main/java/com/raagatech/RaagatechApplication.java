@@ -21,15 +21,14 @@ public class RaagatechApplication {
 
     @Autowired
     private OracleDatabaseInterface oracleDataSource;
-    
+
     public static void main(String[] args) {
         SpringApplication.run(RaagatechApplication.class, args);
     }
 
     @RequestMapping
     public String home() throws Exception {
-        
         String test_table_users = oracleDataSource.databaseConnectionTest();
-        return "<h1>Spring Boot Hello World!</h1><br/>"+test_table_users;
+        return "<h1>Spring Boot Hello World!</h1><br/>" + test_table_users;
     }
 }

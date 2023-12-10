@@ -13,7 +13,12 @@ import java.util.LinkedHashMap;
  */
 public interface RaagatechMusicDataSourceInterface {
 
-    public boolean insertUser(String username, String password, String email, long mobileNo) throws Exception;
+    public UserDataBean getUserData(String username, String password) throws Exception;
+    
+    public boolean insertUser(String username, String password, String email, long mobileNo, 
+            String gender, String postalAddress, String pincode) throws Exception;
+    
+    public boolean updateUserForEmailVerification(String email) throws Exception;
 
     public boolean insertInquiry(String inquiryname, int inspirationid, String email, long mobileNo,
             int levelid, String address, String followupDetails,
@@ -24,7 +29,7 @@ public interface RaagatechMusicDataSourceInterface {
 
     public LinkedHashMap<Integer, String> selectInspiration() throws Exception;
 
-    public ArrayList<InquiryBean> listInquiry() throws Exception;
+    public ArrayList<InquiryBean> listInquiry(String email) throws Exception;
 
     public boolean updateInquiry(int inquiry_id, String inquiryname, int inspirationid, String email, long mobileNo,
             int levelid, String address, String followupDetails, String nationality, String fname, String mname, String dob, long telOther, String image,

@@ -29,14 +29,17 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
     private OracleDatabaseInterface oracleDataSource;
 
     @Override
-    public boolean insertUser(String username, String password, String email, long mobileNo) throws Exception {
+    public boolean insertUser(String username, String password, String email, long mobileNo,
+            String gender, String postalAddress, String pincode) throws Exception {
 
         boolean insertStatus = Boolean.FALSE;
         // With AutoCloseable, the connection is closed automatically.
         int id = oracleDataSource.generateNextPrimaryKey("raagatech_user", "user_id");
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
-            String queryInsertUser = "INSERT into raagatech_user (user_id, username, password, creation_date, email, country_code, mobile) "
-                    + "VALUES ("+id+", '" + username + "','" + password + "',?, '" + email + "', 091, " + mobileNo + ")";
+            String queryInsertUser = "INSERT into raagatech_user (user_id, username, password, creation_date, email, country_code, mobile,"
+                    + "gender, postalAddress, pincode) "
+                    + "VALUES (" + id + ", '" + username + "','" + password + "',?, '" + email + "', 091, " + mobileNo + ", '" + gender
+                    + "', '" + postalAddress + "', '" + pincode + "')";
             PreparedStatement statement = connection.prepareStatement(queryInsertUser);
             statement.setTimestamp(1, getCurrentTimeStamp());
             int records = statement.executeUpdate();
@@ -45,6 +48,21 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             }
         }
         return insertStatus;
+    }
+
+    @Override
+    public boolean updateUserForEmailVerification(String email) throws Exception {
+        boolean updateStatus = Boolean.FALSE;
+        // With AutoCloseable, the connection is closed automatically.
+        try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
+            String queryUpdateUser = "update raagatech_user set emailverification = 1 where email = '" + email + "'";
+            PreparedStatement statement = connection.prepareStatement(queryUpdateUser);
+            int records = statement.executeUpdate();
+            if (records > 0) {
+                updateStatus = Boolean.TRUE;
+            }
+        }
+        return updateStatus;
     }
 
     @Override
@@ -90,8 +108,27 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
     }
 
     @Override
-    public ArrayList<InquiryBean> listInquiry() throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public ArrayList<InquiryBean> listInquiry(String email) throws Exception {
+        ArrayList<InquiryBean> inquiryList = new ArrayList<>();
+        InquiryBean inquiry;
+        // With AutoCloseable, the connection is closed automatically.
+        try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
+            String queryInsertUser = "SELECT * FROM raagatech_inquiry WHERE email = '" + email + "'";
+            PreparedStatement statement = connection.prepareStatement(queryInsertUser);
+            ResultSet record = statement.executeQuery();
+            while (record.next()) {
+                inquiry = new InquiryBean();
+                inquiry.setFirstname(record.getString("firstname"));
+                inquiry.setGender((char)record.getObject("gender"));
+                inquiry.setEmail(record.getString("email"));
+                inquiry.setInquiry_date(record.getDate("inquiry_date"));
+                inquiry.setNationality(record.getString("country_code"));
+                inquiry.setMobile(record.getLong("mobile"));
+                inquiry.setInquiry_id(record.getInt("inquiry_id"));
+                inquiryList.add(inquiry);
+            }
+        }
+        return inquiryList;
     }
 
     @Override
@@ -139,5 +176,28 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         java.util.Date today = new java.util.Date();
         return new java.sql.Timestamp(today.getTime());
 
+    }
+
+    @Override
+    public UserDataBean getUserData(String username, String password) throws Exception {
+        UserDataBean userData = null;
+        // With AutoCloseable, the connection is closed automatically.
+        try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
+            String queryInsertUser = "SELECT * FROM raagatech_user WHERE (email = '" + username + "' "
+                    + "OR username = '" + username + "') AND password = '" + password + "' AND emailverification = 1";
+            PreparedStatement statement = connection.prepareStatement(queryInsertUser);
+            ResultSet record = statement.executeQuery();
+            while (record.next()) {
+                userData = new UserDataBean();
+                userData.setUserName(record.getString("username"));
+                userData.setPassword(record.getString("password"));
+                userData.setEmail(record.getString("email"));
+                userData.setCreationDate(record.getDate("creation_date"));
+                userData.setCountryCode(record.getInt("country_code"));
+                userData.setMobile(record.getLong("mobile"));
+                userData.setUserId(record.getInt("user_id"));
+            }
+        }
+        return userData;
     }
 }

@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * https://www.codejava.net/frameworks/spring-boot/email-sending-tutorial
- * https://mkyong.com/spring-boot/spring-boot-how-to-send-email-via-smtp/
+    * https://mkyong.com/spring-boot/spring-boot-how-to-send-email-via-smtp/
  * @author sarve
  */
 @Service
@@ -26,13 +26,13 @@ public class EmailUtils implements EmailUtilityInterface {
     @Autowired
     private JavaMailSender javaMailSender;
 
-    private static final String SIGNATURE = "\n\n\n\n\n\nRaksha Tripathi\n"
-            + "'PRAVEEN' Indian Classical Vocal & Instrumental\n"
-            + "Principal / Superintendent\n"
-            + "raagatech 'The World of Music Education & Performance' \n"
-            + "(An authorized exam & study centre for PRAYAG SANGIT SAMITI, ALLAHABAD)\n"
-            + "Land-Line: +91 120 4276874 Mobile: +919891029284\n"
-            + "http://www.raagatech.com\n";
+    private static final String SIGNATURE = "<h4>Raksha Tripathi</h4>"
+            .concat("<h5><p>'PRAVEEN' Indian Classical Vocal & Instrumental</p>")
+            .concat("<p>Principal / Superintendent</p>")
+            .concat("<p>raagatech 'The World of Music Education & Performance'</p>")
+            .concat("<p>(An authorized exam & study centre for PRAYAG SANGIT SAMITI, Prayagraj)</p>")
+            .concat("<p>Land-Line: +91 120 4276874 Mobile: +919891029284</p>")
+            .concat("<p>http://www.raagatech.com</p></h5>");
 
     @Override
     public void sendSimpleMail() {
@@ -41,7 +41,25 @@ public class EmailUtils implements EmailUtilityInterface {
 
     @Override
     public void sendEmail(String toEmail, String subject, String body) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        try {
+            MimeMessage msg = javaMailSender.createMimeMessage();
+            // true = multipart message
+            MimeMessageHelper helper = new MimeMessageHelper(msg);
+
+            helper.setTo(toEmail);
+            helper.setBcc("sarvesh.new@gmail.com");
+            helper.setSubject(subject);
+
+            String bodyText = "<h1>The World Of Music Education & Performance!</h1>"
+                    .concat(body)
+                    .concat(SIGNATURE);
+
+            boolean html = true;
+            helper.setText(bodyText, html);
+            javaMailSender.send(msg);
+        } catch (MessagingException ex) {
+            Logger.getLogger(EmailUtils.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Override

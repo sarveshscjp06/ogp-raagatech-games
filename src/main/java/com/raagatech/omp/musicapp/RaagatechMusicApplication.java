@@ -8,6 +8,10 @@ import com.raagatech.common.datasource.CommonUtilitiesInterface;
 import com.raagatech.common.datasource.EmailUtilityInterface;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -20,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author sarve
  */
 @RestController
-@RequestMapping("/resources/register")
+@RequestMapping("/resources/music")
 public class RaagatechMusicApplication {
 
     @Autowired
@@ -32,35 +36,55 @@ public class RaagatechMusicApplication {
 
     @RequestMapping
     public String home() {
-        return "<h1>Spring Boot Hello World!</h1><br/> This service is about Raagatech Music Application";
-    }
-    
-    @RequestMapping(value = "/doregister", method = RequestMethod.GET)
-    public String doRegister(@RequestParam("username") String username, @RequestParam("password") String password,
-            @RequestParam("email") String email, @RequestParam("mobile") String mobileNo) {
-        String response;
-        int result = registerUser(username, password, email, Long.valueOf(mobileNo));
-        if (result == 0) {
-            response = commonUtilities.constructJSON("register", true);
-        } else {
-            response = commonUtilities.constructJSON("register", false, "sql insertion error occurred");
-        }
-        return response;
+        return "true";//"<h1>Spring Boot Hello World!</h1><br/> This service is about Raagatech Music Application";
     }
 
-    private int registerUser(String username, String password, String email, long mobileNo) {
-
-        int result = 3;
-        if (commonUtilities.isNotNull(username) && commonUtilities.isNotNull(password) && commonUtilities.isNotNull(email)) {
+    @RequestMapping(value = "/dologin", method = RequestMethod.GET)
+    public String doLogin(@RequestParam("userName") String userName, @RequestParam("password") String password) {
+        String response = null;
+        if (commonUtilities.isNotNull(userName) && commonUtilities.isNotNull(password)) {
             try {
-                if (musicDataSource.insertUser(username, password, email, mobileNo)) {
-                    result = 0;
+                UserDataBean userData = musicDataSource.getUserData(userName, password);
+                if (userData != null) {
+                    List<UserDataBean> userDataList = new ArrayList<>();
+                    userDataList.add(userData);
+                    JSONArray jsonArray = new JSONArray(userDataList);
+                    response = jsonArray.toString();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        return result;
+        return response;
+    }
+
+    @RequestMapping(value = "/doregister", method = RequestMethod.POST)
+    public String doRegister(@RequestParam("regName") String username, @RequestParam("regPassword") String password,
+            @RequestParam("regEmail") String email, @RequestParam("regMobile") String mobileNo, @RequestParam("regGender") String gender,
+            @RequestParam("regPostalAddress") String postalAddress, @RequestParam("regPincode") String pincode) {
+
+        String response = "false";
+        try {
+            if (musicDataSource.insertUser(username, password, email, Long.valueOf(mobileNo), gender, postalAddress, pincode)) {
+                String body = "<p>Kindly click / tap on below link to verify your email address.</p>"
+                        + "<a href=http://140.238.250.40:8080/resources/music/doemailverification?email=" + email + "><b>" + password + "</b></a>";
+                emailUtility.sendEmail(email, "raagatech: email verification", body);
+                response = "true";
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(RaagatechMusicApplication.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return response;
+    }
+
+    @RequestMapping(value = "/doemailverification", method = RequestMethod.GET)
+    public String doVerifyEmail(@RequestParam("email") String email) {
+        try {
+            musicDataSource.updateUserForEmailVerification(email);
+        } catch (Exception ex) {
+            Logger.getLogger(RaagatechMusicApplication.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return "e-mail verification successful. Thank you!";
     }
 
     @RequestMapping(value = "/doregisterinquiry", method = RequestMethod.GET)
@@ -124,13 +148,12 @@ public class RaagatechMusicApplication {
     }
 
     @RequestMapping(value = "/dolistinquiry", method = RequestMethod.GET)
-    public String doListInquiry() throws Exception {
-        String response;
-        ArrayList<InquiryBean> inquiryList = musicDataSource.listInquiry();
+    public String doListInquiry(@RequestParam("email") String email) throws Exception {
+        String response = null;
+        ArrayList<InquiryBean> inquiryList = musicDataSource.listInquiry(email);
         if (!inquiryList.isEmpty()) {
-            response = commonUtilities.constructJSON("listinquiry", inquiryList);
-        } else {
-            response = commonUtilities.constructJSON("listinquiry", false, "no data available");
+            JSONArray jsonArray = new JSONArray(inquiryList);
+            response = jsonArray.toString();
         }
         return response;
     }
