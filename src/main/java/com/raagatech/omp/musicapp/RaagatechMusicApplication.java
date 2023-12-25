@@ -87,40 +87,27 @@ public class RaagatechMusicApplication {
         return "e-mail verification successful. Thank you!";
     }
 
-    @RequestMapping(value = "/doregisterinquiry", method = RequestMethod.GET)
-    public String doRegisterInquiry(@RequestParam("inquiryname") String inquiryname, @RequestParam("inspirationid") String inspirationid,
-            @RequestParam("email") String email, @RequestParam("mobile") String mobileNo, @RequestParam("levelid") String levelid,
-            @RequestParam("address") String address, @RequestParam("followupDetails") String followupDetails) {
-        String response;
-        int result = registerInquiry(inquiryname, Integer.valueOf(inspirationid), email, Long.valueOf(mobileNo), Integer.valueOf(levelid),
-                address, followupDetails);
-        if (result == 0) {
-            response = commonUtilities.constructJSON("register", true);
-        } else {
-            response = commonUtilities.constructJSON("register", false, "sql insertion error occurred");
+    @RequestMapping(value = "/doregisterinquiry", method = RequestMethod.POST)
+    public String doRegisterInquiry(@RequestParam("inqName") String inquiryname,
+            @RequestParam("inqEmail") String email, @RequestParam("inqMobile") String mobileNo, @RequestParam("inqGender") String gender,
+            @RequestParam("inqPostalAddress") String address, @RequestParam("inqPincode") String pincode, @RequestParam("inqSubject") String subject,
+            @RequestParam("inqYear") String year, @RequestParam("inqFollowup") String followupDetails) {
+        String response = "false";
+        try {
+            if (musicDataSource.insertInquiry(inquiryname, 0, email, Long.valueOf(mobileNo),
+                    0, address, followupDetails, "091",
+                    "", "", "", 0, "", gender,
+                    subject, year, "")) {
+                String body = "<p>Thank you very much for showing interest in music learning and performance activities with us!"
+                        + "To know more about our's effort and approaches, "
+                        + "kindly browse through the website which is mentioned in this email signature.</p>";
+                emailUtility.sendEmail(email, "raagatech: inquiry registration", body);
+                response = "true";
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(RaagatechMusicApplication.class.getName()).log(Level.SEVERE, null, ex);
         }
         return response;
-    }
-
-    private int registerInquiry(String inquiryname, int inspirationid, String email, long mobileNo,
-            int levelid, String address, String followupDetails) {
-
-        int result = 3;
-        if (commonUtilities.isNotNull(inquiryname) && commonUtilities.isNotNull(email)) {
-            try {
-                if (musicDataSource.insertInquiry(inquiryname, inspirationid, email, mobileNo,
-                        levelid, address, followupDetails, "", "", "", "", 0, null,
-                        "", "", "", "")) {
-                    result = 0;
-                    if (!email.equalsIgnoreCase("raksha@raagatech.com")) {
-                        emailUtility.sendGoogleMail(email, inquiryname, followupDetails);
-                    }
-//                    SMSUtils.sendSMS(String.valueOf(mobileNo), followupDetails);
-                }
-            } catch (Exception e) {
-            }
-        }
-        return result;
     }
 
     @RequestMapping(value = "/doselectlevel", method = RequestMethod.GET)

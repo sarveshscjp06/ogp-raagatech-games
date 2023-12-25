@@ -66,7 +66,10 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
     }
 
     @Override
-    public boolean insertInquiry(String inquiryname, int inspirationid, String email, long mobileNo, int levelid, String address, String followupDetails, String nationality, String fname, String mname, String dob, long telOther, String image, String gender, String inspiration, String comfortability, String primaryskill) throws Exception {
+    public boolean insertInquiry(String inquiryname, int inspirationid, String email, long mobileNo, 
+            int levelid, String address, String followupDetails, String nationality, 
+            String fname, String mname, String dob, long telOther, String image, String gender, 
+            String inspiration, String comfortability, String primaryskill) throws Exception {
         boolean insertStatus = Boolean.FALSE;
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
