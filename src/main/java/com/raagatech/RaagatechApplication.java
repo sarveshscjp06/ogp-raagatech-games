@@ -26,7 +26,7 @@ public class RaagatechApplication {
         SpringApplication.run(RaagatechApplication.class, args);
     }
 
-    @RequestMapping
+    @RequestMapping("/test")
     public String home() throws Exception {
         String test_table_users = oracleDataSource.databaseConnectionTest();
         return "<h1>Spring Boot Hello World!</h1><br/>" + test_table_users;

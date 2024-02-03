@@ -36,7 +36,7 @@ public class RaagatechMusicApplication {
 
     @RequestMapping
     public String home() {
-        return "true";//"<h1>Spring Boot Hello World!</h1><br/> This service is about Raagatech Music Application";
+        return "<h1>Spring Boot Hello World!</h1><br/> This service is about Raagatech Music Application";
     }
 
     @RequestMapping(value = "/dologin", method = RequestMethod.GET)
