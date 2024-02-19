@@ -91,13 +91,13 @@ public class RaagatechMusicApplication {
     public String doRegisterInquiry(@RequestParam("inqName") String inquiryname,
             @RequestParam("inqEmail") String email, @RequestParam("inqMobile") String mobileNo, @RequestParam("inqGender") String gender,
             @RequestParam("inqPostalAddress") String address, @RequestParam("inqPincode") String pincode, @RequestParam("inqSubject") String subject,
-            @RequestParam("inqYear") String year, @RequestParam("inqFollowup") String followupDetails) {
+            @RequestParam("inqYear") String year, @RequestParam("inqFollowup") String followupDetails, @RequestParam("userId") String userId) {
         String response = "false";
         try {
             if (musicDataSource.insertInquiry(inquiryname, 0, email, Long.valueOf(mobileNo),
                     0, address, followupDetails, "091",
                     "", "", "", 0, "", gender,
-                    subject, year, "")) {
+                    subject, year, "", userId)) {
                 String body = "<p>Thank you very much for showing interest in music learning and performance activities with us!"
                         + "To know more about our's effort and approaches, "
                         + "kindly browse through the website which is mentioned in this email signature.</p>";

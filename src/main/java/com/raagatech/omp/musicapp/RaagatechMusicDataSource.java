@@ -69,16 +69,16 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
     public boolean insertInquiry(String inquiryname, int inspirationid, String email, long mobileNo, 
             int levelid, String address, String followupDetails, String nationality, 
             String fname, String mname, String dob, long telOther, String image, String gender, 
-            String inspiration, String comfortability, String primaryskill) throws Exception {
+            String inspiration, String comfortability, String primaryskill, String userId) throws Exception {
         boolean insertStatus = Boolean.FALSE;
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
             Statement statement = connection.createStatement();
             String queryInsertInquiry = "INSERT into raagatech_inquiry (firstname, inspiration_id, inquiry_date, email, mobile"
-                    + ", level_id, address_line1, nationality, father_name, mother_name, date_of_birth, telephone, photo, gender, inspiration, comfortability, primaryskill) "
+                    + ", level_id, address_line1, nationality, father_name, mother_name, date_of_birth, telephone, photo, gender, inspiration, comfortability, primaryskill, userId) "
                     + "VALUES ('" + inquiryname + "'," + inspirationid + ",'" + FORMATTER.format(new Date()) + "', '" + email + "', " + mobileNo + ","
                     + levelid + ", '" + address + "', '" + nationality + "', '" + fname + "', '" + mname + "', '" + FORMATTER.format(new SimpleDateFormat("dd/MM/yyyy").parse(dob)) + "', " + telOther + ", '" + image + "', '"
-                    + gender + "', '" + inspiration + "', '" + comfortability + "', '" + primaryskill + "')";
+                    + gender + "', '" + inspiration + "', '" + comfortability + "', '" + primaryskill + "', " + userId + ")";
             int records = statement.executeUpdate(queryInsertInquiry);
             if (records > 0) {
                 statement = connection.createStatement();
