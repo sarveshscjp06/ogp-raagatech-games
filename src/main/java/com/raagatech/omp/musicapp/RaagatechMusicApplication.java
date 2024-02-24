@@ -90,14 +90,14 @@ public class RaagatechMusicApplication {
     @RequestMapping(value = "/doregisterinquiry", method = RequestMethod.POST)
     public String doRegisterInquiry(@RequestParam("inqName") String inquiryname,
             @RequestParam("inqEmail") String email, @RequestParam("inqMobile") String mobileNo, @RequestParam("inqGender") String gender,
-            @RequestParam("inqPostalAddress") String address, @RequestParam("inqPincode") String pincode, @RequestParam("inqSubject") String subject,
-            @RequestParam("inqYear") String year, @RequestParam("inqFollowup") String followupDetails, @RequestParam("userId") String userId) {
+            @RequestParam("inqPostalAddress") String address, @RequestParam("inqPinCode") String pinCode, @RequestParam("inqSubject") int subject,
+            @RequestParam("inqYear") int year, @RequestParam("inqFollowupDetails") String followupDetails, @RequestParam("userId") int userId) {
         String response = "false";
         try {
-            if (musicDataSource.insertInquiry(inquiryname, 0, email, Long.valueOf(mobileNo),
-                    0, address, followupDetails, "091",
+            if (musicDataSource.insertInquiry(inquiryname, subject, email, Long.parseLong(mobileNo),
+                    year, address, followupDetails, "091",
                     "", "", "", 0, "", gender,
-                    subject, year, "", userId)) {
+                    "", "", "", userId)) {
                 String body = "<p>Thank you very much for showing interest in music learning and performance activities with us!"
                         + "To know more about our's effort and approaches, "
                         + "kindly browse through the website which is mentioned in this email signature.</p>";

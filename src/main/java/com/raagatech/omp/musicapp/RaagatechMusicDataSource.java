@@ -7,10 +7,8 @@ package com.raagatech.omp.musicapp;
 import com.raagatech.common.datasource.OracleDatabaseInterface;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import oracle.jdbc.OracleConnection;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,32 +64,31 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
     }
 
     @Override
-    public boolean insertInquiry(String inquiryname, int inspirationid, String email, long mobileNo, 
-            int levelid, String address, String followupDetails, String nationality, 
-            String fname, String mname, String dob, long telOther, String image, String gender, 
-            String inspiration, String comfortability, String primaryskill, String userId) throws Exception {
+    public boolean insertInquiry(String inquiryname, int inspirationid, String email, long mobileNo,
+            int levelid, String address, String followupDetails, String nationality,
+            String fname, String mname, String dob, long telOther, String image, String gender,
+            String inspiration, String comfortability, String primaryskill, int userId) throws Exception {
         boolean insertStatus = Boolean.FALSE;
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
-            Statement statement = connection.createStatement();
-            String queryInsertInquiry = "INSERT into raagatech_inquiry (firstname, inspiration_id, inquiry_date, email, mobile"
-                    + ", level_id, address_line1, nationality, father_name, mother_name, date_of_birth, telephone, photo, gender, inspiration, comfortability, primaryskill, userId) "
-                    + "VALUES ('" + inquiryname + "'," + inspirationid + ",'" + FORMATTER.format(new Date()) + "', '" + email + "', " + mobileNo + ","
-                    + levelid + ", '" + address + "', '" + nationality + "', '" + fname + "', '" + mname + "', '" + FORMATTER.format(new SimpleDateFormat("dd/MM/yyyy").parse(dob)) + "', " + telOther + ", '" + image + "', '"
-                    + gender + "', '" + inspiration + "', '" + comfortability + "', '" + primaryskill + "', " + userId + ")";
-            int records = statement.executeUpdate(queryInsertInquiry);
+            char sex = gender.equals("Male")? 'M':'F';
+            int inquiry_id = oracleDataSource.generateNextPrimaryKey("raagatech_inquiry", "inquiry_id");
+            String queryInsertInquiry = "INSERT into raagatech_inquiry (inquiry_id, firstname, inspiration_id, inquiry_date, email, mobile"
+                    + ", level_id, address_line1, nationality, father_name, mother_name, date_of_birth, telephone, photo, gender, inspiration, comfortability, primaryskill, user_id) "
+                    + "VALUES (" + inquiry_id + ", '" + inquiryname + "'," + inspirationid + ",?, '" + email + "', " + mobileNo + ","
+                    + levelid + ", '" + address + "', '" + nationality + "', '" + fname + "', '" + mname + "', ?, " + telOther + ", '" + image + "', '"
+                    + sex + "', '" + inspiration + "', '" + comfortability + "', '" + primaryskill + "', " + userId + ")";
+            PreparedStatement statement = connection.prepareStatement(queryInsertInquiry);
+            statement.setTimestamp(1, getCurrentTimeStamp());
+            statement.setTimestamp(2, getCurrentTimeStamp());
+            int records = statement.executeUpdate();
             if (records > 0) {
-                statement = connection.createStatement();
-                ResultSet rs = statement.executeQuery("SELECT MAX(inquiry_id) from inquiry");
-                int inquiry_id = 0;
-                while (rs.next()) {
-                    inquiry_id = rs.getInt(1);
-                }
-                rs.close();
-                statement = connection.createStatement();
-                String queryInsertFollowupDetails = "INSERT into raagatech_followupdetails (inquiry_id, inquirystatus_id, followup_details, followup_date) "
-                        + "VALUES (" + inquiry_id + ", 1, '" + followupDetails + "','" + FORMATTER.format(new Date()) + "')";
-                records = statement.executeUpdate(queryInsertFollowupDetails);
+                int followup_id = oracleDataSource.generateNextPrimaryKey("raagatech_followupdetails", "followup_id");
+                String queryInsertFollowupDetails = "INSERT into raagatech_followupdetails (followup_id, inquiry_id, inquirystatus_id, followup_details, followup_date) "
+                        + "VALUES (" + followup_id + ", " + inquiry_id + ", 1, '" + followupDetails + "',?)";
+                PreparedStatement statement2 = connection.prepareStatement(queryInsertFollowupDetails);
+                statement2.setTimestamp(1, getCurrentTimeStamp());
+                records = statement2.executeUpdate();
                 if (records > 0) {
                     insertStatus = Boolean.TRUE;
                 }
@@ -111,18 +108,18 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
     }
 
     @Override
-    public ArrayList<InquiryBean> listInquiry(String email) throws Exception {
+    public ArrayList<InquiryBean> listInquiry(String userId) throws Exception {
         ArrayList<InquiryBean> inquiryList = new ArrayList<>();
         InquiryBean inquiry;
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
-            String queryInsertUser = "SELECT * FROM raagatech_inquiry WHERE email = '" + email + "'";
+            String queryInsertUser = "SELECT * FROM raagatech_inquiry WHERE user_id = " + userId;
             PreparedStatement statement = connection.prepareStatement(queryInsertUser);
             ResultSet record = statement.executeQuery();
             while (record.next()) {
                 inquiry = new InquiryBean();
                 inquiry.setFirstname(record.getString("firstname"));
-                inquiry.setGender((char)record.getObject("gender"));
+                inquiry.setGender((char) record.getObject("gender"));
                 inquiry.setEmail(record.getString("email"));
                 inquiry.setInquiry_date(record.getDate("inquiry_date"));
                 inquiry.setNationality(record.getString("country_code"));

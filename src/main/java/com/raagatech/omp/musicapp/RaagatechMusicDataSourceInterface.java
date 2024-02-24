@@ -23,13 +23,13 @@ public interface RaagatechMusicDataSourceInterface {
     public boolean insertInquiry(String inquiryname, int inspirationid, String email, long mobileNo,
             int levelid, String address, String followupDetails,
             String nationality, String fname, String mname, String dob, long telOther, String image,
-            String gender, String inspiration, String comfortability, String primaryskill, String userId) throws Exception;
+            String gender, String inspiration, String comfortability, String primaryskill, int userId) throws Exception;
 
     public LinkedHashMap<Integer, String> selectLevel() throws Exception;
 
     public LinkedHashMap<Integer, String> selectInspiration() throws Exception;
 
-    public ArrayList<InquiryBean> listInquiry(String email) throws Exception;
+    public ArrayList<InquiryBean> listInquiry(String userId) throws Exception;
 
     public boolean updateInquiry(int inquiry_id, String inquiryname, int inspirationid, String email, long mobileNo,
             int levelid, String address, String followupDetails, String nationality, String fname, String mname, String dob, long telOther, String image,
