@@ -29,7 +29,7 @@ public interface RaagatechMusicDataSourceInterface {
 
     public LinkedHashMap<Integer, String> selectInspiration() throws Exception;
 
-    public ArrayList<InquiryBean> listInquiry(String userId) throws Exception;
+    public ArrayList<InquiryBean> listInquiry(int userId) throws Exception;
 
     public boolean updateInquiry(int inquiry_id, String inquiryname, int inspirationid, String email, long mobileNo,
             int levelid, String address, String followupDetails, String nationality, String fname, String mname, String dob, long telOther, String image,

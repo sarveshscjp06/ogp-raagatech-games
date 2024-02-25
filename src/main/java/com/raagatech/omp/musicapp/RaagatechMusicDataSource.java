@@ -108,7 +108,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
     }
 
     @Override
-    public ArrayList<InquiryBean> listInquiry(String userId) throws Exception {
+    public ArrayList<InquiryBean> listInquiry(int userId) throws Exception {
         ArrayList<InquiryBean> inquiryList = new ArrayList<>();
         InquiryBean inquiry;
         // With AutoCloseable, the connection is closed automatically.
@@ -119,10 +119,10 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             while (record.next()) {
                 inquiry = new InquiryBean();
                 inquiry.setFirstname(record.getString("firstname"));
-                inquiry.setGender((char) record.getObject("gender"));
+                inquiry.setGender(record.getString("gender").equals("M")?'M':'F');
                 inquiry.setEmail(record.getString("email"));
                 inquiry.setInquiry_date(record.getDate("inquiry_date"));
-                inquiry.setNationality(record.getString("country_code"));
+                inquiry.setNationality(record.getString("nationality"));
                 inquiry.setMobile(record.getLong("mobile"));
                 inquiry.setInquiry_id(record.getInt("inquiry_id"));
                 inquiryList.add(inquiry);

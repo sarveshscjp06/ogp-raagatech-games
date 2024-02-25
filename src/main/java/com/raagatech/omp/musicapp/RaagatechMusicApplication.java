@@ -135,9 +135,9 @@ public class RaagatechMusicApplication {
     }
 
     @RequestMapping(value = "/dolistinquiry", method = RequestMethod.GET)
-    public String doListInquiry(@RequestParam("email") String email) throws Exception {
+    public String doListInquiry(@RequestParam("userId") int userId) throws Exception {
         String response = null;
-        ArrayList<InquiryBean> inquiryList = musicDataSource.listInquiry(email);
+        ArrayList<InquiryBean> inquiryList = musicDataSource.listInquiry(userId);
         if (!inquiryList.isEmpty()) {
             JSONArray jsonArray = new JSONArray(inquiryList);
             response = jsonArray.toString();
