@@ -135,7 +135,9 @@
         </script>
     </head>
     <body>
-        <h1>Form</h1>
+        <div class="landing-page"><div class="form-appointment"><div class="wpcf7" id="wpcf7-f560-p590-o1">
+            <h2 style="text-align: center;">Appointment Form</h2>
+            <div style="text-align: center; padding-top: 1em; border-top: 1px solid rgb(153, 202, 129); margin-top: 1em;"></div>
         <form action="#" th:action="@{/appointment}" th:object="${appointment}" method="post" class="wpcf7-form" novalidate="novalidate">
             <p>Id: <input type="text" th:field="*{id}" /> </p>
             <p>Message: <input type="text" th:field="*{content}" /> </p>
@@ -170,11 +172,11 @@
                     <h4>Best time of day for your appointment:</h4>
                     <p><span class="wpcf7-form-control-wrap checkbox-246"><span class="wpcf7-form-control wpcf7-checkbox">
                                 <span class="wpcf7-list-item"><label><input type="checkbox" th:field="*{availabilityMorning}" value="Morning">&nbsp;<span class="wpcf7-list-item-label">Morning</span></label></span>
-                                <span class="wpcf7-list-item"><label><input type="checkbox" th:field="*{availabilityAfternoon
+                                <span class="wpcf7-list-item"><label><input type="checkbox" th:field="*{availabilityAfternoon}" value="Afternoon">&nbsp;<span class="wpcf7-list-item-label">Afternoon</span></label></span></span></span></p>
             <div style="text-align: center; padding-top: 1em; border-top: 1px solid rgb(153, 202, 129); margin-top: 1em;">
                 <input type="submit" value="Request My Appointment" class="wpcf7-form-control wpcf7-submit">
             </div>
-            <div class="wpcf7-response-output wpcf7-display-none"></div>
-        </form>
+            <div class="wpcf7-response-output wpcf7-display-none"></div></div>
+        </form></div></div></div>
     </body>
 </html>
