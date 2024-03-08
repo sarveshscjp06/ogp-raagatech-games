@@ -6,8 +6,13 @@
     </head>
     <body>
         <h1>Result</h1>
-        <p th:text="'Id: '+${appointment.id}"/>
-        <p th:text="'Content: '+${appointment.content}"/>
+        <p th:text="'Name: '+${greeting.name}"/>
+        <p th:text="'Email: '+${greeting.email}"/>
+        <p th:text="'Phone: '+${greeting.phone}"/>
+        <p th:text="'Followup Details: '+${greeting.followupDetails}"/>
+        <p th:text="'Way To Reach: '+${greeting.wayToReach}"/>
+        <p th:text="'Day For Apointment: '+${greeting.monday == null ? 'Tuesday':'Wednesday'}"/>
+        <p th:text="'Time For Apointment: '+${greeting.availabilityMorning}"/>
         <a href="/appointment">book another appointment</a>
     </body>
 </html>
