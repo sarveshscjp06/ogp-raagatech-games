@@ -14,14 +14,13 @@
     <name>ogp-raagatech-games</name>
     <description>Online gaming project for entertainment</description>
     <properties>
-        <java.version>17</java.version>
-        <maven.compiler.release>17</maven.compiler.release>
+        <java.version>11</java.version>
     </properties>
     <dependencies>
-        <dependency>
+        <!--dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
-		</dependency>
+		</dependency-->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
