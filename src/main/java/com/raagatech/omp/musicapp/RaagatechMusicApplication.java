@@ -12,7 +12,10 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -90,14 +93,14 @@ public class RaagatechMusicApplication {
     @RequestMapping(value = "/doregisterinquiry", method = RequestMethod.POST)
     public String doRegisterInquiry(@RequestParam("inqName") String inquiryname,
             @RequestParam("inqEmail") String email, @RequestParam("inqMobile") String mobileNo, @RequestParam("inqGender") String gender,
-            @RequestParam("inqPostalAddress") String address, @RequestParam("inqPinCode") String pinCode, @RequestParam("inqSubject") int subject,
+            @RequestParam("inqPostalAddress") String address, @RequestParam("inqPinCode") int pinCode, @RequestParam("inqSubject") int subject,
             @RequestParam("inqYear") int year, @RequestParam("inqFollowupDetails") String followupDetails, @RequestParam("userId") int userId) {
         String response = "false";
         try {
             if (musicDataSource.insertInquiry(inquiryname, subject, email, Long.parseLong(mobileNo),
                     year, address, followupDetails, "091",
                     "", "", "", 0, "", gender,
-                    "", "", "", userId)) {
+                    "", "", "", userId, pinCode)) {
                 String body = "<p>Thank you very much for showing interest in music learning and performance activities with us!"
                         + "To know more about our's effort and approaches, "
                         + "kindly browse through the website which is mentioned in this email signature.</p>";
@@ -145,30 +148,50 @@ public class RaagatechMusicApplication {
         return response;
     }
 
-    @RequestMapping(value = "/doupdateinquiry", method = RequestMethod.GET)
-    public String doUpdateInquiry(@RequestParam("inquiry_id") String inquiry_id, @RequestParam("inquiryname") String inquiryname, @RequestParam("inspirationid") String inspirationid,
-            @RequestParam("email") String email, @RequestParam("mobile") String mobileNo, @RequestParam("levelid") String levelid,
-            @RequestParam("address") String address, @RequestParam("followupDetails") String followupDetails) {
-        String response;
-        int result = updateInquiry(Integer.valueOf(inquiry_id), inquiryname, Integer.valueOf(inspirationid), email, Long.valueOf(mobileNo), Integer.valueOf(levelid),
-                address, followupDetails);
-        if (result == 0) {
-            response = commonUtilities.constructJSON("register", true);
-        } else {
-            response = commonUtilities.constructJSON("register", false, "sql insertion error occurred");
+    @GetMapping(path = "/dogetinquiry/{inquiryId}")
+    public String doGetInquiry(@PathVariable int inquiryId) throws Exception {
+        String response = null;
+        InquiryBean inquiry = musicDataSource.getInquiryById(inquiryId);
+        if (inquiry != null) {
+            JSONObject jsonObject = new JSONObject(inquiry);
+            response = jsonObject.toString();
+        }
+        return response;
+    }
+
+    @RequestMapping(value = "/doupdateinquiry", method = RequestMethod.POST)
+    public String doUpdateInquiry(@RequestParam("inqName") String inquiryname,
+            @RequestParam("inqEmail") String email, @RequestParam("inqMobile") String mobileNo, @RequestParam("inqGender") String gender,
+            @RequestParam("inqPostalAddress") String address, @RequestParam("inqPinCode") int pinCode, @RequestParam("inqSubject") int subject,
+            @RequestParam("inqYear") int year, @RequestParam("inqFollowupDetails") String followupDetails,
+            @RequestParam("userId") int userId, @RequestParam("inquiryId") int inquiry_id) {
+        String response = "false";
+        try {
+            if (musicDataSource.updateInquiry(inquiry_id, inquiryname, subject, email, Long.parseLong(mobileNo),
+                    year, address, followupDetails, "", "", "", "", 0, null,
+                    gender, "", "", "", userId, pinCode)) {
+                String body = "<p>Thank you very much for updating inquiry!"
+                        + "To know more about our's effort and approaches, "
+                        + "kindly browse through the website which is mentioned in this email signature.</p>";
+                emailUtility.sendEmail(email, "raagatech: update inquiry", body);
+                response = "true";
+            }
+
+        } catch (Exception ex) {
+            Logger.getLogger(RaagatechMusicApplication.class.getName()).log(Level.SEVERE, null, ex);
         }
         return response;
     }
 
     private int updateInquiry(int inquiry_id, String inquiryname, int inspirationid, String email, long mobileNo,
-            int levelid, String address, String followupDetails) {
+            int levelid, String address, String followupDetails, int userId, int pinCode) {
 
         int result = 3;
         if (inquiry_id > 0 && commonUtilities.isNotNull(inquiryname) && commonUtilities.isNotNull(email)) {
             try {
                 if (musicDataSource.updateInquiry(inquiry_id, inquiryname, inspirationid, email, mobileNo,
                         levelid, address, followupDetails, "", "", "", "", 0, null,
-                        "", "", "", "")) {
+                        "", "", "", "", userId, pinCode)) {
                     result = 0;
                 }
                 if (!email.equalsIgnoreCase("raksha@raagatech.com")) {

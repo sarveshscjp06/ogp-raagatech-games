@@ -35,6 +35,7 @@ public class InquiryBean {
     private String inspiration;
     private String comfortability;
     private String primaryskill;
+    private Integer pincode;
 
     /**
      * @return the inquiry_id
@@ -342,6 +343,20 @@ public class InquiryBean {
      */
     public void setPrimaryskill(String primaryskill) {
         this.primaryskill = primaryskill;
+    }
+
+    /**
+     * @return the pincode
+     */
+    public Integer getPincode() {
+        return pincode;
+    }
+
+    /**
+     * @param pincode the pincode to set
+     */
+    public void setPincode(Integer pincode) {
+        this.pincode = pincode;
     }
 
 }
