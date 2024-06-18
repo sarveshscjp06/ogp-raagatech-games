@@ -94,13 +94,13 @@ public class RaagatechMusicApplication {
     public String doRegisterInquiry(@RequestParam("inqName") String inquiryname,
             @RequestParam("inqEmail") String email, @RequestParam("inqMobile") String mobileNo, @RequestParam("inqGender") String gender,
             @RequestParam("inqPostalAddress") String address, @RequestParam("inqPinCode") int pinCode, @RequestParam("inqSubject") int subject,
-            @RequestParam("inqYear") int year, @RequestParam("inqFollowupDetails") String followupDetails, @RequestParam("userId") int userId) {
+            @RequestParam("inqYear") int year, @RequestParam("inqFollowupDetails") String followupDetails, @RequestParam("userId") int userId, @RequestParam("examSession") int examSession) {
         String response = "false";
         try {
             if (musicDataSource.insertInquiry(inquiryname, subject, email, Long.parseLong(mobileNo),
                     year, address, followupDetails, "091",
                     "", "", "", 0, "", gender,
-                    "", "", "", userId, pinCode)) {
+                    "", "", "", userId, pinCode, examSession)) {
                 String body = "<p>Thank you very much for showing interest in music learning and performance activities with us!"
                         + "To know more about our's effort and approaches, "
                         + "kindly browse through the website which is mentioned in this email signature.</p>";
@@ -164,12 +164,12 @@ public class RaagatechMusicApplication {
             @RequestParam("inqEmail") String email, @RequestParam("inqMobile") String mobileNo, @RequestParam("inqGender") String gender,
             @RequestParam("inqPostalAddress") String address, @RequestParam("inqPinCode") int pinCode, @RequestParam("inqSubject") int subject,
             @RequestParam("inqYear") int year, @RequestParam("inqFollowupDetails") String followupDetails,
-            @RequestParam("userId") int userId, @RequestParam("inquiryId") int inquiry_id) {
+            @RequestParam("userId") int userId, @RequestParam("inquiryId") int inquiry_id, @RequestParam("examSession") int examSession) {
         String response = "false";
         try {
             if (musicDataSource.updateInquiry(inquiry_id, inquiryname, subject, email, Long.parseLong(mobileNo),
                     year, address, followupDetails, "", "", "", "", 0, null,
-                    gender, "", "", "", userId, pinCode)) {
+                    gender, "", "", "", userId, pinCode, examSession)) {
                 String body = "<p>Thank you very much for updating inquiry!"
                         + "To know more about our's effort and approaches, "
                         + "kindly browse through the website which is mentioned in this email signature.</p>";
@@ -181,28 +181,6 @@ public class RaagatechMusicApplication {
             Logger.getLogger(RaagatechMusicApplication.class.getName()).log(Level.SEVERE, null, ex);
         }
         return response;
-    }
-
-    private int updateInquiry(int inquiry_id, String inquiryname, int inspirationid, String email, long mobileNo,
-            int levelid, String address, String followupDetails, int userId, int pinCode) {
-
-        int result = 3;
-        if (inquiry_id > 0 && commonUtilities.isNotNull(inquiryname) && commonUtilities.isNotNull(email)) {
-            try {
-                if (musicDataSource.updateInquiry(inquiry_id, inquiryname, inspirationid, email, mobileNo,
-                        levelid, address, followupDetails, "", "", "", "", 0, null,
-                        "", "", "", "", userId, pinCode)) {
-                    result = 0;
-                }
-                if (!email.equalsIgnoreCase("raksha@raagatech.com")) {
-                    emailUtility.sendGoogleMail(email, inquiryname, followupDetails);
-                }
-//                SMSUtils.sendSMS(String.valueOf(mobileNo), followupDetails);
-
-            } catch (Exception e) {
-            }
-        }
-        return result;
     }
 
     @RequestMapping(value = "/doselectinquirystatus", method = RequestMethod.GET)
