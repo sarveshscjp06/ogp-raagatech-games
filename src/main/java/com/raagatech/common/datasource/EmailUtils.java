@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * https://www.codejava.net/frameworks/spring-boot/email-sending-tutorial
@@ -89,7 +91,23 @@ public class EmailUtils implements EmailUtilityInterface {
 
     @Override
     public void executeCronJob(String subject, String followupDetails) throws UnsupportedEncodingException, IOException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        List<InquiryBean> contactList = new ArrayList<>();
+        int contactSize = contactList.size();
+        if (contactSize > 75) {
+            contactSize = 75;
+        }
+        var addresses = new InternetAddress[contactSize];
+        int index = 0;
+        for (Greeting contact : contactList) {
+            if (addresses.length == 75) {
+                break;
+            }
+            addresses[index] = new InternetAddress(contact.getEmail(), contact.getName());
+            index++;
+        }
+        if (addresses.length != 0) {
+            sendDailyEMailAd(subject, addresses, followupDetails);
+        }
     }
 
     @Override
@@ -97,4 +115,25 @@ public class EmailUtils implements EmailUtilityInterface {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
+    private void sendDailyEMailAd(String subject, InternetAddress[] addresses, String body) throws IOException {
+        
+        try {
+            MimeMessage msg = javaMailSender.createMimeMessage();
+            msg.addRecipients(Message.RecipientType.TO, addresses);
+            // true = multipart message
+            MimeMessageHelper helper = new MimeMessageHelper(msg);
+            helper.setBcc("sarvesh.new@gmail.com");
+            msg.setSubject(subject);
+
+            String bodyText = "<h1>The World Of Music Education & Performance!</h1>"
+                    .concat(body)
+                    .concat(SIGNATURE);
+
+            boolean html = true;
+            helper.setText(bodyText, html);
+            javaMailSender.send(msg);
+        } catch (MessagingException ex) {
+            Logger.getLogger(EmailUtils.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 }
