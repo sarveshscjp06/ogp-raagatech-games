@@ -114,7 +114,8 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         InquiryBean inquiry;
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
-            String queryInsertUser = "SELECT * FROM raagatech_inquiry WHERE user_id = " + userId;
+            String queryInsertUser = "SELECT * FROM raagatech_inquiry WHERE user_id = " + userId 
+            + " AND exam_session = " + Integer.parseInt(new SimpleDateFormat("yyyy").format(new Date()));
             PreparedStatement statement = connection.prepareStatement(queryInsertUser);
             ResultSet record = statement.executeQuery();
             while (record.next()) {
@@ -249,5 +250,43 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             }
         }
         return userData;
+    }
+
+    @Override
+    public boolean updateUserData(String username, String password, long mobileNo, 
+            String gender, String postalAddress, String pincode, int userId) throws Exception {
+        boolean updateStatus = Boolean.FALSE;
+        // With AutoCloseable, the connection is closed automatically.
+        try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
+            char sex = gender.equals("Male") ? 'M' : 'F';
+            String queryUpdateUser = "UPDATE raagatech_user set username = '" + username + "', password = '" + password + "'"
+                    + ", mobile = "+ mobileNo + ", gender = '"+ gender + "', pincode = " + pincode  
+                    + " WHERE user_id = " + userId;
+            PreparedStatement statement = connection.prepareStatement(queryUpdateUser);
+            int records = statement.executeUpdate();
+        }
+        return updateStatus;
+    }
+
+    @Override
+    public ArrayList<UserDataBean> getUsersList(String username, String password) throws Exception {
+        ArrayList<UserDataBean> usersList = new ArrayList<>();
+        UserDataBean userData = null;
+        // With AutoCloseable, the connection is closed automatically.
+        try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
+            String queryInsertUser = "SELECT * FROM raagatech_user WHERE (email = '" + username + "' "
+                    + "OR username = '" + username + "') AND password = '" + password + "' AND emailverification = 1";
+            PreparedStatement statement = connection.prepareStatement(queryInsertUser);
+            ResultSet record = statement.executeQuery();
+            while (record.next()) {
+                userData = new UserDataBean();
+                userData.setUserName(record.getString("username"));
+                userData.setEmail(record.getString("email"));
+                userData.setMobile(record.getLong("mobile"));
+                userData.setUserId(record.getInt("user_id"));
+                usersList.add(userData);
+            }
+        }
+        return usersList;
     }
 }

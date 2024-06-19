@@ -61,6 +61,23 @@ public class RaagatechMusicApplication {
         return response;
     }
 
+    @RequestMapping(value = "/dochangepassword", method = RequestMethod.GET)
+    public String doChangePassword(@RequestParam("regName") String username, @RequestParam("regPassword") String password,
+            @RequestParam("regMobile") String mobileNo, @RequestParam("regGender") String gender,
+            @RequestParam("regPostalAddress") String postalAddress, @RequestParam("regPincode") String pincode, @RequestParam("userId") int userId) {
+        String response = "false";
+        if (commonUtilities.isNotNull(userName) && commonUtilities.isNotNull(password)) {
+            try {
+                UserDataBean userData = musicDataSource.updateUserData(username, password, mobileNo, 
+            gender, postalAddress, pincode, userId);
+                response = "true";
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return response;
+    }
+
     @RequestMapping(value = "/doregister", method = RequestMethod.POST)
     public String doRegister(@RequestParam("regName") String username, @RequestParam("regPassword") String password,
             @RequestParam("regEmail") String email, @RequestParam("regMobile") String mobileNo, @RequestParam("regGender") String gender,
@@ -228,5 +245,16 @@ public class RaagatechMusicApplication {
             }
         }
         return result;
+    }
+
+    @RequestMapping(value = "/dolistfavourites", method = RequestMethod.GET)
+    public String doListInquiryFavourites(@RequestParam("username") String username, @RequestParam("password") String password) throws Exception {
+        String response = null;
+        ArrayList<UserDataBean> usersList = musicDataSource.getUsersList(username, password);
+        if (!usersList.isEmpty()) {
+            JSONArray jsonArray = new JSONArray(usersList);
+            response = jsonArray.toString();
+        }
+        return response;
     }
 }
