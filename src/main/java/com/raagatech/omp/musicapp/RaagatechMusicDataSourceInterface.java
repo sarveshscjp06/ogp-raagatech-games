@@ -51,8 +51,10 @@ public interface RaagatechMusicDataSourceInterface {
 
     public InquiryBean getInquiryDetails(String email, long mobileNo) throws Exception;
 
-    public boolean updateUserData(String username, String password, String email, long mobileNo, 
-            String gender, String postalAddress, String , int userId) throws Exception;
+    public boolean updateUserData(String username, String password, long mobileNo, 
+            String gender, String postalAddress, String pincode, int userId) throws Exception;
 
-    public ArrayList<UserDataBean> getUsersList(String username, String password) throws Exception;    
+    public ArrayList<UserDataBean> getUsersList(String username, String password) throws Exception;
+
+    public ArrayList<UserDataBean> listOverAllContacts() throws Exception;
 }

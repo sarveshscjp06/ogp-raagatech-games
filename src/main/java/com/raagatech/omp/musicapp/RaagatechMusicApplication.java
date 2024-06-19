@@ -66,10 +66,10 @@ public class RaagatechMusicApplication {
             @RequestParam("regMobile") String mobileNo, @RequestParam("regGender") String gender,
             @RequestParam("regPostalAddress") String postalAddress, @RequestParam("regPincode") String pincode, @RequestParam("userId") int userId) {
         String response = "false";
-        if (commonUtilities.isNotNull(userName) && commonUtilities.isNotNull(password)) {
+        if (commonUtilities.isNotNull(username) && commonUtilities.isNotNull(password)) {
             try {
-                UserDataBean userData = musicDataSource.updateUserData(username, password, mobileNo, 
-            gender, postalAddress, pincode, userId);
+                musicDataSource.updateUserData(username, password, Long.valueOf(mobileNo),
+                        gender, postalAddress, pincode, userId);
                 response = "true";
             } catch (Exception e) {
                 e.printStackTrace();

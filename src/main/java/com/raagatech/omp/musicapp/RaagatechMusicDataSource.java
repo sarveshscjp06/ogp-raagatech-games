@@ -9,6 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import oracle.jdbc.OracleConnection;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -274,9 +275,9 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         UserDataBean userData = null;
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
-            String queryInsertUser = "SELECT * FROM raagatech_user WHERE (email = '" + username + "' "
+            String querySelectUser = "SELECT * FROM raagatech_user WHERE (email = '" + username + "' "
                     + "OR username = '" + username + "') AND password = '" + password + "' AND emailverification = 1";
-            PreparedStatement statement = connection.prepareStatement(queryInsertUser);
+            PreparedStatement statement = connection.prepareStatement(querySelectUser);
             ResultSet record = statement.executeQuery();
             while (record.next()) {
                 userData = new UserDataBean();
@@ -288,5 +289,27 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             }
         }
         return usersList;
+    }
+
+    @Override
+    public ArrayList<UserDataBean> listOverAllContacts() throws Exception {
+        
+        ArrayList<UserDataBean> contactsList = new ArrayList<>();
+        UserDataBean userData;
+        // With AutoCloseable, the connection is closed automatically.
+        try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
+        String querySelectUser = "select DISTINCT ru.USERNAME as name, ru.EMAIL as email from RAAGATECH_USER ru"
+                + " UNION"
+                + " select DISTINCT ri.FIRSTNAME as name, ri.EMAIL as email from RAAGATECH_INQUIRY ri";
+        PreparedStatement statement = connection.prepareStatement(querySelectUser);
+            ResultSet record = statement.executeQuery();
+            while (record.next()) {
+                userData = new UserDataBean();
+                userData.setUserName(record.getString("name"));
+                userData.setEmail(record.getString("email"));
+                contactsList.add(userData);
+            }
+        }
+        return contactsList;
     }
 }

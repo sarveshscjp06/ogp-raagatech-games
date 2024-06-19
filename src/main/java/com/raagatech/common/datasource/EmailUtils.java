@@ -4,6 +4,9 @@
  */
 package com.raagatech.common.datasource;
 
+import com.raagatech.omp.musicapp.InquiryBean;
+import com.raagatech.omp.musicapp.RaagatechMusicDataSource;
+import com.raagatech.omp.musicapp.UserDataBean;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
@@ -16,6 +19,8 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
+import javax.mail.Message;
+import javax.mail.internet.InternetAddress;
 
 /**
  * https://www.codejava.net/frameworks/spring-boot/email-sending-tutorial
@@ -25,6 +30,8 @@ import java.util.List;
 @Service
 public class EmailUtils implements EmailUtilityInterface {
 
+    @Autowired
+    private RaagatechMusicDataSource musicDataSource;
     @Autowired
     private JavaMailSender javaMailSender;
 
@@ -91,22 +98,26 @@ public class EmailUtils implements EmailUtilityInterface {
 
     @Override
     public void executeCronJob(String subject, String followupDetails) throws UnsupportedEncodingException, IOException {
-        List<InquiryBean> contactList = new ArrayList<>();
-        int contactSize = contactList.size();
-        if (contactSize > 75) {
-            contactSize = 75;
-        }
-        var addresses = new InternetAddress[contactSize];
-        int index = 0;
-        for (Greeting contact : contactList) {
-            if (addresses.length == 75) {
-                break;
+        try {
+            List<UserDataBean> contactList = musicDataSource.listOverAllContacts();
+            int contactSize = contactList.size();
+            if (contactSize > 75) {
+                contactSize = 75;
             }
-            addresses[index] = new InternetAddress(contact.getEmail(), contact.getName());
-            index++;
-        }
-        if (addresses.length != 0) {
-            sendDailyEMailAd(subject, addresses, followupDetails);
+            var addresses = new InternetAddress[contactSize];
+            int index = 0;
+            for (UserDataBean contact : contactList) {
+                if (addresses.length == 75) {
+                    break;
+                }
+                addresses[index] = new InternetAddress(contact.getEmail(), contact.getUserName());
+                index++;
+            }
+            if (addresses.length != 0) {
+                sendDailyEMailAd(subject, addresses, followupDetails);
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(EmailUtils.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
