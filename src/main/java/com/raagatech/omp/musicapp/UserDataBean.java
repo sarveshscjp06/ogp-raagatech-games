@@ -20,6 +20,9 @@ public class UserDataBean {
     private int countryCode;
     private String address;
     private Date creationDate;
+    private int pincode;
+    private int inspiratorId;
+    private char gender;
 
     /**
      * @return the userName
@@ -132,5 +135,46 @@ public class UserDataBean {
     public void setUserId(int userId) {
         this.userId = userId;
     }
-        
+
+    /**
+     * @return the pincode
+     */
+    public int getPincode() {
+        return pincode;
+    }
+
+    /**
+     * @param pincode the pincode to set
+     */
+    public void setPincode(int pincode) {
+        this.pincode = pincode;
+    }
+
+    /**
+     * @return the inspiratorId
+     */
+    public int getInspiratorId() {
+        return inspiratorId;
+    }
+
+    /**
+     * @param inspiratorId the inspiratorId to set
+     */
+    public void setInspiratorId(int inspiratorId) {
+        this.inspiratorId = inspiratorId;
+    }
+
+    /**
+     * @return the gender
+     */
+    public char getGender() {
+        return gender;
+    }
+
+    /**
+     * @param gender the gender to set
+     */
+    public void setGender(char gender) {
+        this.gender = gender;
+    }    
 }

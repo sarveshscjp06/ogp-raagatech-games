@@ -29,16 +29,16 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
 
     @Override
     public boolean insertUser(String username, String password, String email, long mobileNo,
-            String gender, String postalAddress, String pincode) throws Exception {
+            String gender, String postalAddress, String pincode, int inspiratorId) throws Exception {
 
         boolean insertStatus = Boolean.FALSE;
         // With AutoCloseable, the connection is closed automatically.
         int id = oracleDataSource.generateNextPrimaryKey("raagatech_user", "user_id");
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
             String queryInsertUser = "INSERT into raagatech_user (user_id, username, password, creation_date, email, country_code, mobile,"
-                    + "gender, postalAddress, pincode) "
+                    + "gender, postalAddress, pincode, inspirator_id) "
                     + "VALUES (" + id + ", '" + username + "','" + password + "',?, '" + email + "', 091, " + mobileNo + ", '" + gender
-                    + "', '" + postalAddress + "', '" + pincode + "')";
+                    + "', '" + postalAddress + "', " + pincode + ", " + inspiratorId + ")";
             PreparedStatement statement = connection.prepareStatement(queryInsertUser);
             statement.setTimestamp(1, getCurrentTimeStamp());
             int records = statement.executeUpdate();
@@ -110,14 +110,21 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
     }
 
     @Override
-    public ArrayList<InquiryBean> listInquiry(int userId) throws Exception {
+    public ArrayList<InquiryBean> listInquiry(int userId, int inspiratorId) throws Exception {
         ArrayList<InquiryBean> inquiryList = new ArrayList<>();
         InquiryBean inquiry;
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
-            String queryInsertUser = "SELECT * FROM raagatech_inquiry WHERE user_id = " + userId 
-            + " AND exam_session = " + Integer.parseInt(new SimpleDateFormat("yyyy").format(new Date()));
-            PreparedStatement statement = connection.prepareStatement(queryInsertUser);
+            String querySelectInquiries = "SELECT * FROM raagatech_inquiry"
+                    + " WHERE exam_session = " + Integer.parseInt(new SimpleDateFormat("yyyy").format(new Date()))
+                    +" AND user_id = " + userId + " OR user_id in (select user_id from raagatech_user where inspirator_id = "+userId+")";
+            
+            if(inspiratorId > 0) {
+                querySelectInquiries = "SELECT * FROM raagatech_inquiry"
+                    + " WHERE exam_session = " + Integer.parseInt(new SimpleDateFormat("yyyy").format(new Date())) 
+                    + " AND user_id in (select user_id from raagatech_user where inspirator_id = "+inspiratorId+")";
+            }
+            PreparedStatement statement = connection.prepareStatement(querySelectInquiries);
             ResultSet record = statement.executeQuery();
             while (record.next()) {
                 inquiry = new InquiryBean();
@@ -129,7 +136,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 inquiry.setMobile(record.getLong("mobile"));
                 inquiry.setInquiry_id(record.getInt("inquiry_id"));
                 inquiry.setExamSession(record.getInt("exam_session"));
-                
+                inquiry.setPrimaryskill(record.getString("primaryskill"));
                 inquiryList.add(inquiry);
             }
         }
@@ -146,7 +153,8 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
             char sex = gender.equals("Male") ? 'M' : 'F';
             String queryUpdateInquiry = "UPDATE raagatech_inquiry set firstname = '" + inquiryname + "', inspiration_id = " + inspirationid + ", email = '" + email 
-                    + "', mobile = "+ mobileNo + ", level_id = " + levelid + ", address_line1 = '" + address + "', gender = '"+ sex + "', pincode = " + pinCode + ", exam_session = " + examSession  
+                    + "', mobile = "+ mobileNo + ", level_id = " + levelid + ", address_line1 = '" + address + "', gender = '"+ sex + "',"
+                    + " pincode = " + pinCode + ", exam_session = " + examSession+ ", primaryskill = '" + primaryskill + "'"  
                     + " WHERE inquiry_id = " + inquiry_id + " AND user_id = " + userId;
             PreparedStatement statement = connection.prepareStatement(queryUpdateInquiry);
             int records = statement.executeUpdate();
@@ -196,6 +204,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 inquiry.setExamSession(record.getInt("exam_session"));
                 inquiry.setAddress_line1(record.getString("address_line1"));
                 inquiry.setFollowup_details(record.getString("followup_details"));
+                inquiry.setPrimaryskill(record.getString("primaryskill"));
 
             }
         }
@@ -248,6 +257,10 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 userData.setCountryCode(record.getInt("country_code"));
                 userData.setMobile(record.getLong("mobile"));
                 userData.setUserId(record.getInt("user_id"));
+                userData.setPincode(record.getInt("pincode"));
+                userData.setInspiratorId(record.getInt("inspirator_id"));
+                userData.setGender(record.getString("gender").equals("M") ? 'M' : 'F');
+                userData.setAddress(record.getString("postaladdress"));
             }
         }
         return userData;
@@ -255,16 +268,20 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
 
     @Override
     public boolean updateUserData(String username, String password, long mobileNo, 
-            String gender, String postalAddress, String pincode, int userId) throws Exception {
+            String gender, String postalAddress, String pincode, int userId, int inspiratorId) throws Exception {
         boolean updateStatus = Boolean.FALSE;
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
             char sex = gender.equals("Male") ? 'M' : 'F';
             String queryUpdateUser = "UPDATE raagatech_user set username = '" + username + "', password = '" + password + "'"
-                    + ", mobile = "+ mobileNo + ", gender = '"+ gender + "', pincode = " + pincode  
+                    + ", mobile = "+ mobileNo + ", gender = '"+ sex + "', pincode = " + pincode + ""
+                    + ", inspirator_id = " + inspiratorId +", postaladdress = '" + postalAddress + "'"
                     + " WHERE user_id = " + userId;
             PreparedStatement statement = connection.prepareStatement(queryUpdateUser);
             int records = statement.executeUpdate();
+            if(records > 0) {
+                updateStatus = Boolean.TRUE;
+            }
         }
         return updateStatus;
     }
@@ -272,7 +289,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
     @Override
     public ArrayList<UserDataBean> getUsersList(String username, String password) throws Exception {
         ArrayList<UserDataBean> usersList = new ArrayList<>();
-        UserDataBean userData = null;
+        UserDataBean userData;
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
             String querySelectUser = "SELECT * FROM raagatech_user WHERE (email = '" + username + "' "
@@ -285,6 +302,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 userData.setEmail(record.getString("email"));
                 userData.setMobile(record.getLong("mobile"));
                 userData.setUserId(record.getInt("user_id"));
+                userData.setGender(record.getString("gender").equals("M") ? 'M' : 'F');
                 usersList.add(userData);
             }
         }
@@ -311,5 +329,31 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             }
         }
         return contactsList;
+    }
+    
+    @Override
+    public UserDataBean getUserData(int userId) throws Exception {
+        UserDataBean userData = null;
+        // With AutoCloseable, the connection is closed automatically.
+        try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
+            String queryInsertUser = "SELECT * FROM raagatech_user WHERE user_id = " + userId + " AND emailverification = 1";
+            PreparedStatement statement = connection.prepareStatement(queryInsertUser);
+            ResultSet record = statement.executeQuery();
+            while (record.next()) {
+                userData = new UserDataBean();
+                userData.setUserName(record.getString("username"));
+                userData.setPassword(record.getString("password"));
+                userData.setEmail(record.getString("email"));
+                userData.setCreationDate(record.getDate("creation_date"));
+                userData.setCountryCode(record.getInt("country_code"));
+                userData.setMobile(record.getLong("mobile"));
+                userData.setUserId(record.getInt("user_id"));
+                userData.setPincode(record.getInt("pincode"));
+                userData.setInspiratorId(record.getInt("inspirator_id"));
+                userData.setGender(record.getString("gender").equals("M") ? 'M' : 'F');
+                userData.setAddress(record.getString("postaladdress"));
+            }
+        }
+        return userData;
     }
 }

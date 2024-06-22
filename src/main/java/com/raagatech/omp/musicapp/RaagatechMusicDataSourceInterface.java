@@ -16,7 +16,7 @@ public interface RaagatechMusicDataSourceInterface {
     public UserDataBean getUserData(String username, String password) throws Exception;
     
     public boolean insertUser(String username, String password, String email, long mobileNo, 
-            String gender, String postalAddress, String pincode) throws Exception;
+            String gender, String postalAddress, String pincode, int inspirator_id) throws Exception;
     
     public boolean updateUserForEmailVerification(String email) throws Exception;
 
@@ -30,7 +30,7 @@ public interface RaagatechMusicDataSourceInterface {
 
     public LinkedHashMap<Integer, String> selectInspiration() throws Exception;
 
-    public ArrayList<InquiryBean> listInquiry(int userId) throws Exception;
+    public ArrayList<InquiryBean> listInquiry(int userId, int inspiratorId) throws Exception;
 
     public boolean updateInquiry(int inquiry_id, String inquiryname, int inspirationid, String email, long mobileNo,
             int levelid, String address, String followupDetails, String nationality, String fname, String mname, String dob, long telOther, String image,
@@ -52,9 +52,11 @@ public interface RaagatechMusicDataSourceInterface {
     public InquiryBean getInquiryDetails(String email, long mobileNo) throws Exception;
 
     public boolean updateUserData(String username, String password, long mobileNo, 
-            String gender, String postalAddress, String pincode, int userId) throws Exception;
+            String gender, String postalAddress, String pincode, int userId, int inspiratorId) throws Exception;
 
     public ArrayList<UserDataBean> getUsersList(String username, String password) throws Exception;
 
     public ArrayList<UserDataBean> listOverAllContacts() throws Exception;
+    
+    public UserDataBean getUserData(int userId) throws Exception;
 }
