@@ -6,6 +6,7 @@ package com.raagatech.omp.musicapp;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.Date;
 
 /**
  *
@@ -15,10 +16,12 @@ public interface RaagatechMusicDataSourceInterface {
 
     public UserDataBean getUserData(String username, String password) throws Exception;
     
-    public boolean insertUser(String username, String password, String email, long mobileNo, 
+    public int insertUser(String username, String password, String email, long mobileNo, 
             String gender, String postalAddress, String pincode, int inspirator_id) throws Exception;
     
-    public boolean updateUserForEmailVerification(String email) throws Exception;
+    public boolean updateUserForEmailVerification(int userId, String email) throws Exception;
+
+    public boolean updateUserForMobileVerification(int userId, String email, long mobileNo) throws Exception;
 
     public boolean insertInquiry(String inquiryname, int inspirationid, String email, long mobileNo,
             int levelid, String address, String followupDetails,
@@ -56,7 +59,7 @@ public interface RaagatechMusicDataSourceInterface {
 
     public ArrayList<UserDataBean> getUsersList(String username, String password) throws Exception;
 
-    public ArrayList<UserDataBean> listOverAllContacts() throws Exception;
+    public ArrayList<UserDataBean> listOverAllContacts(Date dob) throws Exception;
     
     public UserDataBean getUserData(int userId) throws Exception;
 }

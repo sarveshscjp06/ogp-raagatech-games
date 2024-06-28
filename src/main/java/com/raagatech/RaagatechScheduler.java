@@ -26,6 +26,20 @@ public class RaagatechScheduler {
     @Autowired
     private EmailUtilityInterface emailUtility;
 
+    @Scheduled(cron = "0 30 9 ? * *")
+    public void raagatechHappyBirthday() throws IOException {
+        //every day 09:30 
+        SimpleDateFormat dateFormat = new SimpleDateFormat(
+            "dd-MM-yyyy");
+
+        String strDate = dateFormat.format(new Date());
+
+        String subject = "raagatech :: Happy Birthday!";
+        String followupDetails = "Greetings!, Wishing a very very hapy birthday to you!! Enjoy your day!!!\n\n";
+        emailUtility.executeHbdJob(subject, followupDetails, strDate);
+        Logger.getLogger(RaagatechScheduler.class.getName()).log(Level.SEVERE, null, "raagatech hbd job executed at "+strDate);
+    }
+
     @Scheduled(cron = "0 0 17 ? * 5")
     public void raagatechMusicAd() throws IOException {
         //every friday 17:00

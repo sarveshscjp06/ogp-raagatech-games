@@ -28,7 +28,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
     private OracleDatabaseInterface oracleDataSource;
 
     @Override
-    public boolean insertUser(String username, String password, String email, long mobileNo,
+    public int insertUser(String username, String password, String email, long mobileNo,
             String gender, String postalAddress, String pincode, int inspiratorId) throws Exception {
 
         boolean insertStatus = Boolean.FALSE;
@@ -42,15 +42,15 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             PreparedStatement statement = connection.prepareStatement(queryInsertUser);
             statement.setTimestamp(1, getCurrentTimeStamp());
             int records = statement.executeUpdate();
-            if (records > 0) {
-                insertStatus = Boolean.TRUE;
+            if (records == 0) {
+                id = 0;
             }
         }
-        return insertStatus;
+        return id;
     }
 
     @Override
-    public boolean updateUserForEmailVerification(String email) throws Exception {
+    public boolean updateUserForEmailVerification(int userId, String email) throws Exception {
         boolean updateStatus = Boolean.FALSE;
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
@@ -60,6 +60,9 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             if (records > 0) {
                 updateStatus = Boolean.TRUE;
             }
+            String queryUpdateInquiry = "update raagatech_inquiry set user_id = "+userId+" where email = '" + email + "'";
+            statement = connection.prepareStatement(queryUpdateInquiry);
+            statement.executeUpdate();
         }
         return updateStatus;
     }
@@ -310,15 +313,18 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
     }
 
     @Override
-    public ArrayList<UserDataBean> listOverAllContacts() throws Exception {
+    public ArrayList<UserDataBean> listOverAllContacts(Date dob) throws Exception {
         
         ArrayList<UserDataBean> contactsList = new ArrayList<>();
         UserDataBean userData;
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
-        String querySelectUser = "select DISTINCT ru.USERNAME as name, ru.EMAIL as email from RAAGATECH_USER ru"
+        String querySelectUser = "select DISTINCT ru.USERNAME as name, ru.EMAIL as email from RAAGATECH_USER ru"                
                 + " UNION"
                 + " select DISTINCT ri.FIRSTNAME as name, ri.EMAIL as email from RAAGATECH_INQUIRY ri";
+                if(dob != null){
+                    querySelectUser = querySelectUser.concat(" WHERE date_of_birth = '"+dob+"'");
+                }
         PreparedStatement statement = connection.prepareStatement(querySelectUser);
             ResultSet record = statement.executeQuery();
             while (record.next()) {
@@ -355,5 +361,20 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             }
         }
         return userData;
+    }
+
+    @Override
+    public boolean updateUserForMoileVerification(int userId, String email, long mobileNo) throws Exception {
+        boolean updateStatus = Boolean.FALSE;
+        // With AutoCloseable, the connection is closed automatically.
+        try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
+            String queryUpdateUser = "update raagatech_user set mobileverification = 1 where userId = "+userId+" AND email = '" + email + "' AND mobile = "+mobileNo;
+            PreparedStatement statement = connection.prepareStatement(queryUpdateUser);
+            int records = statement.executeUpdate();
+            if (records > 0) {
+                updateStatus = Boolean.TRUE;
+            }
+        }
+        return updateStatus;
     }
 }

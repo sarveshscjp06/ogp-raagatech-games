@@ -99,7 +99,32 @@ public class EmailUtils implements EmailUtilityInterface {
     @Override
     public void executeCronJob(String subject, String followupDetails) throws UnsupportedEncodingException, IOException {
         try {
-            List<UserDataBean> contactList = musicDataSource.listOverAllContacts();
+            List<UserDataBean> contactList = musicDataSource.listOverAllContacts(null);
+            int contactSize = contactList.size();
+            if (contactSize > 75) {
+                contactSize = 75;
+            }
+            var addresses = new InternetAddress[contactSize];
+            int index = 0;
+            for (UserDataBean contact : contactList) {
+                if (addresses.length == 75) {
+                    break;
+                }
+                addresses[index] = new InternetAddress(contact.getEmail(), contact.getUserName());
+                index++;
+            }
+            if (addresses.length != 0) {
+                sendDailyEMailAd(subject, addresses, followupDetails);
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(EmailUtils.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Override
+    public void executeHbdJob(String subject, String followupDetails, Date dob) throws UnsupportedEncodingException, IOException {
+        try {
+            List<UserDataBean> contactList = musicDataSource.listOverAllContacts(dob);
             int contactSize = contactList.size();
             if (contactSize > 75) {
                 contactSize = 75;

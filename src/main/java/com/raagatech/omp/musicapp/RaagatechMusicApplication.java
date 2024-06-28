@@ -97,9 +97,10 @@ public class RaagatechMusicApplication {
 
         String response = "false";
         try {
-            if (musicDataSource.insertUser(username, password, email, Long.valueOf(mobileNo), gender, postalAddress, pincode, inspiratorId)) {
+            int userId = musicDataSource.insertUser(username, password, email, Long.valueOf(mobileNo), gender, postalAddress, pincode, inspiratorId);
+            if (userId > 0) {
                 String body = "<p>Kindly click / tap on below link to verify your email address.</p>"
-                        + "<a href=http://140.238.250.40:8080/resources/music/doemailverification?email=" + email + "><b>" + password + "</b></a>";
+                        + "<a href=http://140.238.250.40:8080/resources/music/doemailverification?usetId="+userId+"&email=" + email + "><b>" + password + "</b></a>";
                 emailUtility.sendEmail(email, "raagatech: email verification", body);
                 response = "true";
             }
@@ -110,14 +111,32 @@ public class RaagatechMusicApplication {
     }
 
     @RequestMapping(value = "/doemailverification", method = RequestMethod.GET)
-    public String doVerifyEmail(@RequestParam("email") String email) {
+    public String doVerifyEmail(@RequestParam("userId") int userId, @RequestParam("email") String email) {
+        String verificationStatus = "e-mail verification successful. Thank you!";
         try {
-            musicDataSource.updateUserForEmailVerification(email);
+            if(!musicDataSource.updateUserForEmailVerification(userId, email)) {
+                verificationStatus = "e-mail verification failure. May be server is down. "
+                .concat("Kindly contact to admin on mobile: 9891029284.");
+            }
         } catch (Exception ex) {
             Logger.getLogger(RaagatechMusicApplication.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return "e-mail verification successful. Thank you!";
+        return verificationStatus;
     }
+
+    @RequestMapping(value = "/doemobileverification", method = RequestMethod.GET)
+    public String doVerifyMobile(@RequestParam("userId") int userId, @RequestParam("email") String email, @RequestParam("mobile") long mobile) {
+        String verificationStatus = "mobile verification successful. Thank you!";
+        try {
+            if(!musicDataSource.updateUserForMobileVerification(userId, email, mobile)){
+                 verificationStatus = "mobile no verification failure. May be server is down. "
+                .concat("Kindly contact to admin on mobile: 9891029284.");
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(RaagatechMusicApplication.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return verificationStatus;
+    }    
 
     @RequestMapping(value = "/doregisterinquiry", method = RequestMethod.POST)
     public String doRegisterInquiry(@RequestParam("inqName") String inquiryname,
@@ -168,9 +187,9 @@ public class RaagatechMusicApplication {
     }
 
     @RequestMapping(value = "/dolistinquiry", method = RequestMethod.GET)
-    public String doListInquiry(@RequestParam("userId") int userId) throws Exception {
+    public String doListInquiry(@RequestParam("userId") int userId, @RequestParam("inspiratorId") int inspiratorId) throws Exception {
         String response = null;
-        ArrayList<InquiryBean> inquiryList = musicDataSource.listInquiry(userId, 0);
+        ArrayList<InquiryBean> inquiryList = musicDataSource.listInquiry(userId, inspiratorId);
         if (!inquiryList.isEmpty()) {
             JSONArray jsonArray = new JSONArray(inquiryList);
             response = jsonArray.toString();
