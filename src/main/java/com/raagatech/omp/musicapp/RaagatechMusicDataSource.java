@@ -31,7 +31,6 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
     public int insertUser(String username, String password, String email, long mobileNo,
             String gender, String postalAddress, String pincode, int inspiratorId) throws Exception {
 
-        boolean insertStatus = Boolean.FALSE;
         // With AutoCloseable, the connection is closed automatically.
         int id = oracleDataSource.generateNextPrimaryKey("raagatech_user", "user_id");
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
@@ -118,12 +117,12 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
             String querySelectInquiries = "SELECT * FROM raagatech_inquiry"
-                    + " WHERE exam_session = " + Integer.parseInt(new SimpleDateFormat("yyyy").format(new Date()))
+                    + " WHERE exam_session = " + Integer.valueOf(new SimpleDateFormat("yyyy").format(new Date()))
                     +" AND user_id = " + userId + " OR user_id in (select user_id from raagatech_user where inspirator_id = "+userId+")";
             
             if(inspiratorId > 0) {
                 querySelectInquiries = "SELECT * FROM raagatech_inquiry"
-                    + " WHERE exam_session = " + Integer.parseInt(new SimpleDateFormat("yyyy").format(new Date())) 
+                    + " WHERE exam_session = " + Integer.valueOf(new SimpleDateFormat("yyyy").format(new Date())) 
                     + " AND user_id in (select user_id from raagatech_user where inspirator_id = "+inspiratorId+")";
             }
             PreparedStatement statement = connection.prepareStatement(querySelectInquiries);
