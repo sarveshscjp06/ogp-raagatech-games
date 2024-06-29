@@ -6,7 +6,6 @@ package com.raagatech.omp.musicapp;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.Date;
 
 /**
  *
@@ -59,7 +58,7 @@ public interface RaagatechMusicDataSourceInterface {
 
     public ArrayList<UserDataBean> getUsersList(String username, String password) throws Exception;
 
-    public ArrayList<UserDataBean> listOverAllContacts(Date dob) throws Exception;
+    public ArrayList<UserDataBean> listOverAllContacts(String dob) throws Exception;
     
     public UserDataBean getUserData(int userId) throws Exception;
 }

@@ -28,7 +28,7 @@ public class InquiryBean {
     private String nationality;
     private String father_name;
     private String mother_name;
-    private Date date_of_birth;
+    private String date_of_birth;
     private Long telephone;
     private String photo;
     private char gender;
@@ -251,14 +251,14 @@ public class InquiryBean {
     /**
      * @return the date_of_birth
      */
-    public Date getDate_of_birth() {
+    public String getDate_of_birth() {
         return date_of_birth;
     }
 
     /**
      * @param date_of_birth the date_of_birth to set
      */
-    public void setDate_of_birth(Date date_of_birth) {
+    public void setDate_of_birth(String date_of_birth) {
         this.date_of_birth = date_of_birth;
     }
 

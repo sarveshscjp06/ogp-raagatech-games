@@ -6,7 +6,9 @@ package com.raagatech.omp.musicapp;
 
 import com.raagatech.common.datasource.CommonUtilitiesInterface;
 import com.raagatech.common.datasource.EmailUtilityInterface;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.logging.Level;
@@ -143,12 +145,13 @@ public class RaagatechMusicApplication {
             @RequestParam("inqEmail") String email, @RequestParam("inqMobile") String mobileNo, @RequestParam("inqGender") String gender,
             @RequestParam("inqPostalAddress") String address, @RequestParam("inqPinCode") int pinCode, @RequestParam("inqSubject") int subject,
             @RequestParam("inqYear") int year, @RequestParam("inqFollowupDetails") String followupDetails, 
-            @RequestParam("userId") int userId, @RequestParam("examSession") int examSession, @RequestParam("inqEducation") String primaryskill) {
+            @RequestParam("userId") int userId, @RequestParam("examSession") int examSession, 
+            @RequestParam("inqEducation") String primaryskill, @RequestParam("inqDob") String dob) {
         String response = "false";
         try {
             if (musicDataSource.insertInquiry(inquiryname, subject, email, Long.parseLong(mobileNo),
                     year, address, followupDetails, "091",
-                    "", "", "", 0, "", gender,
+                    "", "", dob, 0, "", gender,
                     "", "", primaryskill, userId, pinCode, examSession)) {
                 String body = "<p>Thank you very much for showing interest in music learning and performance activities with us!"
                         + "To know more about our's effort and approaches, "
@@ -213,11 +216,12 @@ public class RaagatechMusicApplication {
             @RequestParam("inqEmail") String email, @RequestParam("inqMobile") String mobileNo, @RequestParam("inqGender") String gender,
             @RequestParam("inqPostalAddress") String address, @RequestParam("inqPinCode") int pinCode, @RequestParam("inqSubject") int subject,
             @RequestParam("inqYear") int year, @RequestParam("inqFollowupDetails") String followupDetails,
-            @RequestParam("userId") int userId, @RequestParam("inquiryId") int inquiry_id, @RequestParam("examSession") int examSession, @RequestParam("inqEducation") String primaryskill) {
+            @RequestParam("userId") int userId, @RequestParam("inquiryId") int inquiry_id, @RequestParam("examSession") int examSession, 
+            @RequestParam("inqEducation") String primaryskill, @RequestParam("inqDob") String dob) {
         String response = "false";
         try {
             if (musicDataSource.updateInquiry(inquiry_id, inquiryname, subject, email, Long.parseLong(mobileNo),
-                    year, address, followupDetails, "", "", "", "", 0, null,
+                    year, address, followupDetails, "", "", "", dob, 0, null,
                     gender, "", "", primaryskill, userId, pinCode, examSession)) {
                 String body = "<p>Thank you very much for updating inquiry!"
                         + "To know more about our's effort and approaches, "

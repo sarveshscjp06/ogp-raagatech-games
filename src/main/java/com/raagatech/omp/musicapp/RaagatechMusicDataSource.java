@@ -81,11 +81,10 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                     + ", level_id, address_line1, nationality, father_name, mother_name, date_of_birth, telephone, photo"
                     + ", gender, inspiration, comfortability, primaryskill, user_id, pincode, exam_session) "
                     + "VALUES (" + inquiry_id + ", '" + inquiryname + "'," + inspirationid + ",?, '" + email + "', " + mobileNo + ","
-                    + levelid + ", '" + address + "', '" + nationality + "', '" + fname + "', '" + mname + "', ?, " + telOther + ", '" + image + "', '"
+                    + levelid + ", '" + address + "', '" + nationality + "', '" + fname + "', '" + mname + "', '"+dob+"', " + telOther + ", '" + image + "', '"
                     + sex + "', '" + inspiration + "', '" + comfortability + "', '" + primaryskill + "', " + userId + ", " + pinCode + ", " + examSession + ")";
             PreparedStatement statement = connection.prepareStatement(queryInsertInquiry);
             statement.setTimestamp(1, getCurrentTimeStamp());
-            statement.setTimestamp(2, getCurrentTimeStamp());
             int records = statement.executeUpdate();
             if (records > 0) {
                 int followup_id = oracleDataSource.generateNextPrimaryKey("raagatech_followupdetails", "followup_id");
@@ -157,7 +156,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             char sex = gender.equals("Male") ? 'M' : 'F';
             String queryUpdateInquiry = "UPDATE raagatech_inquiry set firstname = '" + inquiryname + "', inspiration_id = " + inspirationid + ", email = '" + email 
                     + "', mobile = "+ mobileNo + ", level_id = " + levelid + ", address_line1 = '" + address + "', gender = '"+ sex + "',"
-                    + " pincode = " + pinCode + ", exam_session = " + examSession+ ", primaryskill = '" + primaryskill + "'"  
+                    + " pincode = " + pinCode + ", exam_session = " + examSession+ ", primaryskill = '" + primaryskill + "'"+ ", date_of_birth = '" + dob + "'"  
                     + " WHERE inquiry_id = " + inquiry_id + " AND user_id = " + userId;
             PreparedStatement statement = connection.prepareStatement(queryUpdateInquiry);
             int records = statement.executeUpdate();
@@ -208,7 +207,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 inquiry.setAddress_line1(record.getString("address_line1"));
                 inquiry.setFollowup_details(record.getString("followup_details"));
                 inquiry.setPrimaryskill(record.getString("primaryskill"));
-
+                inquiry.setDate_of_birth(record.getString("date_of_birth"));
             }
         }
         return inquiry;
@@ -313,7 +312,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
     }
 
     @Override
-    public ArrayList<UserDataBean> listOverAllContacts(Date dob) throws Exception {
+    public ArrayList<UserDataBean> listOverAllContacts(String dob) throws Exception {
         
         ArrayList<UserDataBean> contactsList = new ArrayList<>();
         UserDataBean userData;
@@ -364,7 +363,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
     }
 
     @Override
-    public boolean updateUserForMoileVerification(int userId, String email, long mobileNo) throws Exception {
+    public boolean updateUserForMobileVerification(int userId, String email, long mobileNo) throws Exception {
         boolean updateStatus = Boolean.FALSE;
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {

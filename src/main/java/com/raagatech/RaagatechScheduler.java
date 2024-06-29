@@ -36,7 +36,7 @@ public class RaagatechScheduler {
 
         String subject = "raagatech :: Happy Birthday!";
         String followupDetails = "Greetings!, Wishing a very very hapy birthday to you!! Enjoy your day!!!\n\n";
-        emailUtility.executeHbdJob(subject, followupDetails, strDate);
+        emailUtility.executeHbdJob(subject, followupDetails);
         Logger.getLogger(RaagatechScheduler.class.getName()).log(Level.SEVERE, null, "raagatech hbd job executed at "+strDate);
     }
 

@@ -4,11 +4,12 @@
  */
 package com.raagatech.common.datasource;
 
-import com.raagatech.omp.musicapp.InquiryBean;
 import com.raagatech.omp.musicapp.RaagatechMusicDataSource;
 import com.raagatech.omp.musicapp.UserDataBean;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.mail.MessagingException;
@@ -17,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import java.util.ArrayList;
 import java.util.List;
 import javax.mail.Message;
 import javax.mail.internet.InternetAddress;
@@ -122,9 +122,11 @@ public class EmailUtils implements EmailUtilityInterface {
     }
 
     @Override
-    public void executeHbdJob(String subject, String followupDetails, Date dob) throws UnsupportedEncodingException, IOException {
+    public void executeHbdJob(String subject, String followupDetails) throws UnsupportedEncodingException, IOException {
         try {
-            List<UserDataBean> contactList = musicDataSource.listOverAllContacts(dob);
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+            String strDate = dateFormat.format(new Date());
+            List<UserDataBean> contactList = musicDataSource.listOverAllContacts(strDate);
             int contactSize = contactList.size();
             if (contactSize > 75) {
                 contactSize = 75;
