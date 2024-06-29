@@ -6,7 +6,6 @@ package com.raagatech.common.datasource;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.Date;
 
 /**
  *
