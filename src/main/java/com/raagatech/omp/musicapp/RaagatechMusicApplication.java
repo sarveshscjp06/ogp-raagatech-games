@@ -6,7 +6,9 @@ package com.raagatech.omp.musicapp;
 
 import com.raagatech.common.datasource.CommonUtilitiesInterface;
 import com.raagatech.common.datasource.EmailUtilityInterface;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.logging.Level;
@@ -80,7 +82,7 @@ public class RaagatechMusicApplication {
         String response = "false";
         if (commonUtilities.isNotNull(username) && commonUtilities.isNotNull(password)) {
             try {
-                musicDataSource.updateUserData(username, password, Long.parseLong(mobileNo),
+                musicDataSource.updateUserData(username, password, Long.valueOf(mobileNo),
                         gender, postalAddress, pincode, userId, inspiratorId);
                 response = "true";
             } catch (Exception e) {
@@ -97,7 +99,7 @@ public class RaagatechMusicApplication {
 
         String response = "false";
         try {
-            int userId = musicDataSource.insertUser(username, password, email, Long.parseLong(mobileNo), gender, postalAddress, pincode, inspiratorId);
+            int userId = musicDataSource.insertUser(username, password, email, Long.valueOf(mobileNo), gender, postalAddress, pincode, inspiratorId);
             if (userId > 0) {
                 String body = "<p>Kindly click / tap on below link to verify your email address.</p>"
                         + "<a href=http://140.238.250.40:8080/resources/music/doemailverification?usetId="+userId+"&email=" + email + "><b>" + password + "</b></a>";
@@ -250,7 +252,7 @@ public class RaagatechMusicApplication {
     public String doUpdateFollowup(@RequestParam("inquiry_id") String inquiry_id, @RequestParam("inquirystatus_id") String inquirystatus_id,
             @RequestParam("followupDetails") String followupDetails) {
         String response;
-        int result = updateFollowup(Integer.parseInt(inquiry_id), Integer.parseInt(inquirystatus_id), followupDetails);
+        int result = updateFollowup(Integer.valueOf(inquiry_id), Integer.valueOf(inquirystatus_id), followupDetails);
         if (result == 0) {
             response = commonUtilities.constructJSON("register", true);
         } else {
