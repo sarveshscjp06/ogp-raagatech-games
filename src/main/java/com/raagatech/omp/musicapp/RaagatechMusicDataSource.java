@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterface {
 
-    protected static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
 
     @Autowired
     private OracleDatabaseInterface oracleDataSource;
@@ -31,7 +31,6 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
     public int insertUser(String username, String password, String email, long mobileNo,
             String gender, String postalAddress, String pincode, int inspiratorId) throws Exception {
 
-        boolean insertStatus = Boolean.FALSE;
         // With AutoCloseable, the connection is closed automatically.
         int id = oracleDataSource.generateNextPrimaryKey("raagatech_user", "user_id");
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
@@ -207,7 +206,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 inquiry.setAddress_line1(record.getString("address_line1"));
                 inquiry.setFollowup_details(record.getString("followup_details"));
                 inquiry.setPrimaryskill(record.getString("primaryskill"));
-                inquiry.setDate_of_birth(record.getString("date_of_birth"));
+                inquiry.setDate_of_birth(dateFormat.format(record.getDate("date_of_birth")));
             }
         }
         return inquiry;
