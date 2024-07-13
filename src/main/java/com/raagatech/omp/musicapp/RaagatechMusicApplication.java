@@ -143,7 +143,7 @@ public class RaagatechMusicApplication {
             @RequestParam("inqEmail") String email, @RequestParam("inqMobile") String mobileNo, @RequestParam("inqGender") String gender,
             @RequestParam("inqPostalAddress") String address, @RequestParam("inqPinCode") int pinCode, @RequestParam("inqSubject") int subject,
             @RequestParam("inqYear") int year, @RequestParam("inqFollowupDetails") String followupDetails, 
-            @RequestParam("userId") int userId, @RequestParam("examSession") int examSession, 
+            @RequestParam("userId") int userId, @RequestParam("examSession") String examSession, 
             @RequestParam("inqEducation") String primaryskill, @RequestParam("inqDob") String dob) {
         String response = "false";
         try {
@@ -214,7 +214,7 @@ public class RaagatechMusicApplication {
             @RequestParam("inqEmail") String email, @RequestParam("inqMobile") String mobileNo, @RequestParam("inqGender") String gender,
             @RequestParam("inqPostalAddress") String address, @RequestParam("inqPinCode") int pinCode, @RequestParam("inqSubject") int subject,
             @RequestParam("inqYear") int year, @RequestParam("inqFollowupDetails") String followupDetails,
-            @RequestParam("userId") int userId, @RequestParam("inquiryId") int inquiry_id, @RequestParam("examSession") int examSession, 
+            @RequestParam("userId") int userId, @RequestParam("inquiryId") int inquiry_id, @RequestParam("examSession") String examSession, 
             @RequestParam("inqEducation") String primaryskill, @RequestParam("inqDob") String dob) {
         String response = "false";
         try {

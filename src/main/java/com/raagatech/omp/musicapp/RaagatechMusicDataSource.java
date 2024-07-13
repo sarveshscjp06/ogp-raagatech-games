@@ -70,7 +70,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
     public boolean insertInquiry(String inquiryname, int inspirationid, String email, long mobileNo,
             int levelid, String address, String followupDetails, String nationality,
             String fname, String mname, String dob, long telOther, String image, String gender,
-            String inspiration, String comfortability, String primaryskill, int userId, int pinCode, int examSession) throws Exception {
+            String inspiration, String comfortability, String primaryskill, int userId, int pinCode, String examSession) throws Exception {
         boolean insertStatus = Boolean.FALSE;
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
@@ -81,7 +81,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                     + ", gender, inspiration, comfortability, primaryskill, user_id, pincode, exam_session) "
                     + "VALUES (" + inquiry_id + ", '" + inquiryname + "'," + inspirationid + ",?, '" + email + "', " + mobileNo + ","
                     + levelid + ", '" + address + "', '" + nationality + "', '" + fname + "', '" + mname + "', '"+dob+"', " + telOther + ", '" + image + "', '"
-                    + sex + "', '" + inspiration + "', '" + comfortability + "', '" + primaryskill + "', " + userId + ", " + pinCode + ", " + examSession + ")";
+                    + sex + "', '" + inspiration + "', '" + comfortability + "', '" + primaryskill + "', " + userId + ", " + pinCode + ", '" + examSession + "')";
             PreparedStatement statement = connection.prepareStatement(queryInsertInquiry);
             statement.setTimestamp(1, getCurrentTimeStamp());
             int records = statement.executeUpdate();
@@ -116,13 +116,14 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         InquiryBean inquiry;
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
+            int year = Integer.parseInt(new SimpleDateFormat("yyyy").format(new Date()));
             String querySelectInquiries = "SELECT * FROM raagatech_inquiry"
-                    + " WHERE exam_session = " + Integer.parseInt(new SimpleDateFormat("yyyy").format(new Date()))
+                    + " WHERE exam_session = '" +year+"-"+(year+1) +"'"
                     +" AND user_id = " + userId + " OR user_id in (select user_id from raagatech_user where inspirator_id = "+userId+")";
             
             if(inspiratorId > 0) {
                 querySelectInquiries = "SELECT * FROM raagatech_inquiry"
-                    + " WHERE exam_session = " + Integer.parseInt(new SimpleDateFormat("yyyy").format(new Date())) 
+                    + " WHERE exam_session = '" +year+"-"+(year+1) +"'" 
                     + " AND user_id in (select user_id from raagatech_user where inspirator_id = "+inspiratorId+")";
             }
             PreparedStatement statement = connection.prepareStatement(querySelectInquiries);
@@ -136,7 +137,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 inquiry.setNationality(record.getString("nationality"));
                 inquiry.setMobile(record.getLong("mobile"));
                 inquiry.setInquiry_id(record.getInt("inquiry_id"));
-                inquiry.setExamSession(record.getInt("exam_session"));
+                inquiry.setExamSession(record.getString("exam_session"));
                 inquiry.setPrimaryskill(record.getString("primaryskill"));
                 inquiryList.add(inquiry);
             }
@@ -148,14 +149,14 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
     public boolean updateInquiry(int inquiry_id, String inquiryname, int inspirationid, String email, long mobileNo,
             int levelid, String address, String followupDetails, String nationality, String fname, String mname,
             String dob, long telOther, String image, String gender, String inspiration,
-            String comfortability, String primaryskill, int userId, int pinCode, int examSession) throws Exception {
+            String comfortability, String primaryskill, int userId, int pinCode, String examSession) throws Exception {
         boolean updateStatus = Boolean.FALSE;
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
             char sex = gender.equals("Male") ? 'M' : 'F';
             String queryUpdateInquiry = "UPDATE raagatech_inquiry set firstname = '" + inquiryname + "', inspiration_id = " + inspirationid + ", email = '" + email 
                     + "', mobile = "+ mobileNo + ", level_id = " + levelid + ", address_line1 = '" + address + "', gender = '"+ sex + "',"
-                    + " pincode = " + pinCode + ", exam_session = " + examSession+ ", primaryskill = '" + primaryskill + "'"+ ", date_of_birth = '" + dob + "'"  
+                    + " pincode = " + pinCode + ", exam_session = '" + examSession+ "', primaryskill = '" + primaryskill + "'"+ ", date_of_birth = '" + dob + "'"  
                     + " WHERE inquiry_id = " + inquiry_id + " AND user_id = " + userId;
             PreparedStatement statement = connection.prepareStatement(queryUpdateInquiry);
             int records = statement.executeUpdate();
@@ -202,7 +203,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 inquiry.setInspiration_id(record.getInt("inspiration_id"));
                 inquiry.setLevel_id(record.getInt("level_id"));
                 inquiry.setPincode(record.getInt("pincode"));
-                inquiry.setExamSession(record.getInt("exam_session"));
+                inquiry.setExamSession(record.getString("exam_session"));
                 inquiry.setAddress_line1(record.getString("address_line1"));
                 inquiry.setFollowup_details(record.getString("followup_details"));
                 inquiry.setPrimaryskill(record.getString("primaryskill"));

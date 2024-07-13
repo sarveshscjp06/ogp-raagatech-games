@@ -36,7 +36,7 @@ public class InquiryBean {
     private String comfortability;
     private String primaryskill;
     private Integer pincode;
-    private Integer examSession;
+    private String examSession;
 
     /**
      * @return the inquiry_id
@@ -363,14 +363,14 @@ public class InquiryBean {
     /**
      * @return the examSession
      */
-    public Integer getExamSession() {
+    public String getExamSession() {
         return examSession;
     }
 
     /**
      * @param examSession the examSession to set
      */
-    public void setExamSession(Integer examSession) {
+    public void setExamSession(String examSession) {
         this.examSession = examSession;
     }
         
