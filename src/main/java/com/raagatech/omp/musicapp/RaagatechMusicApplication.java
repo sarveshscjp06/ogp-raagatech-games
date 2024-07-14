@@ -124,7 +124,7 @@ public class RaagatechMusicApplication {
         return verificationStatus;
     }
 
-    @RequestMapping(value = "/doemobileverification", method = RequestMethod.GET)
+    @RequestMapping(value = "/domobileverification", method = RequestMethod.GET)
     public String doVerifyMobile(@RequestParam("userId") int userId, @RequestParam("email") String email, @RequestParam("mobile") long mobile) {
         String verificationStatus = "mobile verification successful. Thank you!";
         try {
