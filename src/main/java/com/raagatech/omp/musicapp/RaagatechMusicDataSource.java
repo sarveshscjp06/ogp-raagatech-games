@@ -53,7 +53,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         boolean updateStatus = Boolean.FALSE;
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
-            String queryUpdateUser = "update raagatech_user set emailverification = 1 where email = '" + email + "'";
+            String queryUpdateUser = "update raagatech_user set emailverification = 1 where user_id = "+userId+" AND email = '" + email + "'";
             PreparedStatement statement = connection.prepareStatement(queryUpdateUser);
             int records = statement.executeUpdate();
             if (records > 0) {

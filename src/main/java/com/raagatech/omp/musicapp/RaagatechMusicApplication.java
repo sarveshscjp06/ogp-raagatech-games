@@ -100,7 +100,7 @@ public class RaagatechMusicApplication {
             int userId = musicDataSource.insertUser(username, password, email, Long.parseLong(mobileNo), gender, postalAddress, pincode, inspiratorId);
             if (userId > 0) {
                 String body = "<p>Kindly click / tap on below link to verify your email address.</p>"
-                        + "<a href=http://140.238.250.40:8080/resources/music/doemailverification?usetId="+userId+"&email=" + email + "><b>" + password + "</b></a>";
+                        + "<a href=http://140.238.250.40:8080/resources/music/doemailverification?userId="+userId+"&email=" + email + "><b>" + password + "</b></a>";
                 emailUtility.sendEmail(email, "raagatech: email verification", body);
                 response = "true";
             }
