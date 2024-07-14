@@ -112,11 +112,11 @@ public class RaagatechMusicApplication {
 
     @RequestMapping(value = "/doemailverification", method = RequestMethod.GET)
     public String doVerifyEmail(@RequestParam("userId") int userId, @RequestParam("email") String email) {
-        String verificationStatus = "e-mail verification successful. Thank you!";
-        try {
-            if(!musicDataSource.updateUserForEmailVerification(userId, email)) {
-                verificationStatus = "e-mail verification failure. May be server is down. "
+        String verificationStatus = "e-mail verification failure. May be server is down. "
                 .concat("Kindly contact to admin on mobile: 9891029284.");
+        try {
+            if(musicDataSource.updateUserForEmailVerification(userId, email)) {
+                verificationStatus = "e-mail verification successful. Thank you!";
             }
         } catch (Exception ex) {
             Logger.getLogger(RaagatechMusicApplication.class.getName()).log(Level.SEVERE, null, ex);
@@ -126,11 +126,11 @@ public class RaagatechMusicApplication {
 
     @RequestMapping(value = "/domobileverification", method = RequestMethod.GET)
     public String doVerifyMobile(@RequestParam("userId") int userId, @RequestParam("email") String email, @RequestParam("mobile") long mobile) {
-        String verificationStatus = "mobile verification successful. Thank you!";
-        try {
-            if(!musicDataSource.updateUserForMobileVerification(userId, email, mobile)){
-                 verificationStatus = "mobile no verification failure. May be server is down. "
+        String verificationStatus = "mobile no verification failure. May be server is down. "
                 .concat("Kindly contact to admin on mobile: 9891029284.");
+        try {
+            if(musicDataSource.updateUserForMobileVerification(userId, email, mobile)){
+                 verificationStatus = "mobile verification successful. Thank you!";
             }
         } catch (Exception ex) {
             Logger.getLogger(RaagatechMusicApplication.class.getName()).log(Level.SEVERE, null, ex);
