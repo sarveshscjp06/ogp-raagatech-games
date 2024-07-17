@@ -23,6 +23,7 @@ public class UserDataBean {
     private int pincode;
     private int inspiratorId;
     private char gender;
+    private int mobileVerified;
 
     /**
      * @return the userName
@@ -177,4 +178,19 @@ public class UserDataBean {
     public void setGender(char gender) {
         this.gender = gender;
     }    
+
+    /**
+     * @return the mobileVerified
+     */
+    public int getMobileVerified() {
+        return mobileVerified;
+    }
+
+    /**
+     * @param mobileVerified the mobileVerified to set
+     */
+    public void setMobileVerified(int mobileVerified) {
+        this.mobileVerified = mobileVerified;
+    }
+        
 }

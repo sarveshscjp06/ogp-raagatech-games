@@ -61,4 +61,8 @@ public interface RaagatechMusicDataSourceInterface {
     public ArrayList<UserDataBean> listOverAllContacts(String dob) throws Exception;
     
     public UserDataBean getUserData(int userId) throws Exception;
+    
+    public boolean updateInquiryForEmailVerification(int inquiryId, String email) throws Exception;
+
+    public boolean updateInquiryForMobileVerification(int inquiryId, long mobileNo) throws Exception;
 }

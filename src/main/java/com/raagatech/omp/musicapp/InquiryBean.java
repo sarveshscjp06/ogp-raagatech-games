@@ -37,6 +37,8 @@ public class InquiryBean {
     private String primaryskill;
     private Integer pincode;
     private String examSession;
+    private int emailVerified;
+    private int mobileVerified;
 
     /**
      * @return the inquiry_id
@@ -373,5 +375,33 @@ public class InquiryBean {
     public void setExamSession(String examSession) {
         this.examSession = examSession;
     }
-        
+
+    /**
+     * @return the emailVerified
+     */
+    public int getEmailVerified() {
+        return emailVerified;
+    }
+
+    /**
+     * @param emailVerified the emailVerified to set
+     */
+    public void setEmailVerified(int emailVerified) {
+        this.emailVerified = emailVerified;
+    }
+
+    /**
+     * @return the mobileVerified
+     */
+    public int getMobileVerified() {
+        return mobileVerified;
+    }
+
+    /**
+     * @param mobileVerified the mobileVerified to set
+     */
+    public void setMobileVerified(int mobileVerified) {
+        this.mobileVerified = mobileVerified;
+    }
+         
 }

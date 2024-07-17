@@ -293,4 +293,32 @@ public class RaagatechMusicApplication {
         }
         return response;
     }
+    
+    @RequestMapping(value = "/doinquiryemailverification", method = RequestMethod.GET)
+    public String doVerifyInquiryEmail(@RequestParam("inquiryId") int inquiryId, @RequestParam("email") String email) {
+        String verificationStatus = "e-mail verification successful. Thank you!";
+        try {
+            if(!musicDataSource.updateInquiryForEmailVerification(inquiryId, email)) {
+                verificationStatus = "e-mail verification failure. May be server is down. "
+                .concat("Kindly contact to admin on mobile: 9891029284.");
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(RaagatechMusicApplication.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return verificationStatus;
+    }
+
+    @RequestMapping(value = "/doinquirymobileverification", method = RequestMethod.GET)
+    public String doVerifyInquiryMobile(@RequestParam("inquiryId") int inquiryId, @RequestParam("mobile") long mobile) {
+        String verificationStatus = "mobile verification successful. Thank you!";
+        try {
+            if(!musicDataSource.updateInquiryForMobileVerification(inquiryId, mobile)){
+                 verificationStatus = "mobile no verification failure. May be server is down. "
+                .concat("Kindly contact to admin on mobile: 9891029284.");
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(RaagatechMusicApplication.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return verificationStatus;
+    }
 }
