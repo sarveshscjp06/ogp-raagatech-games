@@ -39,6 +39,8 @@ public class InquiryBean {
     private String examSession;
     private int emailVerified;
     private int mobileVerified;
+    private int examFees;
+    private int feesPaidStatus;
 
     /**
      * @return the inquiry_id
@@ -403,5 +405,33 @@ public class InquiryBean {
     public void setMobileVerified(int mobileVerified) {
         this.mobileVerified = mobileVerified;
     }
-         
+    
+    /**
+     * @return the feesPaidStatus
+     */
+    public int getFeesPaidStatus() {
+        return feesPaidStatus;
+    }
+
+    /**
+     * @param feesPaidStatus the feesPaidStatus to set
+     */
+    public void setFeesPaidStatus(int feesPaidStatus) {
+        this.feesPaidStatus = feesPaidStatus;
+    }
+
+    /**
+     * @return the examFees
+     */
+    public int getExamFees() {
+        return examFees;
+    }
+
+    /**
+     * @param examFees the examFees to set
+     */
+    public void setExamFees(int examFees) {
+        this.examFees = examFees;
+    }
+
 }

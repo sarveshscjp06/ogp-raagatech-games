@@ -71,7 +71,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             int levelid, String address, String followupDetails, String nationality,
             String fname, String mname, String dob, long telOther, String image, String gender,
             String inspiration, String comfortability, String primaryskill, int userId, int pinCode,
-            String examSession, String fatherName, String motherName) throws Exception {
+            String examSession, String fatherName, String motherName, int examFees) throws Exception {
         boolean insertStatus = Boolean.FALSE;
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
@@ -79,11 +79,11 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             int inquiry_id = oracleDataSource.generateNextPrimaryKey("raagatech_inquiry", "inquiry_id");
             String queryInsertInquiry = "INSERT into raagatech_inquiry (inquiry_id, firstname, inspiration_id, inquiry_date, email, mobile"
                     + ", level_id, address_line1, nationality, father_name, mother_name, date_of_birth, telephone, photo"
-                    + ", gender, inspiration, comfortability, primaryskill, user_id, pincode, exam_session, father_name, mother_name) "
+                    + ", gender, inspiration, comfortability, primaryskill, user_id, pincode, exam_session, father_name, mother_name, exam_fees) "
                     + "VALUES (" + inquiry_id + ", '" + inquiryname + "'," + inspirationid + ",?, '" + email + "', " + mobileNo + ","
                     + levelid + ", '" + address + "', '" + nationality + "', '" + fname + "', '" + mname + "', '" + dob + "', " + telOther + ", '" + image + "', '"
                     + sex + "', '" + inspiration + "', '" + comfortability + "', '" + primaryskill + "', " + userId + ", " + pinCode + ", '" + examSession + "'"
-                    + ", '" + fatherName + "', '" + motherName + "')";
+                    + ", '" + fatherName + "', '" + motherName + "', " + examFees + ")";
             PreparedStatement statement = connection.prepareStatement(queryInsertInquiry);
             statement.setTimestamp(1, getCurrentTimeStamp());
             int records = statement.executeUpdate();
@@ -127,6 +127,9 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 querySelectInquiries = "SELECT * FROM raagatech_inquiry"
                         + " WHERE exam_session = '" + year + "-" + (year + 1) + "'"
                         + " AND user_id in (select user_id from raagatech_user where inspirator_id = " + inspiratorId + ")";
+            } else if(userId == 2) {
+                querySelectInquiries = "SELECT * FROM raagatech_inquiry"
+                        + " WHERE exam_session = '" + year + "-" + (year + 1) + "'";
             }
             PreparedStatement statement = connection.prepareStatement(querySelectInquiries);
             ResultSet record = statement.executeQuery();
@@ -141,6 +144,10 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 inquiry.setInquiry_id(record.getInt("inquiry_id"));
                 inquiry.setExamSession(record.getString("exam_session"));
                 inquiry.setPrimaryskill(record.getString("primaryskill"));
+                inquiry.setEmailVerified(record.getInt("emailverification"));
+                inquiry.setMobileVerified(record.getInt("mobileverification"));
+                inquiry.setExamFees(record.getInt("exam_fees"));
+                inquiry.setFeesPaidStatus(record.getInt("fees_paid_status"));
                 inquiryList.add(inquiry);
             }
         }
@@ -152,7 +159,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             int levelid, String address, String followupDetails, String nationality, String fname, String mname,
             String dob, long telOther, String image, String gender, String inspiration,
             String comfortability, String primaryskill, int userId, int pinCode,
-            String examSession, String fatherName, String motherName) throws Exception {
+            String examSession, String fatherName, String motherName, int examFees) throws Exception {
         boolean updateStatus = Boolean.FALSE;
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
@@ -160,7 +167,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             String queryUpdateInquiry = "UPDATE raagatech_inquiry set firstname = '" + inquiryname + "', inspiration_id = " + inspirationid + ", email = '" + email
                     + "', mobile = " + mobileNo + ", level_id = " + levelid + ", address_line1 = '" + address + "', gender = '" + sex + "',"
                     + " pincode = " + pinCode + ", exam_session = '" + examSession + "', primaryskill = '" + primaryskill + "'" + ", date_of_birth = '" + dob + "'"
-                    + ", father_name = '" + fatherName + "' " + ", mother_name = '" + motherName + "'"
+                    + ", father_name = '" + fatherName + "' " + ", mother_name = '" + motherName + "', exam_fees = " + examFees
                     + " WHERE inquiry_id = " + inquiry_id + " AND user_id = " + userId;
             PreparedStatement statement = connection.prepareStatement(queryUpdateInquiry);
             int records = statement.executeUpdate();
@@ -216,6 +223,8 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 inquiry.setMother_name(record.getString("mother_name"));
                 inquiry.setEmailVerified(record.getInt("emailverification"));
                 inquiry.setMobileVerified(record.getInt("mobileverification"));
+                inquiry.setExamFees(record.getInt("exam_fees"));
+                inquiry.setFeesPaidStatus(record.getInt("fees_paid_status"));
             }
         }
         return inquiry;
@@ -408,6 +417,21 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
             String queryUpdateUser = "update raagatech_inquiry set mobileverification = 1 where inquiry_id = " + inquiryId + " AND mobile = " + mobileNo;
+            PreparedStatement statement = connection.prepareStatement(queryUpdateUser);
+            int records = statement.executeUpdate();
+            if (records > 0) {
+                updateStatus = Boolean.TRUE;
+            }
+        }
+        return updateStatus;
+    }
+    
+    @Override
+    public boolean updateInquiryForFeesPaidStatus(int inquiryId, int amount) throws Exception {
+        boolean updateStatus = Boolean.FALSE;
+        // With AutoCloseable, the connection is closed automatically.
+        try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
+            String queryUpdateUser = "update raagatech_inquiry set fees_paid_status = 1 where inquiry_id = " + inquiryId + " AND EXAM_FEES = " + amount;
             PreparedStatement statement = connection.prepareStatement(queryUpdateUser);
             int records = statement.executeUpdate();
             if (records > 0) {

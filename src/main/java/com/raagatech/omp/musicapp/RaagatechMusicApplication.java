@@ -71,11 +71,11 @@ public class RaagatechMusicApplication {
         }
         return response;
     }
-    
+
     @RequestMapping(value = "/doupdateuserdata", method = RequestMethod.POST)
     public String updateUserData(@RequestParam("regName") String username, @RequestParam("regPassword") String password,
             @RequestParam("regEmail") String email, @RequestParam("regMobile") String mobileNo, @RequestParam("regGender") String gender,
-            @RequestParam("regPostalAddress") String postalAddress, @RequestParam("regPincode") String pincode, 
+            @RequestParam("regPostalAddress") String postalAddress, @RequestParam("regPincode") String pincode,
             @RequestParam("userId") int userId, @RequestParam("regInspiratorId") int inspiratorId) {
         String response = "false";
         if (commonUtilities.isNotNull(username) && commonUtilities.isNotNull(password)) {
@@ -100,7 +100,7 @@ public class RaagatechMusicApplication {
             int userId = musicDataSource.insertUser(username, password, email, Long.parseLong(mobileNo), gender, postalAddress, pincode, inspiratorId);
             if (userId > 0) {
                 String body = "<p>Kindly click / tap on below link to verify your email address.</p>"
-                        + "<a href=http://140.238.250.40:8080/resources/music/doemailverification?userId="+userId+"&email=" + email + "><b>" + password + "</b></a>";
+                        + "<a href=http://140.238.250.40:8080/resources/music/doemailverification?userId=" + userId + "&email=" + email + "><b>" + password + "</b></a>";
                 emailUtility.sendEmail(email, "raagatech: email verification", body);
                 response = "true";
             }
@@ -115,7 +115,7 @@ public class RaagatechMusicApplication {
         String verificationStatus = "e-mail verification failure. May be server is down. "
                 .concat("Kindly contact to admin on mobile: 9891029284.");
         try {
-            if(musicDataSource.updateUserForEmailVerification(userId, email)) {
+            if (musicDataSource.updateUserForEmailVerification(userId, email)) {
                 verificationStatus = "e-mail verification successful. Thank you!";
             }
         } catch (Exception ex) {
@@ -129,29 +129,29 @@ public class RaagatechMusicApplication {
         String verificationStatus = "mobile no verification failure. May be server is down. "
                 .concat("Kindly contact to admin on mobile: 9891029284.");
         try {
-            if(musicDataSource.updateUserForMobileVerification(userId, email, mobile)){
-                 verificationStatus = "mobile verification successful. Thank you!";
+            if (musicDataSource.updateUserForMobileVerification(userId, email, mobile)) {
+                verificationStatus = "mobile verification successful. Thank you!";
             }
         } catch (Exception ex) {
             Logger.getLogger(RaagatechMusicApplication.class.getName()).log(Level.SEVERE, null, ex);
         }
         return verificationStatus;
-    }    
+    }
 
     @RequestMapping(value = "/doregisterinquiry", method = RequestMethod.POST)
     public String doRegisterInquiry(@RequestParam("inqName") String inquiryname,
             @RequestParam("inqEmail") String email, @RequestParam("inqMobile") String mobileNo, @RequestParam("inqGender") String gender,
             @RequestParam("inqPostalAddress") String address, @RequestParam("inqPinCode") int pinCode, @RequestParam("inqSubject") int subject,
-            @RequestParam("inqYear") int year, @RequestParam("inqFollowupDetails") String followupDetails, 
-            @RequestParam("userId") int userId, @RequestParam("examSession") String examSession, 
+            @RequestParam("inqYear") int year, @RequestParam("inqFollowupDetails") String followupDetails,
+            @RequestParam("userId") int userId, @RequestParam("examSession") String examSession,
             @RequestParam("inqEducation") String primaryskill, @RequestParam("inqDob") String dob,
-            @RequestParam("inqFatherName") String fatherName, @RequestParam("inqMotherName") String motherName) {
+            @RequestParam("inqFatherName") String fatherName, @RequestParam("inqMotherName") String motherName, @RequestParam("inqExamFees") int inqExamFees) {
         String response = "false";
         try {
             if (musicDataSource.insertInquiry(inquiryname, subject, email, Long.parseLong(mobileNo),
                     year, address, followupDetails, "091",
                     "", "", dob, 0, "", gender,
-                    "", "", primaryskill, userId, pinCode, examSession, fatherName, motherName)) {
+                    "", "", primaryskill, userId, pinCode, examSession, fatherName, motherName, inqExamFees)) {
                 String body = "<p>Thank you very much for showing interest in music learning and performance activities with us!"
                         + "To know more about our's effort and approaches, "
                         + "kindly browse through the website which is mentioned in this email signature.</p>";
@@ -215,14 +215,14 @@ public class RaagatechMusicApplication {
             @RequestParam("inqEmail") String email, @RequestParam("inqMobile") String mobileNo, @RequestParam("inqGender") String gender,
             @RequestParam("inqPostalAddress") String address, @RequestParam("inqPinCode") int pinCode, @RequestParam("inqSubject") int subject,
             @RequestParam("inqYear") int year, @RequestParam("inqFollowupDetails") String followupDetails,
-            @RequestParam("userId") int userId, @RequestParam("inquiryId") int inquiry_id, @RequestParam("examSession") String examSession, 
+            @RequestParam("userId") int userId, @RequestParam("inquiryId") int inquiry_id, @RequestParam("examSession") String examSession,
             @RequestParam("inqEducation") String primaryskill, @RequestParam("inqDob") String dob,
-            @RequestParam("inqFatherName") String fatherName, @RequestParam("inqMotherName") String motherName) {
+            @RequestParam("inqFatherName") String fatherName, @RequestParam("inqMotherName") String motherName, @RequestParam("inqExamFees") int inqExamFees) {
         String response = "false";
         try {
             if (musicDataSource.updateInquiry(inquiry_id, inquiryname, subject, email, Long.parseLong(mobileNo),
                     year, address, followupDetails, "", "", "", dob, 0, null,
-                    gender, "", "", primaryskill, userId, pinCode, examSession, fatherName, motherName)) {
+                    gender, "", "", primaryskill, userId, pinCode, examSession, fatherName, motherName, inqExamFees)) {
                 String body = "<p>Thank you very much for updating inquiry!"
                         + "To know more about our's effort and approaches, "
                         + "kindly browse through the website which is mentioned in this email signature.</p>";
@@ -293,14 +293,14 @@ public class RaagatechMusicApplication {
         }
         return response;
     }
-    
+
     @RequestMapping(value = "/doinquiryemailverification", method = RequestMethod.GET)
     public String doVerifyInquiryEmail(@RequestParam("inquiryId") int inquiryId, @RequestParam("email") String email) {
         String verificationStatus = "e-mail verification successful. Thank you!";
         try {
-            if(!musicDataSource.updateInquiryForEmailVerification(inquiryId, email)) {
+            if (!musicDataSource.updateInquiryForEmailVerification(inquiryId, email)) {
                 verificationStatus = "e-mail verification failure. May be server is down. "
-                .concat("Kindly contact to admin on mobile: 9891029284.");
+                        .concat("Kindly contact to admin on mobile: 9891029284.");
             }
         } catch (Exception ex) {
             Logger.getLogger(RaagatechMusicApplication.class.getName()).log(Level.SEVERE, null, ex);
@@ -312,9 +312,23 @@ public class RaagatechMusicApplication {
     public String doVerifyInquiryMobile(@RequestParam("inquiryId") int inquiryId, @RequestParam("mobile") long mobile) {
         String verificationStatus = "mobile verification successful. Thank you!";
         try {
-            if(!musicDataSource.updateInquiryForMobileVerification(inquiryId, mobile)){
-                 verificationStatus = "mobile no verification failure. May be server is down. "
-                .concat("Kindly contact to admin on mobile: 9891029284.");
+            if (!musicDataSource.updateInquiryForMobileVerification(inquiryId, mobile)) {
+                verificationStatus = "mobile no verification failure. May be server is down. "
+                        .concat("Kindly contact to admin on mobile: 9891029284.");
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(RaagatechMusicApplication.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return verificationStatus;
+    }
+
+    @RequestMapping(value = "/doinquiryfeespaidstatus", method = RequestMethod.GET)
+    public String doUpdateFeesPaidStatus(@RequestParam("inquiryId") int inquiryId, @RequestParam("userId") int userId, @RequestParam("amount") int amount) {
+        String verificationStatus = "Exam Fees Payment successful. Thank you!";
+        try {
+            if (userId == 2 && !musicDataSource.updateInquiryForFeesPaidStatus(inquiryId, amount)) {
+                verificationStatus = "Exam Fees Payment failure. May be server is down. "
+                        .concat("Kindly contact to admin on mobile: 9891029284.");
             }
         } catch (Exception ex) {
             Logger.getLogger(RaagatechMusicApplication.class.getName()).log(Level.SEVERE, null, ex);
