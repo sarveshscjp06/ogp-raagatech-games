@@ -34,9 +34,10 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         // With AutoCloseable, the connection is closed automatically.
         int id = oracleDataSource.generateNextPrimaryKey("raagatech_user", "user_id");
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
+            char sex = gender.equals("Male") ? 'M' : 'F';
             String queryInsertUser = "INSERT into raagatech_user (user_id, username, password, creation_date, email, country_code, mobile,"
                     + "gender, postalAddress, pincode, inspirator_id) "
-                    + "VALUES (" + id + ", '" + username + "','" + password + "',?, '" + email + "', 091, " + mobileNo + ", '" + gender
+                    + "VALUES (" + id + ", '" + username + "','" + password + "',?, '" + email + "', 091, " + mobileNo + ", '" + sex
                     + "', '" + postalAddress + "', " + pincode + ", " + inspiratorId + ")";
             PreparedStatement statement = connection.prepareStatement(queryInsertUser);
             statement.setTimestamp(1, getCurrentTimeStamp());
@@ -44,6 +45,12 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             if (records == 0) {
                 id = 0;
             }
+            /*else {
+                String queryUpdateInquiry = "UPDATE raagatech_inquiry set user_id = " + id
+                        + " WHERE email = '" + email + "' AND mobileNo = " + mobileNo;
+                statement = connection.prepareStatement(queryUpdateInquiry);
+                statement.executeUpdate();
+            }*/
         }
         return id;
     }
@@ -97,6 +104,19 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 if (records > 0) {
                     insertStatus = Boolean.TRUE;
                 }
+                String selectUserQuery = "select user_id from raagatech_user WHERE email = '" + email + "' AND mobile = " + mobileNo;
+                statement = connection.prepareStatement(selectUserQuery);
+                ResultSet rs = statement.executeQuery();
+                int existingUserId = 0;
+                while (rs.next()) {
+                    existingUserId = rs.getInt("user_id");
+                }
+                if (existingUserId > 0) {
+                    String queryUpdateInquiry = "UPDATE raagatech_inquiry set user_id = " + existingUserId
+                            + " WHERE email = '" + email + "' AND mobileNo = " + mobileNo;
+                    statement = connection.prepareStatement(queryUpdateInquiry);
+                    statement.executeUpdate();
+                }
             }
         }
         return insertStatus;
@@ -119,15 +139,14 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
             int year = Integer.parseInt(new SimpleDateFormat("yyyy").format(new Date()));
-            String querySelectInquiries = "SELECT * FROM raagatech_inquiry"
-                    + " WHERE exam_session = '" + year + "-" + (year + 1) + "'"
-                    + " AND user_id = " + userId + " OR user_id in (select user_id from raagatech_user where inspirator_id = " + userId + ")";
-
-            if (inspiratorId > 0) {
-                querySelectInquiries = "SELECT * FROM raagatech_inquiry"
-                        + " WHERE exam_session = '" + year + "-" + (year + 1) + "'"
-                        + " AND user_id in (select user_id from raagatech_user where inspirator_id = " + inspiratorId + ")";
-            } else if(userId == 2) {
+            String querySelectInquiries = "SELECT * FROM raagatech_inquiry ri "
+                    + " WHERE ri.exam_session = '" + year + "-" + (year + 1) + "' AND ri.user_id = " + userId
+                    + " OR ri.user_id in ("
+                    + " select ru1.user_id from raagatech_user ru1 where ru1.inspirator_id in ("
+                    + " select rim.INSPIRATOR_ID FROM RAAGATECH_INSPIRATORMASTER rim JOIN RAAGATECH_USER ru2 "
+                    + " ON rim.EMAIL = ru2.EMAIL AND ru2.USER_ID = " + userId + ")"
+                    + ")";
+            if (userId == 2) {
                 querySelectInquiries = "SELECT * FROM raagatech_inquiry"
                         + " WHERE exam_session = '" + year + "-" + (year + 1) + "'";
             }
@@ -425,7 +444,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         }
         return updateStatus;
     }
-    
+
     @Override
     public boolean updateInquiryForFeesPaidStatus(int inquiryId, int amount) throws Exception {
         boolean updateStatus = Boolean.FALSE;
