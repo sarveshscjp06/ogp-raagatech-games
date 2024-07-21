@@ -187,7 +187,10 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                     + "', mobile = " + mobileNo + ", level_id = " + levelid + ", address_line1 = '" + address + "', gender = '" + sex + "',"
                     + " pincode = " + pinCode + ", exam_session = '" + examSession + "', primaryskill = '" + primaryskill + "'" + ", date_of_birth = '" + dob + "'"
                     + ", father_name = '" + fatherName + "' " + ", mother_name = '" + motherName + "', exam_fees = " + examFees
-                    + " WHERE inquiry_id = " + inquiry_id + " AND user_id = " + userId;
+                    + " WHERE inquiry_id = " + inquiry_id;
+            if(userId != 2) {
+                queryUpdateInquiry = queryUpdateInquiry + " AND user_id = " + userId;
+            }
             PreparedStatement statement = connection.prepareStatement(queryUpdateInquiry);
             int records = statement.executeUpdate();
             if (records > 0) {
