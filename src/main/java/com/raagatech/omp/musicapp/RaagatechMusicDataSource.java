@@ -88,11 +88,12 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                     + ", level_id, address_line1, nationality, father_name, mother_name, date_of_birth, telephone, photo"
                     + ", gender, inspiration, comfortability, primaryskill, user_id, pincode, exam_session, father_name, mother_name, exam_fees) "
                     + "VALUES (" + inquiry_id + ", '" + inquiryname + "'," + inspirationid + ",?, '" + email + "', " + mobileNo + ","
-                    + levelid + ", '" + address + "', '" + nationality + "', '" + fname + "', '" + mname + "', '" + dob + "', " + telOther + ", '" + image + "', '"
+                    + levelid + ", '" + address + "', '" + nationality + "', '" + fname + "', '" + mname + "', to_date(?, 'dd-mm-yyyy'), " + telOther + ", '" + image + "', '"
                     + sex + "', '" + inspiration + "', '" + comfortability + "', '" + primaryskill + "', " + userId + ", " + pinCode + ", '" + examSession + "'"
                     + ", '" + fatherName + "', '" + motherName + "', " + examFees + ")";
             PreparedStatement statement = connection.prepareStatement(queryInsertInquiry);
             statement.setTimestamp(1, getCurrentTimeStamp());
+            statement.setString(2, dob);
             int records = statement.executeUpdate();
             if (records > 0) {
                 int followup_id = oracleDataSource.generateNextPrimaryKey("raagatech_followupdetails", "followup_id");
@@ -185,13 +186,14 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             char sex = gender.equals("Male") ? 'M' : 'F';
             String queryUpdateInquiry = "UPDATE raagatech_inquiry set firstname = '" + inquiryname + "', inspiration_id = " + inspirationid + ", email = '" + email
                     + "', mobile = " + mobileNo + ", level_id = " + levelid + ", address_line1 = '" + address + "', gender = '" + sex + "',"
-                    + " pincode = " + pinCode + ", exam_session = '" + examSession + "', primaryskill = '" + primaryskill + "'" + ", date_of_birth = '" + dob + "'"
+                    + " pincode = " + pinCode + ", exam_session = '" + examSession + "', primaryskill = '" + primaryskill + "'" + ", date_of_birth = to_date(?, 'dd-mm-yyyy')"
                     + ", father_name = '" + fatherName + "' " + ", mother_name = '" + motherName + "', exam_fees = " + examFees
                     + " WHERE inquiry_id = " + inquiry_id;
             if(userId != 2) {
                 queryUpdateInquiry = queryUpdateInquiry + " AND user_id = " + userId;
             }
             PreparedStatement statement = connection.prepareStatement(queryUpdateInquiry);
+            statement.setString(1, dob);
             int records = statement.executeUpdate();
             if (records > 0) {
                 String queryUpdateFollowupDetails = "UPDATE raagatech_followupdetails set followup_details = '" + followupDetails + "' "
