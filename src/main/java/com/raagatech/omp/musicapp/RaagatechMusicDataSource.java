@@ -9,7 +9,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import oracle.jdbc.OracleConnection;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +21,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterface {
 
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
 
     @Autowired
     private OracleDatabaseInterface oracleDataSource;
@@ -134,22 +133,24 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
     }
 
     @Override
-    public ArrayList<InquiryBean> listInquiry(int userId, int inspiratorId) throws Exception {
+    public ArrayList<InquiryBean> listInquiry(int userId, int inspiratorId, String examSession) throws Exception {
         ArrayList<InquiryBean> inquiryList = new ArrayList<>();
         InquiryBean inquiry;
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
-            int year = Integer.parseInt(new SimpleDateFormat("yyyy").format(new Date()));
             String querySelectInquiries = "SELECT * FROM raagatech_inquiry ri "
-                    + " WHERE ri.exam_session = '" + year + "-" + (year + 1) + "' AND ri.user_id = " + userId
+                    + " WHERE ri.exam_session = '" + examSession + "' AND ri.user_id = " + userId
                     + " OR ri.user_id in ("
                     + " select ru1.user_id from raagatech_user ru1 where ru1.inspirator_id in ("
                     + " select rim.INSPIRATOR_ID FROM RAAGATECH_INSPIRATORMASTER rim JOIN RAAGATECH_USER ru2 "
                     + " ON rim.EMAIL = ru2.EMAIL AND ru2.USER_ID = " + userId + ")"
                     + ")";
             if (userId == 2) {
-                querySelectInquiries = "SELECT * FROM raagatech_inquiry"
-                        + " WHERE exam_session = '" + year + "-" + (year + 1) + "'";
+                querySelectInquiries = "SELECT * FROM raagatech_inquiry ri WHERE ri.exam_session = '" + examSession + "'"
+                        + " AND ri.user_id = " + userId
+                        + " OR ri.user_id = (select ru1.user_id from raagatech_user ru1 join RAAGATECH_INSPIRATORMASTER rim"
+                        + " ON rim.EMAIL = ru1.EMAIL AND rim.inspirator_id = " + inspiratorId + ")"
+                        + " OR ri.user_id in (select ru2.user_id from raagatech_user ru2 where ru2.inspirator_id = " + inspiratorId + ")";
             }
             PreparedStatement statement = connection.prepareStatement(querySelectInquiries);
             ResultSet record = statement.executeQuery();

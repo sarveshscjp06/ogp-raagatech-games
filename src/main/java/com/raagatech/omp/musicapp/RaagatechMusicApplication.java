@@ -55,7 +55,7 @@ public class RaagatechMusicApplication {
                     response = jsonArray.toString();
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                Logger.getLogger(RaagatechMusicApplication.class.getName()).log(Level.SEVERE, null, e);
             }
         }
         return response;
@@ -84,7 +84,7 @@ public class RaagatechMusicApplication {
                         gender, postalAddress, pincode, userId, inspiratorId);
                 response = "true";
             } catch (Exception e) {
-                e.printStackTrace();
+                Logger.getLogger(RaagatechMusicApplication.class.getName()).log(Level.SEVERE, null, e);
             }
         }
         return response;
@@ -189,9 +189,9 @@ public class RaagatechMusicApplication {
     }
 
     @RequestMapping(value = "/dolistinquiry", method = RequestMethod.GET)
-    public String doListInquiry(@RequestParam("userId") int userId, @RequestParam("inspiratorId") int inspiratorId) throws Exception {
+    public String doListInquiry(@RequestParam("userId") int userId, @RequestParam("inspiratorId") int inspiratorId, @RequestParam("examSession") String examSession) throws Exception {
         String response = null;
-        ArrayList<InquiryBean> inquiryList = musicDataSource.listInquiry(userId, inspiratorId);
+        ArrayList<InquiryBean> inquiryList = musicDataSource.listInquiry(userId, inspiratorId, examSession);
         if (!inquiryList.isEmpty()) {
             JSONArray jsonArray = new JSONArray(inquiryList);
             response = jsonArray.toString();
