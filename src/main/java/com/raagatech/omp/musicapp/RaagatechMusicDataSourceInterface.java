@@ -32,12 +32,12 @@ public interface RaagatechMusicDataSourceInterface {
 
     public LinkedHashMap<Integer, String> selectInspiration() throws Exception;
 
-    public ArrayList<InquiryBean> listInquiry(int userId, int inspiratorId, String examSession) throws Exception;
+    public ArrayList<InquiryBean> listInquiry(int userId, int inspiratorId, String examSession, int inquiryStatusId) throws Exception;
 
     public boolean updateInquiry(int inquiry_id, String inquiryname, int inspirationid, String email, long mobileNo,
             int levelid, String address, String followupDetails, String nationality, String fname, String mname, String dob, long telOther, String image,
             String gender, String inspiration, String comfortability, String primaryskill
-            , int userId, int pinCode, String examSession, String fatherName, String motherName, int examFees) throws Exception;
+            , int userId, int pinCode, String examSession, String fatherName, String motherName, int examFees, int inquiryStatusId) throws Exception;
 
     public LinkedHashMap<Integer, String> selectInquiryStatus() throws Exception;
 

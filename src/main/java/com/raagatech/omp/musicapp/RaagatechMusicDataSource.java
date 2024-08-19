@@ -104,19 +104,19 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 if (records > 0) {
                     insertStatus = Boolean.TRUE;
                 }
-                String selectUserQuery = "select user_id from raagatech_user WHERE email = '" + email + "' AND mobile = " + mobileNo;
-                statement = connection.prepareStatement(selectUserQuery);
-                ResultSet rs = statement.executeQuery();
-                int existingUserId = 0;
-                while (rs.next()) {
-                    existingUserId = rs.getInt("user_id");
-                }
-                if (existingUserId > 0) {
-                    String queryUpdateInquiry = "UPDATE raagatech_inquiry set user_id = " + existingUserId
-                            + " WHERE email = '" + email + "' AND mobileNo = " + mobileNo;
-                    statement = connection.prepareStatement(queryUpdateInquiry);
-                    statement.executeUpdate();
-                }
+//                String selectUserQuery = "select user_id from raagatech_user WHERE email = '" + email + "' AND mobile = " + mobileNo;
+//                statement = connection.prepareStatement(selectUserQuery);
+//                ResultSet rs = statement.executeQuery();
+//                int existingUserId = 0;
+//                while (rs.next()) {
+//                    existingUserId = rs.getInt("user_id");
+//                }
+//                if (existingUserId > 0) {
+//                    String queryUpdateInquiry = "UPDATE raagatech_inquiry set user_id = " + existingUserId
+//                            + " WHERE email = '" + email + "' AND mobileNo = " + mobileNo;
+//                    statement = connection.prepareStatement(queryUpdateInquiry);
+//                    statement.executeUpdate();
+//                }
             }
         }
         return insertStatus;
@@ -133,22 +133,30 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
     }
 
     @Override
-    public ArrayList<InquiryBean> listInquiry(int userId, int inspiratorId, String examSession) throws Exception {
+    public ArrayList<InquiryBean> listInquiry(int userId, int inspiratorId, String examSession, int inquiryStatusId) throws Exception {
         ArrayList<InquiryBean> inquiryList = new ArrayList<>();
         InquiryBean inquiry;
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
-            String querySelectInquiries = "SELECT * FROM raagatech_inquiry ri "
-                    + " WHERE ri.exam_session = '" + examSession + "' AND ri.user_id = " + userId
-                    + " OR ri.user_id in ("
+            String querySelectInquiries = "SELECT ri.* FROM raagatech_inquiry ri "
+                    + " LEFT JOIN RAAGATECH_FOLLOWUPDETAILS rf ON ri.INQUIRY_ID = rf.INQUIRY_ID "
+                    + " WHERE ri.exam_session = '" + examSession + "' ";
+            if (inquiryStatusId > 1) {
+                querySelectInquiries = querySelectInquiries + " AND rf.INQUIRYSTATUS_ID = " + inquiryStatusId;
+            }
+            querySelectInquiries = querySelectInquiries + " AND ri.user_id = " + userId + " OR ri.user_id in ("
                     + " select ru1.user_id from raagatech_user ru1 where ru1.inspirator_id in ("
                     + " select rim.INSPIRATOR_ID FROM RAAGATECH_INSPIRATORMASTER rim JOIN RAAGATECH_USER ru2 "
                     + " ON rim.EMAIL = ru2.EMAIL AND ru2.USER_ID = " + userId + ")"
                     + ")";
             if (userId == 2) {
-                querySelectInquiries = "SELECT * FROM raagatech_inquiry ri WHERE ri.exam_session = '" + examSession + "'"
-                        + " AND ri.user_id = " + userId
-                        + " OR ri.user_id = (select ru1.user_id from raagatech_user ru1 join RAAGATECH_INSPIRATORMASTER rim"
+                querySelectInquiries = "SELECT ri.* FROM raagatech_inquiry ri "
+                        + " LEFT JOIN RAAGATECH_FOLLOWUPDETAILS rf ON ri.INQUIRY_ID = rf.INQUIRY_ID "
+                        + "WHERE ri.exam_session = '" + examSession + "'";
+                if (inquiryStatusId > 1) {
+                    querySelectInquiries = querySelectInquiries + " AND rf.INQUIRYSTATUS_ID = " + inquiryStatusId;
+                }
+                querySelectInquiries = querySelectInquiries + " AND ri.user_id = " + userId + " OR ri.user_id = (select ru1.user_id from raagatech_user ru1 join RAAGATECH_INSPIRATORMASTER rim"
                         + " ON rim.EMAIL = ru1.EMAIL AND rim.inspirator_id = " + inspiratorId + ")"
                         + " OR ri.user_id in (select ru2.user_id from raagatech_user ru2 where ru2.inspirator_id = " + inspiratorId + ")";
             }
@@ -180,7 +188,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             int levelid, String address, String followupDetails, String nationality, String fname, String mname,
             String dob, long telOther, String image, String gender, String inspiration,
             String comfortability, String primaryskill, int userId, int pinCode,
-            String examSession, String fatherName, String motherName, int examFees) throws Exception {
+            String examSession, String fatherName, String motherName, int examFees, int inquiryStatusId) throws Exception {
         boolean updateStatus = Boolean.FALSE;
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
@@ -190,15 +198,15 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                     + " pincode = " + pinCode + ", exam_session = '" + examSession + "', primaryskill = '" + primaryskill + "'" + ", date_of_birth = to_date(?, 'dd-mm-yyyy')"
                     + ", father_name = '" + fatherName + "' " + ", mother_name = '" + motherName + "', exam_fees = " + examFees
                     + " WHERE inquiry_id = " + inquiry_id;
-            if(userId != 2) {
+            if (userId != 2) {
                 queryUpdateInquiry = queryUpdateInquiry + " AND user_id = " + userId;
             }
             PreparedStatement statement = connection.prepareStatement(queryUpdateInquiry);
             statement.setString(1, dob);
             int records = statement.executeUpdate();
             if (records > 0) {
-                String queryUpdateFollowupDetails = "UPDATE raagatech_followupdetails set followup_details = '" + followupDetails + "' "
-                        + "WHERE inquiry_id = " + inquiry_id;
+                String queryUpdateFollowupDetails = "UPDATE raagatech_followupdetails set followup_details = '" + followupDetails + "', inquirystatus_id = " + inquiryStatusId
+                        + " WHERE inquiry_id = " + inquiry_id;
                 PreparedStatement statement2 = connection.prepareStatement(queryUpdateFollowupDetails);
                 records = statement2.executeUpdate();
                 if (records > 0) {
@@ -224,7 +232,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         InquiryBean inquiry = null;
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
-            String queryInsertUser = "SELECT ri.*, rf.followup_details FROM raagatech_inquiry ri join raagatech_followupdetails rf on ri.inquiry_id = rf.inquiry_id WHERE ri.inquiry_id = " + inquiryId;
+            String queryInsertUser = "SELECT ri.*, rf.followup_details, rf.inquirystatus_id FROM raagatech_inquiry ri join raagatech_followupdetails rf on ri.inquiry_id = rf.inquiry_id WHERE ri.inquiry_id = " + inquiryId;
             PreparedStatement statement = connection.prepareStatement(queryInsertUser);
             ResultSet record = statement.executeQuery();
             while (record.next()) {
@@ -250,6 +258,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 inquiry.setMobileVerified(record.getInt("mobileverification"));
                 inquiry.setExamFees(record.getInt("exam_fees"));
                 inquiry.setFeesPaidStatus(record.getInt("fees_paid_status"));
+                inquiry.setInquirystatus_id(record.getInt("inquirystatus_id"));
             }
         }
         return inquiry;

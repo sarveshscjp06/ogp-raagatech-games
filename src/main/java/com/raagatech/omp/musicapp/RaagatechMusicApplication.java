@@ -39,7 +39,9 @@ public class RaagatechMusicApplication {
 
     @RequestMapping
     public String home() {
-        return "<h1>Spring Boot Hello World!</h1><br/> This service is about Raagatech Music Application";
+        return "<h1>Spring Boot Hello World!</h1>"
+                + "<br/> This service is about Raagatech Music Application"
+                + "<br/>Inquiry -> Lead Generation -> Follow-up -> Interest Showing -> Confirm Registration -> Admission";
     }
 
     @RequestMapping(value = "/dologin", method = RequestMethod.GET)
@@ -189,9 +191,10 @@ public class RaagatechMusicApplication {
     }
 
     @RequestMapping(value = "/dolistinquiry", method = RequestMethod.GET)
-    public String doListInquiry(@RequestParam("userId") int userId, @RequestParam("inspiratorId") int inspiratorId, @RequestParam("examSession") String examSession) throws Exception {
+    public String doListInquiry(@RequestParam("userId") int userId, @RequestParam("inspiratorId") int inspiratorId,
+            @RequestParam("examSession") String examSession, @RequestParam("inquiryStatusId") int inquiryStatusId) throws Exception {
         String response = null;
-        ArrayList<InquiryBean> inquiryList = musicDataSource.listInquiry(userId, inspiratorId, examSession);
+        ArrayList<InquiryBean> inquiryList = musicDataSource.listInquiry(userId, inspiratorId, examSession, inquiryStatusId);
         if (!inquiryList.isEmpty()) {
             JSONArray jsonArray = new JSONArray(inquiryList);
             response = jsonArray.toString();
@@ -217,12 +220,12 @@ public class RaagatechMusicApplication {
             @RequestParam("inqYear") int year, @RequestParam("inqFollowupDetails") String followupDetails,
             @RequestParam("userId") int userId, @RequestParam("inquiryId") int inquiry_id, @RequestParam("examSession") String examSession,
             @RequestParam("inqEducation") String primaryskill, @RequestParam("inqDob") String dob,
-            @RequestParam("inqFatherName") String fatherName, @RequestParam("inqMotherName") String motherName, @RequestParam("inqExamFees") int inqExamFees) {
+            @RequestParam("inqFatherName") String fatherName, @RequestParam("inqMotherName") String motherName, @RequestParam("inqExamFees") int inqExamFees, @RequestParam("inquiryStatus") int inquiryStatusId) {
         String response = "false";
         try {
             if (musicDataSource.updateInquiry(inquiry_id, inquiryname, subject, email, Long.parseLong(mobileNo),
                     year, address, followupDetails, "", "", "", dob, 0, null,
-                    gender, "", "", primaryskill, userId, pinCode, examSession, fatherName, motherName, inqExamFees)) {
+                    gender, "", "", primaryskill, userId, pinCode, examSession, fatherName, motherName, inqExamFees, inquiryStatusId)) {
                 String body = "<p>Thank you very much for updating inquiry!"
                         + "To know more about our's effort and approaches, "
                         + "kindly browse through the website which is mentioned in this email signature.</p>";
