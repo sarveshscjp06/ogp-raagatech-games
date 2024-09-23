@@ -147,13 +147,14 @@ public class RaagatechMusicApplication {
             @RequestParam("inqYear") int year, @RequestParam("inqFollowupDetails") String followupDetails,
             @RequestParam("userId") int userId, @RequestParam("examSession") String examSession,
             @RequestParam("inqEducation") String primaryskill, @RequestParam("inqDob") String dob,
-            @RequestParam("inqFatherName") String fatherName, @RequestParam("inqMotherName") String motherName, @RequestParam("inqExamFees") int inqExamFees) {
+            @RequestParam("inqFatherName") String fatherName, @RequestParam("inqMotherName") String motherName, 
+            @RequestParam("inqExamFees") int inqExamFees, @RequestParam("inspiratorId") int inspiratorId) {
         String response = "false";
         try {
             if (musicDataSource.insertInquiry(inquiryname, subject, email, Long.parseLong(mobileNo),
                     year, address, followupDetails, "091",
-                    "", "", dob, 0, "", gender,
-                    "", "", primaryskill, userId, pinCode, examSession, fatherName, motherName, inqExamFees)) {
+                    dob, 0, "", gender,
+                    inspiratorId, "", primaryskill, userId, pinCode, examSession, fatherName, motherName, inqExamFees)) {
                 String body = "<p>Thank you very much for showing interest in music learning and performance activities with us!"
                         + "To know more about our's effort and approaches, "
                         + "kindly browse through the website which is mentioned in this email signature.</p>";
@@ -220,12 +221,14 @@ public class RaagatechMusicApplication {
             @RequestParam("inqYear") int year, @RequestParam("inqFollowupDetails") String followupDetails,
             @RequestParam("userId") int userId, @RequestParam("inquiryId") int inquiry_id, @RequestParam("examSession") String examSession,
             @RequestParam("inqEducation") String primaryskill, @RequestParam("inqDob") String dob,
-            @RequestParam("inqFatherName") String fatherName, @RequestParam("inqMotherName") String motherName, @RequestParam("inqExamFees") int inqExamFees, @RequestParam("inquiryStatus") int inquiryStatusId) {
+            @RequestParam("inqFatherName") String fatherName, @RequestParam("inqMotherName") String motherName, 
+            @RequestParam("inqExamFees") int inqExamFees, @RequestParam("inquiryStatus") int inquiryStatusId, @RequestParam("inspiratorId") int inspiratorId) {
         String response = "false";
         try {
             if (musicDataSource.updateInquiry(inquiry_id, inquiryname, subject, email, Long.parseLong(mobileNo),
-                    year, address, followupDetails, "", "", "", dob, 0, null,
-                    gender, "", "", primaryskill, userId, pinCode, examSession, fatherName, motherName, inqExamFees, inquiryStatusId)) {
+                    year, address, followupDetails, "", dob, 0, null,
+                    gender, inspiratorId, "", primaryskill, userId, pinCode, examSession, fatherName, motherName, 
+                    inqExamFees, inquiryStatusId)) {
                 String body = "<p>Thank you very much for updating inquiry!"
                         + "To know more about our's effort and approaches, "
                         + "kindly browse through the website which is mentioned in this email signature.</p>";

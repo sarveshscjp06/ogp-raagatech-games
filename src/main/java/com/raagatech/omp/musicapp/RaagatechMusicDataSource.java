@@ -43,13 +43,12 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             int records = statement.executeUpdate();
             if (records == 0) {
                 id = 0;
-            }
-            /*else {
+            } else {
                 String queryUpdateInquiry = "UPDATE raagatech_inquiry set user_id = " + id
                         + " WHERE email = '" + email + "' AND mobileNo = " + mobileNo;
                 statement = connection.prepareStatement(queryUpdateInquiry);
                 statement.executeUpdate();
-            }*/
+            }
         }
         return id;
     }
@@ -75,8 +74,8 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
     @Override
     public boolean insertInquiry(String inquiryname, int inspirationid, String email, long mobileNo,
             int levelid, String address, String followupDetails, String nationality,
-            String fname, String mname, String dob, long telOther, String image, String gender,
-            String inspiration, String comfortability, String primaryskill, int userId, int pinCode,
+            String dob, long telOther, String image, String gender,
+            int inspiratorId, String comfortability, String primaryskill, int userId, int pinCode,
             String examSession, String fatherName, String motherName, int examFees) throws Exception {
         boolean insertStatus = Boolean.FALSE;
         // With AutoCloseable, the connection is closed automatically.
@@ -84,11 +83,11 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             char sex = gender.equals("Male") ? 'M' : 'F';
             int inquiry_id = oracleDataSource.generateNextPrimaryKey("raagatech_inquiry", "inquiry_id");
             String queryInsertInquiry = "INSERT into raagatech_inquiry (inquiry_id, firstname, inspiration_id, inquiry_date, email, mobile"
-                    + ", level_id, address_line1, nationality, father_name, mother_name, date_of_birth, telephone, photo"
-                    + ", gender, inspiration, comfortability, primaryskill, user_id, pincode, exam_session, father_name, mother_name, exam_fees) "
+                    + ", level_id, address_line1, nationality, date_of_birth, telephone, photo"
+                    + ", gender, inspirator_id, comfortability, primaryskill, user_id, pincode, exam_session, father_name, mother_name, exam_fees) "
                     + "VALUES (" + inquiry_id + ", '" + inquiryname + "'," + inspirationid + ",?, '" + email + "', " + mobileNo + ","
-                    + levelid + ", '" + address + "', '" + nationality + "', '" + fname + "', '" + mname + "', to_date(?, 'dd-mm-yyyy'), " + telOther + ", '" + image + "', '"
-                    + sex + "', '" + inspiration + "', '" + comfortability + "', '" + primaryskill + "', " + userId + ", " + pinCode + ", '" + examSession + "'"
+                    + levelid + ", '" + address + "', '" + nationality + "', to_date(?, 'dd-mm-yyyy'), " + telOther + ", '" + image + "', '"
+                    + sex + "', " + inspiratorId + ", '" + comfortability + "', '" + primaryskill + "', " + userId + ", " + pinCode + ", '" + examSession + "'"
                     + ", '" + fatherName + "', '" + motherName + "', " + examFees + ")";
             PreparedStatement statement = connection.prepareStatement(queryInsertInquiry);
             statement.setTimestamp(1, getCurrentTimeStamp());
@@ -104,19 +103,19 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 if (records > 0) {
                     insertStatus = Boolean.TRUE;
                 }
-//                String selectUserQuery = "select user_id from raagatech_user WHERE email = '" + email + "' AND mobile = " + mobileNo;
-//                statement = connection.prepareStatement(selectUserQuery);
-//                ResultSet rs = statement.executeQuery();
-//                int existingUserId = 0;
-//                while (rs.next()) {
-//                    existingUserId = rs.getInt("user_id");
-//                }
-//                if (existingUserId > 0) {
-//                    String queryUpdateInquiry = "UPDATE raagatech_inquiry set user_id = " + existingUserId
-//                            + " WHERE email = '" + email + "' AND mobileNo = " + mobileNo;
-//                    statement = connection.prepareStatement(queryUpdateInquiry);
-//                    statement.executeUpdate();
-//                }
+                String selectUserQuery = "select user_id from raagatech_user WHERE email = '" + email + "' AND mobile = " + mobileNo;
+                statement = connection.prepareStatement(selectUserQuery);
+                ResultSet rs = statement.executeQuery();
+                int existingUserId = 0;
+                while (rs.next()) {
+                    existingUserId = rs.getInt("user_id");
+                }
+                if (existingUserId > 0) {
+                    String queryUpdateInquiry = "UPDATE raagatech_inquiry set user_id = " + existingUserId
+                            + " WHERE email = '" + email + "' AND mobileNo = " + mobileNo;
+                    statement = connection.prepareStatement(queryUpdateInquiry);
+                    statement.executeUpdate();
+                }
             }
         }
         return insertStatus;
@@ -185,8 +184,8 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
 
     @Override
     public boolean updateInquiry(int inquiry_id, String inquiryname, int inspirationid, String email, long mobileNo,
-            int levelid, String address, String followupDetails, String nationality, String fname, String mname,
-            String dob, long telOther, String image, String gender, String inspiration,
+            int levelid, String address, String followupDetails, String nationality,
+            String dob, long telOther, String image, String gender, int inspirator_id,
             String comfortability, String primaryskill, int userId, int pinCode,
             String examSession, String fatherName, String motherName, int examFees, int inquiryStatusId) throws Exception {
         boolean updateStatus = Boolean.FALSE;

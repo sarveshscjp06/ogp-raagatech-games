@@ -32,8 +32,8 @@ public class AppointmentController {
         boolean appointmentStatus = Boolean.FALSE;
         try {
             appointmentStatus = musicDataSource.insertInquiry(appointment.getName(), 1, appointment.getEmail(), appointment.getPhone(), 1,
-                    "appointment", appointment.getFollowupDetails(), "091", "", "", "", 0, "",
-                    "", "", "", "", 1, 201009, "", "", "", 0);
+                    "appointment", appointment.getFollowupDetails(), "091", "", 0, "",
+                    "", 0, "", "", 1, 201009, "", "", "", 0);
         } catch (Exception ex) {
             Logger.getLogger(AppointmentController.class.getName()).log(Level.SEVERE, null, ex);
         }
