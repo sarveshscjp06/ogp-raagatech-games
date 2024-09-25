@@ -139,25 +139,10 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
             String querySelectInquiries = "SELECT ri.* FROM raagatech_inquiry ri "
                     + " LEFT JOIN RAAGATECH_FOLLOWUPDETAILS rf ON ri.INQUIRY_ID = rf.INQUIRY_ID "
-                    + " WHERE ri.exam_session = '" + examSession + "' ";
+                    + " WHERE ri.exam_session = '" + examSession + "' AND (ri.inspirator_id = " + inspiratorId +" OR ri.user_id = " + userId + ") ";
+            
             if (inquiryStatusId > 1) {
                 querySelectInquiries = querySelectInquiries + " AND rf.INQUIRYSTATUS_ID = " + inquiryStatusId;
-            }
-            querySelectInquiries = querySelectInquiries + " AND ri.user_id = " + userId + " OR ri.user_id in ("
-                    + " select ru1.user_id from raagatech_user ru1 where ru1.inspirator_id in ("
-                    + " select rim.INSPIRATOR_ID FROM RAAGATECH_INSPIRATORMASTER rim JOIN RAAGATECH_USER ru2 "
-                    + " ON rim.EMAIL = ru2.EMAIL AND ru2.USER_ID = " + userId + ")"
-                    + ")";
-            if (userId == 2) {
-                querySelectInquiries = "SELECT ri.* FROM raagatech_inquiry ri "
-                        + " LEFT JOIN RAAGATECH_FOLLOWUPDETAILS rf ON ri.INQUIRY_ID = rf.INQUIRY_ID "
-                        + "WHERE ri.exam_session = '" + examSession + "'";
-                if (inquiryStatusId > 1) {
-                    querySelectInquiries = querySelectInquiries + " AND rf.INQUIRYSTATUS_ID = " + inquiryStatusId;
-                }
-                querySelectInquiries = querySelectInquiries + " AND ri.user_id = " + userId + " OR ri.user_id = (select ru1.user_id from raagatech_user ru1 join RAAGATECH_INSPIRATORMASTER rim"
-                        + " ON rim.EMAIL = ru1.EMAIL AND rim.inspirator_id = " + inspiratorId + ")"
-                        + " OR ri.user_id in (select ru2.user_id from raagatech_user ru2 where ru2.inspirator_id = " + inspiratorId + ")";
             }
             PreparedStatement statement = connection.prepareStatement(querySelectInquiries);
             ResultSet record = statement.executeQuery();
@@ -192,14 +177,14 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
             char sex = gender.equals("Male") ? 'M' : 'F';
-            String queryUpdateInquiry = "UPDATE raagatech_inquiry set firstname = '" + inquiryname + "', inspiration_id = " + inspirationid + ", email = '" + email
-                    + "', mobile = " + mobileNo + ", level_id = " + levelid + ", address_line1 = '" + address + "', gender = '" + sex + "',"
+            String queryUpdateInquiry = "UPDATE raagatech_inquiry set firstname = '" + inquiryname + "', inspiration_id = " + inspirationid 
+                    + ", email = '" + email + "', mobile = " + mobileNo + ", level_id = " + levelid + ", address_line1 = '" + address + "', gender = '" + sex + "',"
                     + " pincode = " + pinCode + ", exam_session = '" + examSession + "', primaryskill = '" + primaryskill + "'" + ", date_of_birth = to_date(?, 'dd-mm-yyyy')"
                     + ", father_name = '" + fatherName + "' " + ", mother_name = '" + motherName + "', exam_fees = " + examFees
                     + " WHERE inquiry_id = " + inquiry_id;
-            if (userId != 2) {
+            /*if (userId != 2) {
                 queryUpdateInquiry = queryUpdateInquiry + " AND user_id = " + userId;
-            }
+            }*/
             PreparedStatement statement = connection.prepareStatement(queryUpdateInquiry);
             statement.setString(1, dob);
             int records = statement.executeUpdate();
