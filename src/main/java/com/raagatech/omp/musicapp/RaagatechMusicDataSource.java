@@ -139,8 +139,12 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
             String querySelectInquiries = "SELECT ri.* FROM raagatech_inquiry ri "
                     + " LEFT JOIN RAAGATECH_FOLLOWUPDETAILS rf ON ri.INQUIRY_ID = rf.INQUIRY_ID "
-                    + " WHERE ri.exam_session = '" + examSession + "' AND (ri.inspirator_id = " + inspiratorId +" OR ri.user_id = " + userId + ") ";
-            
+                    + " WHERE ri.exam_session = '" + examSession + "' ";
+            if (inspiratorId > 0) {
+                querySelectInquiries = querySelectInquiries + " AND (ri.inspirator_id = " + inspiratorId +" OR ri.user_id = " + userId + ")";
+            } else {
+                querySelectInquiries = querySelectInquiries + " AND ri.user_id = " + userId;
+            }
             if (inquiryStatusId > 1) {
                 querySelectInquiries = querySelectInquiries + " AND rf.INQUIRYSTATUS_ID = " + inquiryStatusId;
             }
