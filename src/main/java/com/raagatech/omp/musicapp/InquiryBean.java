@@ -41,6 +41,7 @@ public class InquiryBean {
     private int mobileVerified;
     private int examFees;
     private int feesPaidStatus;
+    private int inspiratorId;
 
     /**
      * @return the inquiry_id
@@ -434,4 +435,18 @@ public class InquiryBean {
         this.examFees = examFees;
     }
 
+    /**
+     * @return the inspiratorId
+     */
+    public int getInspiratorId() {
+        return inspiratorId;
+    }
+
+    /**
+     * @param inspiratorId the inspiratorId to set
+     */
+    public void setInspiratorId(int inspiratorId) {
+        this.inspiratorId = inspiratorId;
+    }
+    
 }

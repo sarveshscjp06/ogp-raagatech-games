@@ -140,8 +140,8 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             String querySelectInquiries = "SELECT ri.* FROM raagatech_inquiry ri "
                     + " LEFT JOIN RAAGATECH_FOLLOWUPDETAILS rf ON ri.INQUIRY_ID = rf.INQUIRY_ID "
                     + " WHERE ri.exam_session = '" + examSession + "' ";
-            if (inspiratorId > 0) {
-                querySelectInquiries = querySelectInquiries + " AND (ri.inspirator_id = " + inspiratorId +" OR ri.user_id = " + userId + ")";
+            if (inspiratorId > 0 || userId == 2) {//2 is superuser
+                querySelectInquiries = querySelectInquiries + " AND (ri.inspirator_id = " + inspiratorId + " OR ri.user_id = " + userId + ")";
             } else {
                 querySelectInquiries = querySelectInquiries + " AND ri.user_id = " + userId;
             }
@@ -181,10 +181,10 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
             char sex = gender.equals("Male") ? 'M' : 'F';
-            String queryUpdateInquiry = "UPDATE raagatech_inquiry set firstname = '" + inquiryname + "', inspiration_id = " + inspirationid 
+            String queryUpdateInquiry = "UPDATE raagatech_inquiry set firstname = '" + inquiryname + "', inspiration_id = " + inspirationid
                     + ", email = '" + email + "', mobile = " + mobileNo + ", level_id = " + levelid + ", address_line1 = '" + address + "', gender = '" + sex + "',"
                     + " pincode = " + pinCode + ", exam_session = '" + examSession + "', primaryskill = '" + primaryskill + "'" + ", date_of_birth = to_date(?, 'dd-mm-yyyy')"
-                    + ", father_name = '" + fatherName + "' " + ", mother_name = '" + motherName + "', exam_fees = " + examFees
+                    + ", father_name = '" + fatherName + "' " + ", mother_name = '" + motherName + "', exam_fees = " + examFees+ ", inspirator_id = " + inspirator_id 
                     + " WHERE inquiry_id = " + inquiry_id;
             /*if (userId != 2) {
                 queryUpdateInquiry = queryUpdateInquiry + " AND user_id = " + userId;
@@ -247,6 +247,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 inquiry.setExamFees(record.getInt("exam_fees"));
                 inquiry.setFeesPaidStatus(record.getInt("fees_paid_status"));
                 inquiry.setInquirystatus_id(record.getInt("inquirystatus_id"));
+                inquiry.setInspiratorId(record.getInt("inspirator_id"));
             }
         }
         return inquiry;
@@ -285,8 +286,11 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         UserDataBean userData = null;
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
-            String queryInsertUser = "SELECT * FROM raagatech_user WHERE (email = '" + username + "' "
-                    + "OR username = '" + username + "') AND password = '" + password + "' AND emailverification = 1";
+            String queryInsertUser = "SELECT ru.*, rim.INSPIRATOR_ID as rim_id FROM RAAGATECH_USER ru left join RAAGATECH_INSPIRATORMASTER rim "
+                    + "ON ru.email = rim.email AND ru.mobile = rim.MOBILE "
+                    + "WHERE (ru.email = '" + username + "' OR ru.username = '" + username + "') "
+                    + "AND ru.password = '" + password + "' AND ru.emailverification = 1";
+
             PreparedStatement statement = connection.prepareStatement(queryInsertUser);
             ResultSet record = statement.executeQuery();
             while (record.next()) {
@@ -299,7 +303,11 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 userData.setMobile(record.getLong("mobile"));
                 userData.setUserId(record.getInt("user_id"));
                 userData.setPincode(record.getInt("pincode"));
-                userData.setInspiratorId(record.getInt("inspirator_id"));
+                if(record.getString("rim_id") == null) {
+                    userData.setInspiratorId(0);
+                } else {
+                    userData.setInspiratorId(record.getInt("rim_id"));
+                }
                 userData.setGender(record.getString("gender").equals("M") ? 'M' : 'F');
                 userData.setAddress(record.getString("postaladdress"));
                 userData.setMobileVerified(record.getInt("mobileverification"));
