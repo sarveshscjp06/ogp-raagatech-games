@@ -83,10 +83,10 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             char sex = gender.equals("Male") ? 'M' : 'F';
             int inquiry_id = oracleDataSource.generateNextPrimaryKey("raagatech_inquiry", "inquiry_id");
             String queryInsertInquiry = "INSERT into raagatech_inquiry (inquiry_id, firstname, inspiration_id, inquiry_date, email, mobile"
-                    + ", level_id, address_line1, nationality, date_of_birth, telephone, photo"
+                    + ", level_id, address_line1, nationality, date_of_birth, photo"
                     + ", gender, inspirator_id, comfortability, primaryskill, user_id, pincode, exam_session, father_name, mother_name, exam_fees) "
                     + "VALUES (" + inquiry_id + ", '" + inquiryname + "'," + inspirationid + ",?, '" + email + "', " + mobileNo + ","
-                    + levelid + ", '" + address + "', '" + nationality + "', to_date(?, 'dd-mm-yyyy'), " + telOther + ", '" + image + "', '"
+                    + levelid + ", '" + address + "', '" + nationality + "', to_date(?, 'dd-mm-yyyy'), '" + image + "', '"
                     + sex + "', " + inspiratorId + ", '" + comfortability + "', '" + primaryskill + "', " + userId + ", " + pinCode + ", '" + examSession + "'"
                     + ", '" + fatherName + "', '" + motherName + "', " + examFees + ")";
             PreparedStatement statement = connection.prepareStatement(queryInsertInquiry);

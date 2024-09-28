@@ -5,6 +5,8 @@
 package com.raagatech.omp.musicapp;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  *
@@ -24,6 +26,7 @@ public class UserDataBean {
     private int inspiratorId;
     private char gender;
     private int mobileVerified;
+    private Set<String> inspiratorSet = new HashSet<>();
 
     /**
      * @return the userName
@@ -192,5 +195,19 @@ public class UserDataBean {
     public void setMobileVerified(int mobileVerified) {
         this.mobileVerified = mobileVerified;
     }
-        
+
+    /**
+     * @return the inspiratorSet
+     */
+    public Set<String> getInspiratorSet() {
+        return inspiratorSet;
+    }
+
+    /**
+     * @param inspiratorSet the inspiratorSet to set
+     */
+    public void setInspiratorSet(Set<String> inspiratorSet) {
+        this.inspiratorSet = inspiratorSet;
+    }    
+            
 }
