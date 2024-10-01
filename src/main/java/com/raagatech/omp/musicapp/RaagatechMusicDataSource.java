@@ -184,7 +184,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             String queryUpdateInquiry = "UPDATE raagatech_inquiry set firstname = '" + inquiryname + "', inspiration_id = " + inspirationid
                     + ", email = '" + email + "', mobile = " + mobileNo + ", level_id = " + levelid + ", address_line1 = '" + address + "', gender = '" + sex + "',"
                     + " pincode = " + pinCode + ", exam_session = '" + examSession + "', primaryskill = '" + primaryskill + "'" + ", date_of_birth = to_date(?, 'dd-mm-yyyy')"
-                    + ", father_name = '" + fatherName + "' " + ", mother_name = '" + motherName + "', exam_fees = " + examFees+ ", inspirator_id = " + inspirator_id 
+                    + ", father_name = '" + fatherName + "' " + ", mother_name = '" + motherName + "', exam_fees = " + examFees + ", inspirator_id = " + inspirator_id
                     + " WHERE inquiry_id = " + inquiry_id;
             /*if (userId != 2) {
                 queryUpdateInquiry = queryUpdateInquiry + " AND user_id = " + userId;
@@ -303,7 +303,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 userData.setMobile(record.getLong("mobile"));
                 userData.setUserId(record.getInt("user_id"));
                 userData.setPincode(record.getInt("pincode"));
-                if(record.getString("rim_id") == null) {
+                if (record.getString("rim_id") == null) {
                     userData.setInspiratorId(0);
                 } else {
                     userData.setInspiratorId(record.getInt("rim_id"));
@@ -469,5 +469,25 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             }
         }
         return updateStatus;
+    }
+
+    @Override
+    public boolean addFeedback(String name, String email, long mobile, String followupDetails) throws Exception {
+        boolean insertStatus = Boolean.FALSE;
+
+        // With AutoCloseable, the connection is closed automatically.
+        try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
+
+            int followup_id = oracleDataSource.generateNextPrimaryKey("raagatech_followupdetails", "followup_id");
+            String queryInsertFollowupDetails = "INSERT into raagatech_followupdetails (followup_id, name, mobile, followup_details, followup_date, inquiry_id, inquirystatus_id) "
+                    + "VALUES (" + followup_id + ", '" + name + "', " + mobile + ", '" + followupDetails + "',?, 1, 1)";
+            PreparedStatement statement2 = connection.prepareStatement(queryInsertFollowupDetails);
+            statement2.setTimestamp(1, getCurrentTimeStamp());
+            int records = statement2.executeUpdate();
+            if (records > 0) {
+                insertStatus = Boolean.TRUE;
+            }
+        }
+        return insertStatus;
     }
 }

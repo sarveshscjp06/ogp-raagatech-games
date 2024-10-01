@@ -67,4 +67,6 @@ public interface RaagatechMusicDataSourceInterface {
     public boolean updateInquiryForMobileVerification(int inquiryId, long mobileNo) throws Exception;
     
     public boolean updateInquiryForFeesPaidStatus(int inquiryId, int amount) throws Exception;
+    
+    public boolean addFeedback(String name, String email, long mobile, String followupDetails) throws Exception;
 }
