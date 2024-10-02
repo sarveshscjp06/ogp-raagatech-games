@@ -139,9 +139,11 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
             String querySelectInquiries = "SELECT ri.* FROM raagatech_inquiry ri "
                     + " LEFT JOIN RAAGATECH_FOLLOWUPDETAILS rf ON ri.INQUIRY_ID = rf.INQUIRY_ID "
-                    + " WHERE ri.exam_session = '" + examSession + "' ";
-            if (inspiratorId >= 0) {
+                    + " WHERE rf.inquirystatus_id < 7 AND ri.exam_session = '" + examSession + "' ";
+            if (inspiratorId >= 0 && userId == 2) {
                 querySelectInquiries = querySelectInquiries + " AND (ri.inspirator_id = " + inspiratorId + " OR ri.user_id = " + userId + ")";
+            } else if (inspiratorId > 0) {
+                querySelectInquiries = querySelectInquiries + " AND ri.inspirator_id = " + inspiratorId;
             } else {
                 querySelectInquiries = querySelectInquiries + " AND ri.user_id = " + userId;
             }
@@ -194,7 +196,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             int records = statement.executeUpdate();
             if (records > 0) {
                 String queryUpdateFollowupDetails = "UPDATE raagatech_followupdetails set followup_details = '" + followupDetails + "', inquirystatus_id = " + inquiryStatusId
-                        + " WHERE inquiry_id = " + inquiry_id;
+                        + " WHERE rf.inquirystatus_id < 7 AND inquiry_id = " + inquiry_id;
                 PreparedStatement statement2 = connection.prepareStatement(queryUpdateFollowupDetails);
                 records = statement2.executeUpdate();
                 if (records > 0) {
@@ -220,7 +222,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         InquiryBean inquiry = null;
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
-            String queryInsertUser = "SELECT ri.*, rf.followup_details, rf.inquirystatus_id FROM raagatech_inquiry ri join raagatech_followupdetails rf on ri.inquiry_id = rf.inquiry_id WHERE ri.inquiry_id = " + inquiryId;
+            String queryInsertUser = "SELECT ri.*, rf.followup_details, rf.inquirystatus_id FROM raagatech_inquiry ri join raagatech_followupdetails rf on ri.inquiry_id = rf.inquiry_id WHERE rf.inquirystatus_id < 7 AND ri.inquiry_id = " + inquiryId;
             PreparedStatement statement = connection.prepareStatement(queryInsertUser);
             ResultSet record = statement.executeQuery();
             while (record.next()) {
@@ -480,7 +482,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
 
             int followup_id = oracleDataSource.generateNextPrimaryKey("raagatech_followupdetails", "followup_id");
             String queryInsertFollowupDetails = "INSERT into raagatech_followupdetails (followup_id, name, mobile, followup_details, followup_date, inquiry_id, inquirystatus_id) "
-                    + "VALUES (" + followup_id + ", '" + name + "', " + mobile + ", '" + followupDetails + "',?, 1, 1)";
+                    + "VALUES (" + followup_id + ", '" + name + "', " + mobile + ", '" + followupDetails + "',?, 1, 7)";
             PreparedStatement statement2 = connection.prepareStatement(queryInsertFollowupDetails);
             statement2.setTimestamp(1, getCurrentTimeStamp());
             int records = statement2.executeUpdate();
