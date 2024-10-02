@@ -141,7 +141,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                     + " LEFT JOIN RAAGATECH_FOLLOWUPDETAILS rf ON ri.INQUIRY_ID = rf.INQUIRY_ID "
                     + " WHERE rf.inquirystatus_id < 7 AND ri.exam_session = '" + examSession + "' ";
             if (inspiratorId >= 0 && userId == 2) {
-                querySelectInquiries = querySelectInquiries + " AND (ri.inspirator_id = " + inspiratorId + " OR ri.user_id = " + userId + ")";
+                querySelectInquiries = querySelectInquiries + " AND ri.inspirator_id = " + inspiratorId;
             } else if (inspiratorId > 0) {
                 querySelectInquiries = querySelectInquiries + " AND ri.inspirator_id = " + inspiratorId;
             } else {
