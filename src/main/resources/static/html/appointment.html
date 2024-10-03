@@ -1,13 +1,8 @@
-<!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
+<!DOCTYPE HTML>
 <html>
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
-        <title>raagatech Appointment Form</title>    
+        <title>Appointment Form Submission</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <style>
             .group:after {
                 content: "";
@@ -140,50 +135,45 @@ and open the template in the editor.
         </script>
     </head>
     <body>
-        <div class="landing-page"><div class="form-appointment"><div class="wpcf7" id="wpcf7-f560-p590-o1">
-
-                    <h2 style="text-align: center;">To REGISTER for the music classes <a href="registrationForm.html">Click Here</a></h2>
-                    <div style="text-align: center; border-top: 1px solid rgb(153, 202, 129); margin-top: 1em;"></div>
-                    <h2 style="text-align: center;">To VIEW / UPDATE your registration form</h2>
-                    <form name="viewUpdate" action="http://localhost:8888/raagatechmusic" method="get" id="viewUpdate">                    
-                        <input type="hidden" name="requestIdentifier" value="viewUpdateForm">    
-                        <div class="group" style="text-align: center;">
-                                <div style="width: 48%; float: left;">
-                                    <span><input type="email" name="email-680" value="" size="45" required placeholder="Email"></span><br>
-                                    <span><input type="tel" name="tel-630" value="" size="45" required placeholder="Phone"></span><br>
-                                    <input type="submit" value="SUBMIT" onclick="viewUpdate.submit()"/>
-                                </div>
-                            </div>
-                    </form>
-                    <div style="text-align: center; border-top: 1px solid rgb(153, 202, 129); margin-top: 1em;"></div>
-                    <h2 style="text-align: center;">Appointment Form</h2>
-                    <div style="text-align: center; padding-top: 1em; border-top: 1px solid rgb(153, 202, 129); margin-top: 1em;"></div>
-                        <form action="http://www.raagatech.com/raagatechmusic" method="post" class="wpcf7-form" novalidate="novalidate" ><!--_lpchecked="1"-->
-                            <div style="display: none;">
-                                <input type="hidden" name="requestIdentifier" value="apform">
-                                <input type="hidden" name="_wpcf7" value="560">
-                                <input type="hidden" name="_wpcf7_version" value="3.5">
-                                <input type="hidden" name="_wpcf7_locale" value="">
-                                <input type="hidden" name="_wpcf7_unit_tag" value="wpcf7-f560-p590-o1">
-                                <input type="hidden" name="_wpnonce" value="dbb28877d5">
-                            </div>
-                            <div class="group">
-                                <div style="width: 48%; float: left;">
-                                    <span class="wpcf7-form-control-wrap text-680"><input type="text" name="text-680" value="" size="45" class="wpcf7-form-control wpcf7-text wpcf7-validates-as-required" aria-required="true" placeholder="Name"></span><br>
-                                    <span class="wpcf7-form-control-wrap email-680"><input type="email" name="email-680" value="" size="45" class="wpcf7-form-control wpcf7-text wpcf7-email wpcf7-validates-as-required wpcf7-validates-as-email" aria-required="true" placeholder="Email"></span><br>
-                                    <span class="wpcf7-form-control-wrap tel-630"><input type="tel" name="tel-630" value="" size="45" class="wpcf7-form-control wpcf7-text wpcf7-tel wpcf7-validates-as-required wpcf7-validates-as-tel" aria-required="true" placeholder="Phone"></span><br>
-                                    <span class="wpcf7-form-control-wrap textarea-398"><textarea name="textarea-398" cols="40" rows="10" class="wpcf7-form-control wpcf7-textarea" placeholder="Special notes, concerns, or requirements"></textarea></span></div>
-                                <div style="width: 48%; float: right;">
-                                    <h4>What is the best way to reach you?</h4>
-                                    <p><span class="wpcf7-form-control-wrap radio-98"><span class="wpcf7-form-control wpcf7-radio"><span class="wpcf7-list-item"><label><input type="radio" name="radio-98" value="Phone">&nbsp;<span class="wpcf7-list-item-label">Phone</span></label></span><span class="wpcf7-list-item"><label><input type="radio" name="radio-98" value="Email">&nbsp;<span class="wpcf7-list-item-label">Email</span></label></span></span></span></p>
-                                    <h4>Days of the week you are available for appointment:</h4>
-                                    <p><span class="wpcf7-form-control-wrap checkbox-465"><span class="wpcf7-form-control wpcf7-checkbox"><span class="wpcf7-list-item"><label><input type="checkbox" name="checkbox-465[]" value="Monday">&nbsp;<span class="wpcf7-list-item-label">Monday</span></label></span><span class="wpcf7-list-item"><label><input type="checkbox" name="checkbox-465[]" value="Tuesday">&nbsp;<span class="wpcf7-list-item-label">Tuesday</span></label></span><span class="wpcf7-list-item"><label><input type="checkbox" name="checkbox-465[]" value="Wednesday">&nbsp;<span class="wpcf7-list-item-label">Wednesday</span></label></span><span class="wpcf7-list-item"><label><input type="checkbox" name="checkbox-465[]" value="Thursday">&nbsp;<span class="wpcf7-list-item-label">Thursday</span></label></span><span class="wpcf7-list-item"><label><input type="checkbox" name="checkbox-465[]" value="Friday">&nbsp;<span class="wpcf7-list-item-label">Friday</span></label></span></span></span></p>
-                                    <h4>Best time of day for your appointment:</h4>
-                                    <p><span class="wpcf7-form-control-wrap checkbox-246"><span class="wpcf7-form-control wpcf7-checkbox"><span class="wpcf7-list-item"><label><input type="checkbox" name="checkbox-246[]" value="Morning">&nbsp;<span class="wpcf7-list-item-label">Morning</span></label></span><span class="wpcf7-list-item"><label><input type="checkbox" name="checkbox-246[]" value="Afternoon">&nbsp;<span class="wpcf7-list-item-label">Afternoon</span></label></span></span></span></p></div>
-                            </div>
-                            <div style="text-align: center; padding-top: 1em; border-top: 1px solid rgb(153, 202, 129); margin-top: 1em;">
-                                <input type="submit" value="Request My Appointment" class="wpcf7-form-control wpcf7-submit">
-                                <!--img class="ajax-loader" src="http://www.professionalaudiologicalservices.com/wp-content/plugins/contact-form-7/images/ajax-loader.gif" alt="Sending ..." style="visibility: hidden;"></div-->
-                            <div class="wpcf7-response-output wpcf7-display-none"></div></form></div></div></div>
+        <div class="landing-page"><div class="form-appointment"><div id="wpcf7-f560-p590-o1">
+            <h2 style="text-align: center;">Appointment Form</h2>
+            <div style="text-align: center; padding-top: 1em; border-top: 1px solid rgb(153, 202, 129); margin-top: 1em;"></div>
+        <form action="/appointment" method="post" novalidate="novalidate">            
+            <div class="group">
+                <div style="width: 48%; float: left;">
+                    <span >
+                        <input type="text" id="name" name="name" size="45" aria-required="true" placeholder="Name">
+                    </span><br>
+                    <span >
+                        <input type="email" id="email" name="email" size="45" aria-required="true" placeholder="Email">
+                    </span><br>
+                    <span >
+                        <input type="tel" id="phone" name="phone" size="45" aria-required="true" placeholder="Phone">
+                    </span><br>
+                    <span >
+                        <textarea cols="40" rows="10" id="followupDetails" name="followupDetails" placeholder="Special notes, concerns, or requirements"></textarea>
+                    </span></div>
+                <div style="width: 48%; float: right;">
+                    <h4>What is the best way to reach you?</h4>
+                    <p><span ><span >
+                           <span class="wpcf7-list-item"><label><input type="radio" value="Phone">&nbsp;<span class="wpcf7-list-item-label">Phone</span></label></span>
+                           <span class="wpcf7-list-item"><label><input type="radio" value="Email">&nbsp;<span class="wpcf7-list-item-label">Email</span></label></span></span></span></p>
+                    <h4>Days of the week you are available for appointment:</h4>
+                    <p><span >
+                            <span >
+                            <span class="wpcf7-list-item"><label><input type="checkbox" value="Monday" >&nbsp;<span class="wpcf7-list-item-label">Monday</span></label></span>
+                            <span class="wpcf7-list-item"><label><input type="checkbox" value="Tuesday" >&nbsp;<span class="wpcf7-list-item-label">Tuesday</span></label></span>
+                            <span class="wpcf7-list-item"><label><input type="checkbox" value="Wednesday" >&nbsp;<span class="wpcf7-list-item-label">Wednesday</span></label></span>
+                            <span class="wpcf7-list-item"><label><input type="checkbox" value="Thursday" >&nbsp;<span class="wpcf7-list-item-label">Thursday</span></label></span>
+                            <span class="wpcf7-list-item"><label><input type="checkbox" value="Friday" >&nbsp;<span class="wpcf7-list-item-label">Friday</span></label></span></span></span></p>
+                    <h4>Best time of day for your appointment:</h4>
+                    <p><span ><span >
+                                <span class="wpcf7-list-item"><label><input type="checkbox" value="Morning">&nbsp;<span class="wpcf7-list-item-label">Morning</span></label></span>
+                                <span class="wpcf7-list-item"><label><input type="checkbox" value="Afternoon">&nbsp;<span class="wpcf7-list-item-label">Afternoon</span></label></span></span></span></p>
+            <div style="text-align: center; padding-top: 1em; border-top: 1px solid rgb(153, 202, 129); margin-top: 1em;">
+                <input type="submit" value="Request My Appointment" >
+            </div>
+                                <div ></div></div></div>
+        </form></div></div></div>
     </body>
 </html>

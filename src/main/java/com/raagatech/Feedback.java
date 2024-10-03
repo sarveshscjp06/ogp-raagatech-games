@@ -4,6 +4,8 @@
  */
 package com.raagatech;
 
+import java.util.Date;
+
 /**
  *
  * @author STripathi
@@ -16,6 +18,7 @@ public class Feedback {
     private String email;
     private long mobile;
     private String followupDetails;
+    private Date followup_date;
 
     /**
      * @return the id
@@ -100,10 +103,26 @@ public class Feedback {
     public void setFollowupDetails(String followupDetails) {
         this.followupDetails = followupDetails;
     }
+    
+    
 
     @Override
     public String toString() {
-        return "Name: " + name + " Email: " + email + " Mobile: " + mobile + " Feedback: " + followupDetails;
+        return "Name: " + name + " Email: " + email + " Mobile: " + mobile + " Feedback: " + followupDetails  + " Feedback date: " +followup_date;
+    }
+
+    /**
+     * @return the followup_date
+     */
+    public Date getFollowup_date() {
+        return followup_date;
+    }
+
+    /**
+     * @param followup_date the followup_date to set
+     */
+    public void setFollowup_date(Date followup_date) {
+        this.followup_date = followup_date;
     }
 
 }

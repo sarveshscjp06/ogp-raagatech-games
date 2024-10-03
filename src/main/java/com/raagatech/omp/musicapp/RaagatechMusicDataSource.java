@@ -4,12 +4,14 @@
  */
 package com.raagatech.omp.musicapp;
 
+import com.raagatech.Feedback;
 import com.raagatech.common.datasource.OracleDatabaseInterface;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import oracle.jdbc.OracleConnection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -474,41 +476,37 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
     }
 
     @Override
-    public boolean addFeedback(String name, String email, long mobile, String followupDetails) throws Exception {
-        boolean insertStatus = Boolean.FALSE;
+    public boolean addFollowUps(String name, String email, long mobile, String followupDetails, int inquiryStatusId) throws Exception {
+        boolean insertStatus;
 
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
 
             int followup_id = oracleDataSource.generateNextPrimaryKey("raagatech_followupdetails", "followup_id");
             String queryInsertFollowupDetails = "INSERT into raagatech_followupdetails (followup_id, name, mobile, followup_details, followup_date, inquiry_id, inquirystatus_id) "
-                    + "VALUES (" + followup_id + ", '" + name + "', " + mobile + ", '" + followupDetails + "',?, 1, 7)";
+                    + "VALUES (" + followup_id + ", '" + name + "', " + mobile + ", '" + followupDetails + "',?, 1, "+inquiryStatusId+")";
             PreparedStatement statement2 = connection.prepareStatement(queryInsertFollowupDetails);
             statement2.setTimestamp(1, getCurrentTimeStamp());
-            int records = statement2.executeUpdate();
-            if (records > 0) {
-                insertStatus = Boolean.TRUE;
-            }
+            insertStatus = statement2.execute();            
         }
         return insertStatus;
     }
 
     @Override
-    public List<Feedback> getFeedbacks(int inquiryStatusId) throws Exception {
+    public List<Feedback> getFollowUps(int inquiryStatusId) throws Exception {
         List<Feedback> feedbackList = new ArrayList();
-        Feedback feedback = null;
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
             String queryInsertUser = "SELECT * FROM raagatech_followupdetails WHERE inquirystatus_id = " + inquiryStatusId;
             PreparedStatement statement = connection.prepareStatement(queryInsertUser);
             ResultSet record = statement.executeQuery();
             while (record.next()) {
-                feedback = new Feedback();
+                Feedback feedback = new Feedback();
                 feedback.setName(record.getString("name"));
                 feedback.setEmail(record.getString("email"));
                 feedback.setMobile(record.getLong("mobile"));
-                feedback.setfollowupDetails(record.getString("followupDetails"));
-
+                feedback.setFollowupDetails(record.getString("followup_details"));
+                feedback.setFollowup_date(record.getDate("followup_date"));
                 feedbackList.add(feedback);
             }
         }

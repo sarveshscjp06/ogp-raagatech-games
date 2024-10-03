@@ -1,5 +1,7 @@
 package com.raagatech;
 
+import java.util.Date;
+
 public class Appointment {
 
     private long id;
@@ -17,6 +19,7 @@ public class Appointment {
     private String friday;
     private String availabilityMorning;
     private String availabilityAfternoon;
+    private Date appointmentDate;
 
     public long getId() {
         return id;
@@ -201,5 +204,23 @@ public class Appointment {
     public void setAvailabilityAfternoon(String availabilityAfternoon) {
         this.availabilityAfternoon = availabilityAfternoon;
     }
+    
+    /**
+     * @return the appointmentDate
+     */
+    public Date getAppointmentDate() {
+        return appointmentDate;
+    }
+
+    /**
+     * @param appointmentDate the appointmentDate to set
+     */
+    public void setAppointmentDate(Date appointmentDate) {
+        this.appointmentDate = appointmentDate;
+    }
         
+    @Override
+    public String toString() {
+        return "Name: " + name + " Email: " + email + " Mobile: " + phone + " Feedback: " + followupDetails  + " Feedback date: " +appointmentDate;
+    }
 }

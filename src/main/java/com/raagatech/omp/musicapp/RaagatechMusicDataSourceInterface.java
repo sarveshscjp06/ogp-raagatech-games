@@ -4,8 +4,10 @@
  */
 package com.raagatech.omp.musicapp;
 
+import com.raagatech.Feedback;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 /**
  *
@@ -68,7 +70,7 @@ public interface RaagatechMusicDataSourceInterface {
     
     public boolean updateInquiryForFeesPaidStatus(int inquiryId, int amount) throws Exception;
     
-    public boolean addFeedback(String name, String email, long mobile, String followupDetails) throws Exception;
+    public boolean addFollowUps(String name, String email, long mobile, String followupDetails, int inquiryStatusId) throws Exception;
 
-    public List<Feedback> getFeedbacks(int inquiryStatusId) throws Exception;
+    public List<Feedback> getFollowUps(int inquiryStatusId) throws Exception;
 }

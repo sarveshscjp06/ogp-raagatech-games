@@ -7,7 +7,6 @@ import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -19,21 +18,16 @@ public class AppointmentController {
     @Autowired
     private EmailUtilityInterface emailUtility;
 
-    @GetMapping("/appointment")
-    public String appointmentForm(Model model) {
-
-        model.addAttribute("appointment", new Appointment());
-        return "appointment";
-    }
-
     @PostMapping("/appointment")
     public String appointmentSubmit(@ModelAttribute Appointment appointment, Model model) {
 
         boolean appointmentStatus = Boolean.FALSE;
         try {
-            appointmentStatus = musicDataSource.insertInquiry(appointment.getName(), 1, appointment.getEmail(), appointment.getPhone(), 1,
-                    "appointment", appointment.getFollowupDetails(), "091", "", 0, "",
-                    "", 0, "", "", 1, 201009, "", "", "", 0);
+            if (!appointment.getName().isEmpty() && !appointment.getEmail().isEmpty() && String.valueOf(appointment.getPhone()).length() == 10
+                    && !appointment.getFollowupDetails().isEmpty()) {
+                appointmentStatus = musicDataSource.addFollowUps(appointment.getName(), appointment.getEmail(), appointment.getPhone(),
+                        appointment.getFollowupDetails(), 8);
+            }
         } catch (Exception ex) {
             Logger.getLogger(AppointmentController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -41,12 +35,11 @@ public class AppointmentController {
             String body = "Hi ".concat(appointment.getName()).concat(", ")
                     .concat("The appointment details have been sent via SMS and e-mail service.")
                     .concat("Thanks!");
-            emailUtility.sendEmail(appointment.getEmail(), "raagatech: inquiry registration", body);
+            emailUtility.sendEmail(appointment.getEmail(), "raagatech: Appointment", body);
             appointment.setContent(body);
         }
-        model.addAttribute("appointment", appointment);
-
-        return "result";
+        
+        return "redirect:html/thanks.html";
     }
 
 }
