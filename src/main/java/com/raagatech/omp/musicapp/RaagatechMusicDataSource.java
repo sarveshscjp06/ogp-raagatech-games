@@ -492,4 +492,26 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         }
         return insertStatus;
     }
+
+    @Override
+    public List<Feedback> getFeedbacks(int inquiryStatusId) throws Exception {
+        List<Feedback> feedbackList = new ArrayList();
+        Feedback feedback = null;
+        // With AutoCloseable, the connection is closed automatically.
+        try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
+            String queryInsertUser = "SELECT * FROM raagatech_followupdetails WHERE inquirystatus_id = " + inquiryStatusId;
+            PreparedStatement statement = connection.prepareStatement(queryInsertUser);
+            ResultSet record = statement.executeQuery();
+            while (record.next()) {
+                feedback = new Feedback();
+                feedback.setName(record.getString("name"));
+                feedback.setEmail(record.getString("email"));
+                feedback.setMobile(record.getLong("mobile"));
+                feedback.setfollowupDetails(record.getString("followupDetails"));
+
+                feedbackList.add(feedback);
+            }
+        }
+        return feedbackList;
+    }
 }
