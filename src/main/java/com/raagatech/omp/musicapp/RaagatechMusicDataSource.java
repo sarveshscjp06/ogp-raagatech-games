@@ -96,9 +96,13 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             statement.setString(2, dob);
             int records = statement.executeUpdate();
             if (records > 0) {
+                int inquirystatusId = 1;
+                if (examSession.equals("6")) {//direct registration through website
+                    inquirystatusId = 6;
+                }
                 int followup_id = oracleDataSource.generateNextPrimaryKey("raagatech_followupdetails", "followup_id");
                 String queryInsertFollowupDetails = "INSERT into raagatech_followupdetails (followup_id, inquiry_id, inquirystatus_id, followup_details, followup_date) "
-                        + "VALUES (" + followup_id + ", " + inquiry_id + ", 1, '" + followupDetails + "',?)";
+                        + "VALUES (" + followup_id + ", " + inquiry_id + ", " + inquirystatusId + ", '" + followupDetails + "',?)";
                 PreparedStatement statement2 = connection.prepareStatement(queryInsertFollowupDetails);
                 statement2.setTimestamp(1, getCurrentTimeStamp());
                 records = statement2.executeUpdate();
@@ -190,9 +194,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                     + " pincode = " + pinCode + ", exam_session = '" + examSession + "', primaryskill = '" + primaryskill + "'" + ", date_of_birth = to_date(?, 'dd-mm-yyyy')"
                     + ", father_name = '" + fatherName + "' " + ", mother_name = '" + motherName + "', exam_fees = " + examFees + ", inspirator_id = " + inspirator_id
                     + " WHERE inquiry_id = " + inquiry_id;
-            /*if (userId != 2) {
-                queryUpdateInquiry = queryUpdateInquiry + " AND user_id = " + userId;
-            }*/
+
             PreparedStatement statement = connection.prepareStatement(queryUpdateInquiry);
             statement.setString(1, dob);
             int records = statement.executeUpdate();
@@ -484,10 +486,10 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
 
             int followup_id = oracleDataSource.generateNextPrimaryKey("raagatech_followupdetails", "followup_id");
             String queryInsertFollowupDetails = "INSERT into raagatech_followupdetails (followup_id, name, mobile, followup_details, followup_date, inquiry_id, inquirystatus_id) "
-                    + "VALUES (" + followup_id + ", '" + name + "', " + mobile + ", '" + followupDetails + "',?, 1, "+inquiryStatusId+")";
+                    + "VALUES (" + followup_id + ", '" + name + "', " + mobile + ", '" + followupDetails + "',?, 1, " + inquiryStatusId + ")";
             PreparedStatement statement2 = connection.prepareStatement(queryInsertFollowupDetails);
             statement2.setTimestamp(1, getCurrentTimeStamp());
-            insertStatus = statement2.execute();            
+            insertStatus = statement2.execute();
         }
         return insertStatus;
     }

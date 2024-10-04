@@ -1,288 +1,160 @@
 <!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
 <html>
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
-        <link class="jsbin" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
-        <script class="jsbin" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-        <script class="jsbin" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.0/jquery-ui.min.js"></script>
         <title>'raagatech' Registration Form</title>
-        <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
         <style>
-            article, aside, figure, footer, header, hgroup, 
-            menu, nav, section { display: block; }
-        </style>
-        <style>
-            .group:after {
+            * {
+                box-sizing: border-box;
+            }
+
+            input[type=text], select, textarea {
+                width: 100%;
+                padding: 12px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                resize: vertical;
+            }
+
+            label {
+                padding: 12px 12px 12px 0;
+                display: inline-block;
+            }
+
+            input[type=submit] {
+                background-color: #04AA6D;
+                color: white;
+                padding: 12px 20px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                float: right;
+            }
+
+            input[type=submit]:hover {
+                background-color: #45a049;
+            }
+
+            .container {
+                border-radius: 5px;
+                background-color: #f2f2f2;
+                padding: 20px;
+            }
+
+            .col-25 {
+                float: left;
+                width: 25%;
+                margin-top: 6px;
+            }
+
+            .col-75 {
+                float: left;
+                width: 75%;
+                margin-top: 6px;
+            }
+
+            /* Clear floats after the columns */
+            .row:after {
                 content: "";
-                display: block;
+                display: table;
                 clear: both;
             }
 
-            .landing-page {
-                width: 882px;
-                margin: 100px auto 0;  
-            }
-
-            .landing-page *,
-            .landing-page *:before,
-            .landing-page *:after {
-                -webkit-box-sizing: border-box;
-                -moz-box-sizing: border-box;
-                box-sizing: border-box; 
-            }
-
-            .landing-page .module {
-                border: 1px solid rgb(219, 219, 219);
-                border-radius: 4px;
-                float: left;
-                padding: 2em;
-                width: 48%;
-            }
-
-            .landing-page .module > *:last-child,
-            .landing-page .module > *:last-child > *:last-child,
-            .landing-page .module > *:last-child > *:last-child > *:last-child {
-                margin: 0;
-                padding: 0;
-            }
-
-            .landing-page .note {	
-                background-color: rgb(236, 248, 236);
-                border: 1px dashed;	
-                border-radius: 4px;	
-                color: rgb(115, 136, 96);
-                font-family: georgia;	
-                font-size: .9em;
-                font-style: italic;
-                margin: 20px auto;
-                padding: 2em;
-            }
-
-            .form-registration {
-                padding: 2em;
-                background-color: rgb(239, 252, 239);
-                border-radius: 4px;
-                border: 1px solid rgb(130, 228, 130);
-                box-shadow: 2px 2px 4px 0px rgba(0, 0, 0, 0.1);
-                font-family: 'PT Sans', Arial, sans-serif;
-                margin: 20px auto;
-            }
-
-            .form-registration input[type=text],
-            .form-registration input[type=email],
-            .form-registration input[type=tel],
-            .form-registration textarea {	
-                border: 1px solid rgb(153, 202, 129);
-                border-radius: .2em;	
-                font-family: 'PT Sans', Arial, sans-serif;
-                font-size: 1.1em;
-                padding: .4em 1em;
-                margin: 0 0 .8em;
-                width: 100%;
-                box-shadow: 0 0 8px rgba(0,0,0,.08) inset;
-            }
-
-            .form-registration input[type=text],
-            .form-registration input[type=email],
-            .form-registration input[type=tel],
-            .form-registration input[type=submit],
-            .form-registration textarea {	
-                -webkit-transition: all .2s ease-in-out;
-                -moz-transition: all .2s ease-in-out;
-                transition: all .2s ease-in-out;
-            }
-
-            .form-registration input[type=text]:active,
-            .form-registration input[type=text]:focus,
-            .form-registration input[type=email]:active,
-            .form-registration input[type=email]:focus,
-            .form-registration input[type=tel]:active,
-            .form-registration input[type=tel]:focus,
-            .form-registration textarea:active,
-            .form-registration textarea:focus {	
-                outline: 0;
-                box-shadow: 0 0 6px rgb(176, 226, 188);
-            }
-
-            .form-registration textarea {
-                height: 160px;
-            }
-
-            .form-registration input[type=submit] {
-                background-color: rgb(118, 207, 118);
-                border: 1px solid rgb(134, 189, 134);
-                border-radius: 4px;
-                color: rgb(255, 255, 255);
-                cursor: pointer;
-                font-family: inherit;
-                font-size: 1.4em;
-                padding: 10px 18px;
-            }
-
-            .form-registration input[type=submit]:hover {
-                background-color: white;
-                color: rgb(118, 207, 118);
-            }
-
-            .form-registration .wpcf7-list-item-label {
-                color: rgb(130, 178, 136);
-            }
-
-            span.wpcf7-list-item {
-                display: block;
-                margin-left: -.02em;
-            }
-
-        </style>
-        <script>
-            $(document).ready(function () {
-                $('input[type=submit]').click(function () {
-                    $('input[type=submit]').toggleClass('red');
-                });
-                
-                // FETCHING DATA FROM JSON FILE 
-                $.ajaxSetup({cache: false});
-                //var winterval=setInterval(function () {
-                    $.getJSON("registrationData.txt",  
-                        function (data) {
-                        $('#result').html(data.tag); 
-                        $('#primaryskill-680').val(""+data.primaryskill);
-                        $('#nationality-680').val(""+data.nationality);
-                        $('#text-680').val(""+data.firstname);
-                        $('#dob-680').val(""+data.date_of_birth);
-                        $('#fname-680').val(""+data.father_name);
-                        $('#mname-680').val(""+data.mother_name);
-                        $('#address-680').val(""+data.address_line1);
-                        $('#email-680').val(""+data.email);
-                        $('#tel-630').val(""+data.mobile);
-                        $('#telOther-630').val(""+data.telephone);
-                        $('#textarea-398').val(""+data.followup_details);                        
-                    });
-                //}, 1000);
-            });
-        </script>
-        <script>
-            function readURL(input) {
-                if (input.files && input.files[0]) {
-                    var reader = new FileReader();
-                    var file = input.files[0];                    
-                    reader.onload = function (e) {
-                        
-                        $('#passportSizePhoto')
-                                .attr('src', e.target.result)
-                                .width(150)
-                                .height(200);
-                    };
-                    
-                    reader.readAsDataURL(file);
-                                     
-                        $.ajax({
-                        url: "http://www.raagatech.com/resources/upload/uploadImage",
-                        type: 'POST',
-                        data: file,
-                        cache: false,
-                        contentType: false,
-                        processData: false,
-                        success: function (response) {
-                            alert("Document uploaded successfully.");
-                        }
-                    });
+            /* Responsive layout - when the screen is less than 600px wide, make the two columns stack on top of each other instead of next to each other */
+            @media screen and (max-width: 600px) {
+                .col-25, .col-75, input[type=submit] {
+                    width: 100%;
+                    margin-top: 0;
                 }
             }
-        </script>
+        </style>        
     </head>
-    <body>        
-        <div class="landing-page"><div class="form-registration"><div id="wpcf7-f560-p590-o1">
-                    <table >
+    <body>
+
+        <table >
+            <tr>
+                <td>
+                    <a href="http://www.raagatech.com/"><img src="../images/raagatech-logo.jpg" width="299" height="54" alt="RAAGATECH - The World of Music Education and Performance!!!" /></a>
+                </td>
+                <td style="text-align: left; padding-left: 250px; font-family: Arial, Helvetica, sans-serif; color: #e51824; font-size: 10px;">
+                    Doc Version 202007_1.0<br>
+                    Affiliated To Prayag Sangit Samiti, Allahabad<br>
+                    Exam Center Code: D-648, Affiliation No: 3384<br>
+                    F - 530, Galaxy North Avenue II, G. Noida West
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: center;">
+                    <h2><u>Assessment-cum-Registration Form</u></h2>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: left; border: 2px dotted rgb(130, 228, 130); font-family: Arial, Helvetica, sans-serif; color: #e51824; font-size: 10px;">
+                    <b><i><u>For Office Use Only</u></i></b><br>
+                    Student ID : ___________________________<br><br>
+                    Start Date : ___________________________<br><br>
+                    Time - Slot: ___________________________<br>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: left; font-family: Arial, Helvetica, sans-serif; color: #e51824; font-size: 20px;">
+                    <ul><li>Kindly provide correct and complete information.</li></ul>
+                </td>
+            </tr>
+        </table>
+        <form action="/registrationForm" method="post" >
+            <div class="group">
+                <div style="width: 96%; float: left;">
+                    <span >Primary Skill: <input type="text" name="primaryskill" id="primaryskill" size="45" required></span>
+                </div>
+
+                <div style="width: 48%; float: left;">
+                    <span >Nationality: <input type="text" name="nationality-680" id="nationality-680" size="45" required></span><br>
+                    <span >Name: <input type="text" name="firstname" id="firstname" size="45" required></span><br>
+                    <span >Date Of Birth (dd-MM-yyyy): <input type="text" name="date_of_birth" id="date_of_birth" size="45" required></span><br>
+                    <span >Father's Name: <input type="text" name="father_name" id="father_name" size="45" required></span><br>
+                    <span >Mother's Name: <input type="text" name="mother_name" id="mother_name" size="45" required></span><br>
+                    <span >Current Address: <input type="text" name="address_line1" id="address_line1" size="45" required></span><br>
+                    <span >Email: <input type="text" name="email" id="email" size="45" required></span><br>
+                    <span >Mobile: <input type="text" name="mobile" id="mobile" size="45" required></span><br>
+                    <span >Remarks: <textarea name="followup_details" id="followup_details" style="height:100px"></textarea></span>
+                </div>
+                <div style="width: 48%; float: right;">
+                    <table style="padding-left: 60px;">
                         <tr>
-                            <td>
-                                <a href="http://www.raagatech.com/"><img src="../images/raagatech-logo.jpg" width="299" height="54" alt="RAAGATECH - The World of Music Education and Performance!!!" /></a>
-                            </td>
-                            <td style="text-align: left; padding-left: 250px; font-family: Arial, Helvetica, sans-serif; color: #e51824; font-size: 10px;">
-                                Doc Version 202007_1.0<br>
-                                Affiliated To Prayag Sangit Samiti, Allahabad<br>
-                                Exam Center Code: D-648, Affiliation No: 3384<br>
-                                F - 530, Galaxy North Avenue II, G. Noida West
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="2" style="text-align: center;">
-                                <h1><u>Gaur City Club, Gaur's Stadium, Greater Noida West</u></h1>
-                                <h3><u>Assessment-cum-Registration Form</u></h3>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="2" style="text-align: center;">
-                                <div id="result"></div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="2" style="text-align: left; border: 2px dotted rgb(130, 228, 130); font-family: Arial, Helvetica, sans-serif; color: #e51824; font-size: 10px;">
-                                <b><i><u>For Office Use Only</u></i></b><br>
-                                Student ID : ___________________________<br>
-                                Start Date : ___________________________<br>
-                                Time - Slot: ___________________________<br>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="2" style="text-align: left; font-family: Arial, Helvetica, sans-serif; color: #e51824; font-size: 10px;">
-                                <ul><li>Kindly provide correct and complete information.</li></ul>
+                            <td style="width: 180px; height: 180px; text-align: left; border: 2px dotted rgb(130, 228, 130); font-family: Arial, Helvetica, sans-serif; color: #e51824; font-size: 10px;">
+                                <input type='file' required size="50" onchange="readURL(this);" /><br>
+                                <img id="passportSizePhoto" src="#" alt="your passport size photo" />
                             </td>
                         </tr>
                     </table>
-                    <form action="http://www.raagatech.com/raagatechmusic" method="post" >
-                        <input type="hidden" name="requestIdentifier" value="regform">                        
-                        <div class="group">
-                            <div style="width: 96%; float: left;">
-                                <span >
-                                    <input type="text" name="primaryskill-680" id="primaryskill-680" size="45" required placeholder="Primary Skill / Competency"></span>
-                            </div>
 
-                            <div style="width: 48%; float: left;">
-                                <span ><input type="text" name="nationality-680" id="nationality-680" size="45" required placeholder="Nationality"></span><br>
-                                <span ><input type="text" name="text-680" id="text-680" size="45" required placeholder="Name"></span><br>
-                                <span ><input type="text" name="dob-680" id="dob-680" size="45" required placeholder="D-O-B (dd/MM/yyyy)"></span><br>
-                                <span ><input type="text" name="fname-680" id="fname-680" size="45" required placeholder="Father's Name"></span><br>
-                                <span ><input type="text" name="mname-680" id="mname-680" size="45" required placeholder="Mother's Name"></span><br>
-                                <span ><input type="text" name="address-680" id="address-680" size="200" required placeholder="Current Address"></span><br>
-                                <span ><input type="email" name="email-680" id="email-680" size="45" required placeholder="Email"></span><br>
-                                <span ><input type="tel" name="tel-630" id="tel-630" size="45" required placeholder="Mobile"></span><br>
-                                <span ><input type="tel" name="telOther-630" id="telOther-630" size="45" placeholder="Other Contact No"></span><br>
-                                <span ><textarea name="textarea-398" id="textarea-398" cols="40" rows="10" placeholder="Remarks"></textarea></span></div>
-                            <div style="width: 48%; float: right;">
-                                <table style="padding-left: 60px;">
-                                    <tr>
-                                        <td style="width: 180px; height: 180px; text-align: left; border: 2px dotted rgb(130, 228, 130); font-family: Arial, Helvetica, sans-serif; color: #e51824; font-size: 10px;">
-                                            <input type='file' required size="50" onchange="readURL(this);" /><br>
-                                            <img id="passportSizePhoto" src="#" alt="your passport size photo" />
-                                        </td>
-                                    </tr>
-                                </table>
-
-                                <h4>Gender</h4>
-                                <p><span ><span ><span class="wpcf7-list-item"><label><input type="radio" name="gender-98" id="gender-98" value="F" required>&nbsp;<span class="wpcf7-list-item-label">Female</span></label></span><span class="wpcf7-list-item"><label><input type="radio" name="gender-98" id="gender-98" value="M">&nbsp;<span class="wpcf7-list-item-label">Male</span></label></span></span></span></p>
-                                <h4>Interest / Course Preferred:</h4>
-                                <p><span ><span >
-                                            <span class="wpcf7-list-item"><label><input type="radio" name="inspiration-465" id="inspiration-465" value="Indian Classical Vocals" required>&nbsp;<span class="wpcf7-list-item-label">Indian Classical Vocals</span></label></span>
-                                            <span class="wpcf7-list-item"><label><input type="radio" name="inspiration-465" id="inspiration-465" value="Keyboards">&nbsp;<span class="wpcf7-list-item-label">Keyboards</span></label></span>
-                                            <span class="wpcf7-list-item"><label><input type="radio" name="inspiration-465" id="inspiration-465" value="Guitar">&nbsp;<span class="wpcf7-list-item-label">Guitar</span></label></span>
-                                            <span class="wpcf7-list-item"><label><input type="radio" name="inspiration-465" id="inspiration-465" value="Dance">&nbsp;<span class="wpcf7-list-item-label">Dance</span></label></span>
-                                            <span class="wpcf7-list-item"><label><input type="radio" name="inspiration-465" id="inspiration-465" value="Tabla">&nbsp;<span class="wpcf7-list-item-label">Tabla</span></label></span></span></span></p>
-                                <h4>I'm Comfortable In:</h4>
-                                <p><span ><span >
-                                            <span class="wpcf7-list-item"><label><input type="radio" name="comfortability-246" id="comfortability-246" value="group" required>&nbsp;<span class="wpcf7-list-item-label">group</span></label></span>
-                                            <span class="wpcf7-list-item"><label><input type="radio" name="comfortability-246" id="comfortability-246" value="Individual">&nbsp;<span class="wpcf7-list-item-label">Individual</span></label></span></span></span>
-                                </p>
-                            </div>
-                        </div>
-                        <div style="text-align: center; padding-top: 1em; border-top: 1px solid rgb(153, 202, 129); margin-top: 1em;">
-                            <input type="submit" value="SUBMIT">
-                        </div></form></div></div></div>        
+                    <h4>Gender</h4>
+                    <p><span ><span >
+                                <span ><label><input type="radio" name="gender" id="gender" value="F" required>&nbsp;
+                                        <span >Female</span></label></span>
+                                <span ><label><input type="radio" name="gender" id="gender" value="M">&nbsp;
+                                        <span >Male</span></label></span>                                                    
+                            </span></span>
+                    </p>
+                    <h4>Interest / Course Preferred:</h4>
+                    <p><span ><span >
+                                <span ><label><input type="radio" name="inspiration_id" id="inspiration_id" value="Indian Classical Vocals" required>&nbsp;<span >Indian Classical Vocals</span></label></span>
+                                <span ><label><input type="radio" name="inspiration_id" id="inspiration_id" value="Keyboards">&nbsp;<span >Keyboards</span></label></span>
+                                <span ><label><input type="radio" name="inspiration_id" id="inspiration_id" value="Guitar">&nbsp;<span >Guitar</span></label></span>
+                                <span ><label><input type="radio" name="inspiration_id" id="inspiration_id" value="Dance">&nbsp;<span >Dance</span></label></span>
+                                <span ><label><input type="radio" name="inspiration_id" id="inspiration_id" value="Tabla">&nbsp;<span >Tabla</span></label></span></span></span></p>
+                    <h4>I'm Comfortable In:</h4>
+                    <p><span ><span >
+                                <span ><label><input type="radio" name="comfortability" id="comfortability" value="group" required>&nbsp;<span >group</span></label></span>
+                                <span ><label><input type="radio" name="comfortability" id="comfortability" value="Individual">&nbsp;<span >Individual</span></label></span></span></span>
+                    </p>
+                </div>
+                <div style="text-align: center; padding-top: 1em; border-top: 1px solid rgb(153, 202, 129); margin-top: 1em;">
+                    <input type="submit" value="SUBMIT">
+                </div>
+            </div>
+        </form>
     </body>
 </html>
