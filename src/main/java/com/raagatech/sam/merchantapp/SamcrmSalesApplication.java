@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class SamcrmSalesApplication {
     @RequestMapping
     public String home() {
-        return "<h1>Spring Boot Hello World!</h1><br/> This service is about SAMCRM Sale Application";
+        return "<h1>Spring Boot Hello World!</h1><br/> This service is about SAMCRM Sale Application"+
+        "<br/>Sales focuses on closing deals and generating revenue."+
+        "<br/>I.E. Sales involve direct interaction with potential customers, actively persuading them to purchase a product or service.";
     }
 }
