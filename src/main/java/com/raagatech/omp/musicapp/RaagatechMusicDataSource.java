@@ -78,7 +78,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             int levelid, String address, String followupDetails, String nationality,
             String dob, long telOther, String image, String gender,
             int inspiratorId, String comfortability, String primaryskill, int userId, int pinCode,
-            String examSession, String fatherName, String motherName, int examFees) throws Exception {
+            String examSession, String fatherName, String motherName, int examFees, int inquiryStatusId) throws Exception {
         boolean insertStatus = Boolean.FALSE;
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
@@ -96,13 +96,9 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             statement.setString(2, dob);
             int records = statement.executeUpdate();
             if (records > 0) {
-                int inquirystatusId = 1;
-                if (examSession.equals("6")) {//direct registration through website
-                    inquirystatusId = 6;
-                }
                 int followup_id = oracleDataSource.generateNextPrimaryKey("raagatech_followupdetails", "followup_id");
                 String queryInsertFollowupDetails = "INSERT into raagatech_followupdetails (followup_id, inquiry_id, inquirystatus_id, followup_details, followup_date) "
-                        + "VALUES (" + followup_id + ", " + inquiry_id + ", " + inquirystatusId + ", '" + followupDetails + "',?)";
+                        + "VALUES (" + followup_id + ", " + inquiry_id + ", " + inquiryStatusId + ", '" + followupDetails + "',?)";
                 PreparedStatement statement2 = connection.prepareStatement(queryInsertFollowupDetails);
                 statement2.setTimestamp(1, getCurrentTimeStamp());
                 records = statement2.executeUpdate();

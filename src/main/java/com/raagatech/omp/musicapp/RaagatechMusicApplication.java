@@ -41,7 +41,8 @@ public class RaagatechMusicApplication {
     public String home() {
         return "<h1>Spring Boot Hello World!</h1>"
                 + "<br/> This service is about Raagatech Music Application"
-                + "<br/>Inquiry -> Lead Generation -> Follow-up -> Interest Showing -> Confirm Registration -> Admission";
+                + "<br/>Inquiry -> Lead Generation -> Follow-up -> Interest Showing -> Confirm Registration -> Admission"+
+                " -> Feedback -> PSS Exam -> Certified -> Meeting -> Contacts";
     }
 
     @RequestMapping(value = "/dologin", method = RequestMethod.GET)
@@ -148,13 +149,13 @@ public class RaagatechMusicApplication {
             @RequestParam("userId") int userId, @RequestParam("examSession") String examSession,
             @RequestParam("inqEducation") String primaryskill, @RequestParam("inqDob") String dob,
             @RequestParam("inqFatherName") String fatherName, @RequestParam("inqMotherName") String motherName, 
-            @RequestParam("inqExamFees") int inqExamFees, @RequestParam("inspiratorId") int inspiratorId) {
+            @RequestParam("inqExamFees") int inqExamFees, @RequestParam("inspiratorId") int inspiratorId, @RequestParam("inquiryStatusId") int inquiryStatusId) {
         String response = "false";
         try {
             if (musicDataSource.insertInquiry(inquiryname, subject, email, Long.parseLong(mobileNo),
                     year, address, followupDetails, "091",
                     dob, 0, "", gender,
-                    inspiratorId, "", primaryskill, userId, pinCode, examSession, fatherName, motherName, inqExamFees)) {
+                    inspiratorId, "", primaryskill, userId, pinCode, examSession, fatherName, motherName, inqExamFees, inquiryStatusId)) {
                 String body = "<p>Thank you very much for showing interest in music learning and performance activities with us!"
                         + "To know more about our's effort and approaches, "
                         + "kindly browse through the website which is mentioned in this email signature.</p>";

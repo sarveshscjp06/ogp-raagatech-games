@@ -28,7 +28,7 @@ public interface RaagatechMusicDataSourceInterface {
             int levelid, String address, String followupDetails,
             String nationality, String dob, long telOther, String image,
             String gender, int inspirator_id, String comfortability, String primaryskill,
-            int userId, int pinCode, String examSession, String fatherName, String motherName, int examFees) throws Exception;
+            int userId, int pinCode, String examSession, String fatherName, String motherName, int examFees, int inquiryStatusId) throws Exception;
 
     public LinkedHashMap<Integer, String> selectLevel() throws Exception;
 
