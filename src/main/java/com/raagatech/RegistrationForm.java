@@ -6,6 +6,7 @@ package com.raagatech;
 
 import java.util.Date;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,7 +28,7 @@ public class RegistrationForm {
     private Integer inspiration_id;
     @NotEmpty
     private String email;
-    @NotEmpty
+    @Size(min=10, message="Not Valid")
     private Long mobile;
     private Integer level_id;
     private String address_line1;

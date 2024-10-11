@@ -36,7 +36,7 @@ public class RegistrationFormController {
                     0, registration.getAddress_line1(), registration.getFollowup_details(), "091",
                     registration.getDate_of_birth(), 0, "", "" + registration.getGender(),
                     1, registration.getComfortability(), registration.getPrimaryskill(), 1, 201009,
-                    "6", registration.getFather_name(), registration.getMother_name(), 0);
+                    registration.getExamSession(), registration.getFather_name(), registration.getMother_name(), 0, 6);
         } catch (Exception ex) {
             Logger.getLogger(RegistrationFormController.class.getName()).log(Level.SEVERE, null, ex);
         }
