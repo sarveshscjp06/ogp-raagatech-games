@@ -41,8 +41,8 @@ public class RaagatechMusicApplication {
     public String home() {
         return "<h1>Spring Boot Hello World!</h1>"
                 + "<br/> This service is about Raagatech Music Application"
-                + "<br/>Inquiry -> Lead Generation -> Follow-up -> Interest Showing -> Confirm Registration -> Admission"+
-                " -> Feedback -> PSS Exam -> Certified -> Meeting -> Contacts";
+                + "<br/>Inquiry -> Lead Generation -> Follow-up -> Interest Showing -> Confirm Registration -> Admission"
+                + " -> Feedback -> PSS Exam -> Certified -> Meeting -> Contacts";
     }
 
     @RequestMapping(value = "/dologin", method = RequestMethod.GET)
@@ -148,8 +148,8 @@ public class RaagatechMusicApplication {
             @RequestParam("inqYear") int year, @RequestParam("inqFollowupDetails") String followupDetails,
             @RequestParam("userId") int userId, @RequestParam("examSession") String examSession,
             @RequestParam("inqEducation") String primaryskill, @RequestParam("inqDob") String dob,
-            @RequestParam("inqFatherName") String fatherName, @RequestParam("inqMotherName") String motherName, 
-            @RequestParam("inqExamFees") int inqExamFees, @RequestParam("inspiratorId") int inspiratorId, @RequestParam("inquiryStatusId") int inquiryStatusId) {
+            @RequestParam("inqFatherName") String fatherName, @RequestParam("inqMotherName") String motherName,
+            @RequestParam("inqExamFees") int inqExamFees, @RequestParam("inspiratorId") int inspiratorId, @RequestParam("inquiryStatus") int inquiryStatusId) {
         String response = "false";
         try {
             if (musicDataSource.insertInquiry(inquiryname, subject, email, Long.parseLong(mobileNo),
@@ -196,6 +196,9 @@ public class RaagatechMusicApplication {
     public String doListInquiry(@RequestParam("userId") int userId, @RequestParam("inspiratorId") int inspiratorId,
             @RequestParam("examSession") String examSession, @RequestParam("inquiryStatusId") int inquiryStatusId) throws Exception {
         String response = null;
+        if (inquiryStatusId == 0) {
+            inquiryStatusId = 1;
+        }
         ArrayList<InquiryBean> inquiryList = musicDataSource.listInquiry(userId, inspiratorId, examSession, inquiryStatusId);
         if (!inquiryList.isEmpty()) {
             JSONArray jsonArray = new JSONArray(inquiryList);
@@ -204,10 +207,10 @@ public class RaagatechMusicApplication {
         return response;
     }
 
-    @GetMapping(path = "/dogetinquiry/{inquiryId}")
-    public String doGetInquiry(@PathVariable int inquiryId) throws Exception {
+    @GetMapping(path = "/dogetinquiry/{inquiryId}/{followUpId}")
+    public String doGetInquiry(@PathVariable int inquiryId, @PathVariable String followUpId) throws Exception {
         String response = null;
-        InquiryBean inquiry = musicDataSource.getInquiryById(inquiryId);
+        InquiryBean inquiry = musicDataSource.getInquiryById(inquiryId, followUpId);
         if (inquiry != null) {
             JSONObject jsonObject = new JSONObject(inquiry);
             response = jsonObject.toString();
@@ -222,13 +225,13 @@ public class RaagatechMusicApplication {
             @RequestParam("inqYear") int year, @RequestParam("inqFollowupDetails") String followupDetails,
             @RequestParam("userId") int userId, @RequestParam("inquiryId") int inquiry_id, @RequestParam("examSession") String examSession,
             @RequestParam("inqEducation") String primaryskill, @RequestParam("inqDob") String dob,
-            @RequestParam("inqFatherName") String fatherName, @RequestParam("inqMotherName") String motherName, 
+            @RequestParam("inqFatherName") String fatherName, @RequestParam("inqMotherName") String motherName,
             @RequestParam("inqExamFees") int inqExamFees, @RequestParam("inquiryStatus") int inquiryStatusId, @RequestParam("inspiratorId") int inspiratorId) {
         String response = "false";
         try {
             if (musicDataSource.updateInquiry(inquiry_id, inquiryname, subject, email, Long.parseLong(mobileNo),
                     year, address, followupDetails, "", dob, 0, null,
-                    gender, inspiratorId, "", primaryskill, userId, pinCode, examSession, fatherName, motherName, 
+                    gender, inspiratorId, "", primaryskill, userId, pinCode, examSession, fatherName, motherName,
                     inqExamFees, inquiryStatusId)) {
                 String body = "<p>Thank you very much for updating inquiry!"
                         + "To know more about our's effort and approaches, "
@@ -257,9 +260,9 @@ public class RaagatechMusicApplication {
 
     @RequestMapping(value = "/doupdatefollowup", method = RequestMethod.GET)
     public String doUpdateFollowup(@RequestParam("inquiry_id") String inquiry_id, @RequestParam("inquirystatus_id") String inquirystatus_id,
-            @RequestParam("followupDetails") String followupDetails) {
+            @RequestParam("followupDetails") String followupDetails, @RequestParam("followUpId") String followUpId) {
         String response;
-        int result = updateFollowup(Integer.parseInt(inquiry_id), Integer.parseInt(inquirystatus_id), followupDetails);
+        int result = updateFollowup(Integer.parseInt(inquiry_id), Integer.parseInt(inquirystatus_id), followupDetails, followUpId);
         if (result == 0) {
             response = commonUtilities.constructJSON("register", true);
         } else {
@@ -268,7 +271,7 @@ public class RaagatechMusicApplication {
         return response;
     }
 
-    private int updateFollowup(int inquiry_id, int inquirystatus_id, String followupDetails) {
+    private int updateFollowup(int inquiry_id, int inquirystatus_id, String followupDetails, String followUpId) {
 
         int result = 3;
         if (inquiry_id > 0 && commonUtilities.isNotNull(followupDetails) && inquirystatus_id > 0) {
@@ -277,7 +280,7 @@ public class RaagatechMusicApplication {
                     result = 0;
                 }
 
-                InquiryBean inquiryBean = musicDataSource.getInquiryById(inquiry_id);
+                InquiryBean inquiryBean = musicDataSource.getInquiryById(inquiry_id, followUpId);
                 if (inquiryBean != null) {
                     if (!inquiryBean.getEmail().equalsIgnoreCase("raksha@raagatech.com")) {
                         emailUtility.sendGoogleMail(inquiryBean.getEmail(), inquiryBean.getFirstname(), followupDetails);

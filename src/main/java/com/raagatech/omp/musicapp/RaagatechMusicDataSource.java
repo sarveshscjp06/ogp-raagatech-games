@@ -83,6 +83,12 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
             char sex = gender.equals("Male") ? 'M' : 'F';
+            if (address == null || address.isEmpty()) {
+                address = "Postal address here...";
+                levelid = 1;
+                inspiratorId = 1;
+                inspirationid = 1;
+            }
             int inquiry_id = oracleDataSource.generateNextPrimaryKey("raagatech_inquiry", "inquiry_id");
             String queryInsertInquiry = "INSERT into raagatech_inquiry (inquiry_id, firstname, inspiration_id, inquiry_date, email, mobile"
                     + ", level_id, address_line1, nationality, date_of_birth, photo"
@@ -139,7 +145,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         InquiryBean inquiry;
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
-            String querySelectInquiries = "SELECT ri.* FROM raagatech_inquiry ri "
+            String querySelectInquiries = "SELECT ri.*, rf.followup_id as flpid FROM raagatech_inquiry ri "
                     + " LEFT JOIN RAAGATECH_FOLLOWUPDETAILS rf ON ri.INQUIRY_ID = rf.INQUIRY_ID "
                     + " WHERE ri.exam_session = '" + examSession + "' ";
             if (inspiratorId >= 0 && userId == 2) {
@@ -169,6 +175,13 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 inquiry.setMobileVerified(record.getInt("mobileverification"));
                 inquiry.setExamFees(record.getInt("exam_fees"));
                 inquiry.setFeesPaidStatus(record.getInt("fees_paid_status"));
+
+                if (record.getString("flpid") == null) {
+                    inquiry.setFollowup_details("0");
+                } else {
+                    inquiry.setFollowup_details(record.getString("flpid"));
+                }
+
                 inquiryList.add(inquiry);
             }
         }
@@ -218,11 +231,16 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
     }
 
     @Override
-    public InquiryBean getInquiryById(int inquiryId) throws Exception {
+    public InquiryBean getInquiryById(int inquiryId, String followUpId) throws Exception {
         InquiryBean inquiry = null;
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
-            String queryInsertUser = "SELECT ri.*, rf.followup_details, rf.inquirystatus_id FROM raagatech_inquiry ri join raagatech_followupdetails rf on ri.inquiry_id = rf.inquiry_id WHERE ri.inquiry_id = " + inquiryId;
+            String queryInsertUser = "SELECT ri.*, rf.followup_details, rf.inquirystatus_id "
+                    + "FROM raagatech_inquiry ri join raagatech_followupdetails rf on ri.inquiry_id = rf.inquiry_id "
+                    + "WHERE ri.inquiry_id = " + inquiryId;
+            if (followUpId != null) {
+                queryInsertUser = queryInsertUser + "AND rf.followup_id = " + followUpId;
+            }
             PreparedStatement statement = connection.prepareStatement(queryInsertUser);
             ResultSet record = statement.executeQuery();
             while (record.next()) {
@@ -241,7 +259,9 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 inquiry.setAddress_line1(record.getString("address_line1"));
                 inquiry.setFollowup_details(record.getString("followup_details"));
                 inquiry.setPrimaryskill(record.getString("primaryskill"));
-                inquiry.setDate_of_birth(dateFormat.format(record.getDate("date_of_birth")));
+                if (record.getDate("date_of_birth") != null) {
+                    inquiry.setDate_of_birth(dateFormat.format(record.getDate("date_of_birth")));
+                }
                 inquiry.setFather_name(record.getString("father_name"));
                 inquiry.setMother_name(record.getString("mother_name"));
                 inquiry.setEmailVerified(record.getInt("emailverification"));

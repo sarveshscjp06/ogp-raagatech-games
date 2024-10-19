@@ -45,7 +45,7 @@ public interface RaagatechMusicDataSourceInterface {
 
     public boolean updateFollowup(int inquiry_id, int inquirystatus_id, String followupDetails) throws Exception;
 
-    public InquiryBean getInquiryById(int inquiryId) throws Exception;
+    public InquiryBean getInquiryById(int inquiryId, String followUpId) throws Exception;
 
     public int generateNextPrimaryKey(String tableName, String columnName) throws Exception;
 
