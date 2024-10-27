@@ -4,9 +4,15 @@
  */
 package com.raagatech.common.datasource;
 
-import com.raagatech.omp.musicapp.InquiryBean;
+import com.raagatech.bean.OrderDataBean;
+import com.raagatech.bean.OrderTrackerBean;
+import com.raagatech.bean.ProductCategoryBean;
+import com.raagatech.bean.ProductsAndServicesBean;
+import com.raagatech.bean.SliderImageBean;
+import com.raagatech.bean.VendorDataBean;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import com.raagatech.bean.InquiryBean;
 
 /**
  *
@@ -22,5 +28,25 @@ public interface CommonUtilitiesInterface {
 
     public String constructJSON(String tag, LinkedHashMap<Integer, String> map);
 
+    //public String constructJSON(String tag, ArrayList<InquiryBean> inquiryList);
+    
     public String constructJSON(String tag, ArrayList<InquiryBean> inquiryList);
+
+    public String constructContactJSON(String tag, boolean status, ArrayList<VendorDataBean> contactList);
+
+    public String constructProductCategoryJSON(ArrayList<ProductCategoryBean> vendorList, boolean status, String errorMessage);
+
+    public String constructProductItemsJSON(ArrayList<ProductsAndServicesBean> vendorList, boolean status, String errorMessage);
+
+    public String constructJSON_ForSliderImage(String tag, ArrayList<SliderImageBean> sliderImageList);
+    
+    public String constructOrdersJSON(ArrayList<OrderDataBean> ordersList, LinkedHashMap<String, String> map, boolean isError);
+    
+    public String constructOrdersJSON(OrderDataBean orderDataBean, LinkedHashMap<String, String> map, boolean isError);
+    
+    public String constructJSONString(ArrayList<OrderTrackerBean> list, boolean isError, String msg);
+    
+    public String constructJSON(ArrayList<VendorDataBean> vendorList, boolean status, LinkedHashMap<String, String> individualData);
+    
+    public String constructJSONString(ArrayList<VendorDataBean> vendorList, LinkedHashMap<String, String> map, boolean isError);
 }

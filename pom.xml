@@ -55,6 +55,21 @@
             <artifactId>json</artifactId>
             <version>20140107</version>
         </dependency>
+        <dependency>
+            <groupId>com.sam.raagatech</groupId>
+            <artifactId>ogp-samcrm-sales</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sam.raagatech</groupId>
+            <artifactId>ogp-samcrm-marketing</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.crm.raagatech</groupId>
+            <artifactId>ogp-samcrm-contacts</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>
