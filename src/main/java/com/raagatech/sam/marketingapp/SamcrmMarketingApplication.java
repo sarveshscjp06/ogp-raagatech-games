@@ -20,6 +20,7 @@ import java.util.Random;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -32,17 +33,18 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/resources/order")
+@ComponentScan("com.raagatech.samcrm.marketing")
 public class SamcrmMarketingApplication {
 
     @Autowired
     private VendorDataSource vendorDataSource;
-    @Autowired(required = false)
+    @Autowired
     private OrderBookingDataSource orderBookingDataSource;
     @Autowired
     private CommonUtilitiesInterface commonUtilities;
     @Autowired
     private EmailUtilityInterface emailUtility;
-    @Autowired(required = false)
+    @Autowired
     private UserDataSource userDataSource;
 
     @RequestMapping

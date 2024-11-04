@@ -15,6 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,9 +29,10 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/resources/login")
+@ComponentScan("com.sam.raagatech.ogp.samcrm.contacts")
 public class SamcrmCustomerLogon {
 
-    @Autowired(required = false)
+    @Autowired
     private UserDataSource userDataSource;
     @Autowired
     private CommonUtilitiesInterface commonUtilities;    

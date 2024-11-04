@@ -158,6 +158,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             if (inquiryStatusId >= 1) {
                 querySelectInquiries = querySelectInquiries + " AND rf.INQUIRYSTATUS_ID = " + inquiryStatusId;
             }
+            querySelectInquiries = querySelectInquiries + " order by ri.INQUIRY_ID ";
             PreparedStatement statement = connection.prepareStatement(querySelectInquiries);
             ResultSet record = statement.executeQuery();
             while (record.next()) {

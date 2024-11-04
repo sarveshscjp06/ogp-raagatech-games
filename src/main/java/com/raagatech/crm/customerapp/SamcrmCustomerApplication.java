@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/resources/register")
 public class SamcrmCustomerApplication {
 
-    @Autowired(required = false)
+    @Autowired
     private UserDataSource userDataSource;
     @Autowired
     private CommonUtilitiesInterface commonUtilities;
