@@ -532,66 +532,35 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         return feedbackList;
     }
 
+    @Override
     public ArrayList<PssExamReportBean> generatePssExamReport(int userId, int inspiratorId, String examSession) throws Exception {
-        
+
         ArrayList<PssExamReportBean> subjectWiseReportList = new ArrayList<>();
-        PssExamReportBean reportBean = new PssExamReportBean();
-        ArrayList<Integer> classwiseTotalForms = new ArrayList<>();
-        ArrayList<Integer> classwiseTotalFees = new ArrayList<>();
-        ArrayList<Integer> classwiseFeesCollectedCount = new ArrayList<>();
-        for(int year = 0; year <= 8; year++) {
-            classwiseTotalForms.add(year, 0);
-            classwiseTotalFees.add(year, 0);
-            classwiseFeesCollectedCount.add(year, 0);
-        }
-        InquiryBean inquiry;
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
-            String queryPssExamReport = "SELECT inspiration_id, level_id, count(ri.inspiration_id) as totalforms, sum(ri.EXAM_FEES) as totalfees, " 
+            String queryPssExamReport = "SELECT inspiration_id as subjectId, level_id as yearId, count(ri.inspiration_id) as totalforms, sum(ri.EXAM_FEES) as totalfees, "
                     + " sum(ri.FEES_PAID_STATUS) as feescollectedcount "
                     + " FROM raagatech_inquiry ri  LEFT JOIN RAAGATECH_FOLLOWUPDETAILS rf ON ri.INQUIRY_ID = rf.INQUIRY_ID "
                     + " WHERE ri.exam_session = '" + examSession + "' AND rf.INQUIRYSTATUS_ID = 1 ";
-            if (inspiratorId >= 0 && userId == 2) {
-                queryPssExamReport = queryPssExamReport + " AND ri.inspirator_id = " + inspiratorId;
-            } else if (inspiratorId > 0) {
-                queryPssExamReport = queryPssExamReport + " AND ri.inspirator_id = " + inspiratorId;
-            } else {
-                queryPssExamReport = queryPssExamReport + " AND ri.user_id = " + userId;
-            }
+//            if (inspiratorId >= 0 && userId == 2) {
+//                queryPssExamReport = queryPssExamReport + " AND ri.inspirator_id = " + inspiratorId;
+//            } else if (inspiratorId > 0) {
+//                queryPssExamReport = queryPssExamReport + " AND ri.inspirator_id = " + inspiratorId;
+//            } else {
+//                queryPssExamReport = queryPssExamReport + " AND ri.user_id = " + userId;
+//            }
             queryPssExamReport = queryPssExamReport + " group by inspiration_id, level_id order by inspiration_id";
             PreparedStatement statement = connection.prepareStatement(queryPssExamReport);
             ResultSet record = statement.executeQuery();
-            int previousInspirationId = 0;
             while (record.next()) {
-                int inspirationId = record.getInt("inspiration_id");
-                int levelId = record.getInt("level_id");
-                
-                if(previousInspirationId == 0 || previousInspirationId == inspirationId){
-                    previousInspirationId = inspirationId;
-                    reportBean.setTotalFormCount(reportBean.getTotalFormCount() + record.getInt("totalforms"));
-                    reportBean.setTotalFees(reportBean.getTotalFees() + record.getInt("totalfees"));
-                    reportBean.setTotalFeesCollectedCount(reportBean.getTotalFeesCollectedCount() + record.getInt("feescollectedcount"));
-                    classwiseTotalForms.add(levelId, (classwiseTotalForms.get(levelId) + record.getInt("totalforms")));
-                    classwiseTotalFees.add(levelId, (classwiseTotalFees.get(levelId) + record.getInt("totalfees")));
-                    classwiseFeesCollectedCount.add(levelId, (classwiseFeesCollectedCount.get(levelId) + record.getInt("feescollectedcount")));
-                } else {
-                    reportBean.setClasswiseTotalForms(classwiseTotalForms.clone());
-                    reportBean.setClasswiseTotalFees(classwiseTotalFees.clone());
-                    reportBean.setClasswiseFeesCollectedCount(classwiseFeesCollectedCount.clone());                                                            
-                    subjectWiseReportList.add(reportBean);
-
-                    previousInspirationId = inspirationId;                    
-                    classwiseTotalForms = new ArrayList<>();
-                    classwiseTotalFees = new ArrayList<>();
-                    classwiseFeesCollectedCount = new ArrayList<>();
-                    for(int year = 0; year <= 8; year++) {
-                        classwiseTotalForms.add(year, 0);
-                        classwiseTotalFees.add(year, 0);
-                        classwiseFeesCollectedCount.add(year, 0);
-                    }
-                }
+                PssExamReportBean reportBean = new PssExamReportBean();
+                reportBean.setSubjectId(record.getInt("subjectId"));
+                reportBean.setYearId(record.getInt("yearId"));
+                reportBean.setTotalForms(record.getInt("totalforms"));
+                reportBean.setTotalFees(record.getInt("totalfees"));
+                reportBean.setTotalFeesCollectedCount(record.getInt("feescollectedcount"));
+                subjectWiseReportList.add(reportBean);
             }
-            subjectWiseReportList.add(reportBean);
         }
         return subjectWiseReportList;
     }

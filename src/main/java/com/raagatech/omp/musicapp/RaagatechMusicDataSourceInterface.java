@@ -16,10 +16,10 @@ import java.util.List;
 public interface RaagatechMusicDataSourceInterface {
 
     public UserDataBean getUserData(String username, String password) throws Exception;
-    
-    public int insertUser(String username, String password, String email, long mobileNo, 
+
+    public int insertUser(String username, String password, String email, long mobileNo,
             String gender, String postalAddress, String pincode, int inspirator_id) throws Exception;
-    
+
     public boolean updateUserForEmailVerification(int userId, String email) throws Exception;
 
     public boolean updateUserForMobileVerification(int userId, String email, long mobileNo) throws Exception;
@@ -38,8 +38,8 @@ public interface RaagatechMusicDataSourceInterface {
 
     public boolean updateInquiry(int inquiry_id, String inquiryname, int inspirationid, String email, long mobileNo,
             int levelid, String address, String followupDetails, String nationality, String dob, long telOther, String image,
-            String gender, int inspirator_id, String comfortability, String primaryskill
-            , int userId, int pinCode, String examSession, String fatherName, String motherName, int examFees, int inquiryStatusId) throws Exception;
+            String gender, int inspirator_id, String comfortability, String primaryskill,
+             int userId, int pinCode, String examSession, String fatherName, String motherName, int examFees, int inquiryStatusId) throws Exception;
 
     public LinkedHashMap<Integer, String> selectInquiryStatus() throws Exception;
 
@@ -55,21 +55,21 @@ public interface RaagatechMusicDataSourceInterface {
 
     public InquiryBean getInquiryDetails(String email, long mobileNo) throws Exception;
 
-    public boolean updateUserData(String username, String password, long mobileNo, 
+    public boolean updateUserData(String username, String password, long mobileNo,
             String gender, String postalAddress, String pincode, int userId, int inspiratorId) throws Exception;
 
     public ArrayList<UserDataBean> getUsersList(String username, String password) throws Exception;
 
     public ArrayList<UserDataBean> listOverAllContacts(String dob) throws Exception;
-    
+
     public UserDataBean getUserData(int userId) throws Exception;
-    
+
     public boolean updateInquiryForEmailVerification(int inquiryId, String email) throws Exception;
 
     public boolean updateInquiryForMobileVerification(int inquiryId, long mobileNo) throws Exception;
-    
+
     public boolean updateInquiryForFeesPaidStatus(int inquiryId, int amount) throws Exception;
-    
+
     public boolean addFollowUps(String name, String email, long mobile, String followupDetails, int inquiryStatusId) throws Exception;
 
     public List<Feedback> getFollowUps(int inquiryStatusId) throws Exception;
