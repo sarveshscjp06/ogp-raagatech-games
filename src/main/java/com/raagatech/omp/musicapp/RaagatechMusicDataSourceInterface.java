@@ -73,4 +73,6 @@ public interface RaagatechMusicDataSourceInterface {
     public boolean addFollowUps(String name, String email, long mobile, String followupDetails, int inquiryStatusId) throws Exception;
 
     public List<Feedback> getFollowUps(int inquiryStatusId) throws Exception;
+
+    public ArrayList<PssExamReportBean> generatePssExamReport(int userId, int inspiratorId, String examSession) throws Exception;
 }
