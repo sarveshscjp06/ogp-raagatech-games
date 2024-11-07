@@ -20,6 +20,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class PssExamReportBean {
 
+    private Integer educatorId;
     private Integer subjectId;
     private Integer yearId;
     private Integer totalForms;

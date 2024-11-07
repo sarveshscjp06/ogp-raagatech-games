@@ -564,6 +564,11 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             ResultSet record = statement.executeQuery();
             while (record.next()) {
                 PssExamReportBean reportBean = new PssExamReportBean();
+                if(reportType == 3) {
+                    reportBean.setEducatorId(record.getInt("educatorId"));
+                } else {
+                    reportBean.setEducatorId(0);
+                }
                 if(reportType == 1) {
                     reportBean.setSubjectId(record.getInt("subjectId"));
                 } else {
