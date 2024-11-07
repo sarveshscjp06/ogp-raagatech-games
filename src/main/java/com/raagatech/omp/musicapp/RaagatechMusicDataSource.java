@@ -533,26 +533,37 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
     }
 
     @Override
-    public ArrayList<PssExamReportBean> generatePssExamReport(int userId, int inspiratorId, String examSession) throws Exception {
+    public ArrayList<PssExamReportBean> generatePssExamReport(int userId, int inspiratorId, String examSession, int inquiryStatusId, int reportType) throws Exception {
 
         ArrayList<PssExamReportBean> subjectWiseReportList = new ArrayList<>();
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
             String queryPssExamReport = "SELECT level_id as yearId, count(ri.inspiration_id) as totalforms, sum(ri.EXAM_FEES) as totalfees, "
-                    + " sum(ri.FEES_PAID_STATUS) as feescollectedcount " //inspiration_id as subjectId, 
+                    + " sum(ri.FEES_PAID_STATUS) as feescollectedcount " 
+                    if(reportType == 1) {
+                        queryPssExamReport = queryPssExamReport + " , inspiration_id as subjectId  " 
+                    }
                     + " FROM raagatech_inquiry ri  LEFT JOIN RAAGATECH_FOLLOWUPDETAILS rf ON ri.INQUIRY_ID = rf.INQUIRY_ID "
-                    + " WHERE ri.exam_session = '" + examSession + "' AND rf.INQUIRYSTATUS_ID = 1 AND ri.user_id = "+userId;
+                    + " WHERE ri.exam_session = '" + examSession + "' AND rf.INQUIRYSTATUS_ID = "+inquiryStatusId+" AND ri.user_id = "+userId;
 //            if (inspiratorId >= 0 && userId == 2) {
 //                queryPssExamReport = queryPssExamReport + " AND ri.inspirator_id = " + inspiratorId;
 //            } else if (inspiratorId > 0) {
 //                queryPssExamReport = queryPssExamReport + " AND ri.inspirator_id = " + inspiratorId;
 //            }
-            queryPssExamReport = queryPssExamReport + " group by level_id order by level_id";//inspiration_id, 
+            if(reportType == 1) {
+                queryPssExamReport = queryPssExamReport + " group by inspiration_id, level_id order by inspiration_id, level_id";
+            } else {
+                queryPssExamReport = queryPssExamReport + " group by level_id order by level_id";
+            }
             PreparedStatement statement = connection.prepareStatement(queryPssExamReport);
             ResultSet record = statement.executeQuery();
             while (record.next()) {
                 PssExamReportBean reportBean = new PssExamReportBean();
-                reportBean.setSubjectId(1);//record.getInt("subjectId")
+                if(reportType == 1) {
+                    reportBean.setSubjectId(record.getInt("subjectId"));
+                } else {
+                    reportBean.setSubjectId(0);
+                }
                 reportBean.setYearId(record.getInt("yearId"));
                 reportBean.setTotalForms(record.getInt("totalforms"));
                 reportBean.setTotalFees(record.getInt("totalfees"));

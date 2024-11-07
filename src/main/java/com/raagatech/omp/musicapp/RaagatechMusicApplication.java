@@ -348,10 +348,11 @@ public class RaagatechMusicApplication {
 
     @RequestMapping(value = "/dogeneratepssexamreport", method = RequestMethod.GET)
     public String doGeneratePssExamReport(@RequestParam("userId") int userId, @RequestParam("inspiratorId") int inspiratorId,
-            @RequestParam("examSession") String examSession, @RequestParam("inquiryStatusId") String inquiryStatusId) throws Exception {
+            @RequestParam("examSession") String examSession, @RequestParam("inquiryStatusId") int inquiryStatusId,
+            @RequestParam("reportType") int reportType) throws Exception {
         String response = null;
 
-        ArrayList<PssExamReportBean> pssExamReport = musicDataSource.generatePssExamReport(userId, inspiratorId, examSession);
+        ArrayList<PssExamReportBean> pssExamReport = musicDataSource.generatePssExamReport(userId, inspiratorId, examSession, inquiryStatusId, reportType);
         if (!pssExamReport.isEmpty()) {
             JSONArray jsonArray = new JSONArray(pssExamReport);
             response = jsonArray.toString();
