@@ -543,6 +543,9 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                     if(reportType == 1) {
                         queryPssExamReport = queryPssExamReport + " , inspiration_id as subjectId  " 
                     }
+                    if(reportType == 3) {
+                        queryPssExamReport = queryPssExamReport + " , inspirator_id as educator  " 
+                    }
                     + " FROM raagatech_inquiry ri  LEFT JOIN RAAGATECH_FOLLOWUPDETAILS rf ON ri.INQUIRY_ID = rf.INQUIRY_ID "
                     + " WHERE ri.exam_session = '" + examSession + "' AND rf.INQUIRYSTATUS_ID = "+inquiryStatusId+" AND ri.user_id = "+userId;
 //            if (inspiratorId >= 0 && userId == 2) {
@@ -552,6 +555,8 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
 //            }
             if(reportType == 1) {
                 queryPssExamReport = queryPssExamReport + " group by inspiration_id, level_id order by inspiration_id, level_id";
+            } else if(reportType == 3) {
+                queryPssExamReport = queryPssExamReport + " group by inspirator_id, inspiration_id, level_id order by inspirator_id, inspiration_id, level_id";
             } else {
                 queryPssExamReport = queryPssExamReport + " group by level_id order by level_id";
             }
