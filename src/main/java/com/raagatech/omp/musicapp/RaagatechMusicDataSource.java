@@ -539,26 +539,30 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
             String queryPssExamReport = "SELECT level_id as yearId, count(ri.inspiration_id) as totalforms, sum(ri.EXAM_FEES) as totalfees, "
-                    + " sum(ri.FEES_PAID_STATUS) as feescollectedcount " 
+                    + " sum(ri.FEES_PAID_STATUS) as feescollectedcount ";
                     if(reportType == 1) {
-                        queryPssExamReport = queryPssExamReport + " , inspiration_id as subjectId  " 
+                        queryPssExamReport = queryPssExamReport + " , inspiration_id as subjectId  ";
                     }
                     if(reportType == 3) {
-                        queryPssExamReport = queryPssExamReport + " , inspirator_id as educator  " 
+                        queryPssExamReport = queryPssExamReport + " , inspirator_id as educatorId , inspiration_id as subjectId ";
                     }
-                    + " FROM raagatech_inquiry ri  LEFT JOIN RAAGATECH_FOLLOWUPDETAILS rf ON ri.INQUIRY_ID = rf.INQUIRY_ID "
+                    queryPssExamReport = queryPssExamReport + " FROM raagatech_inquiry ri  LEFT JOIN RAAGATECH_FOLLOWUPDETAILS rf ON ri.INQUIRY_ID = rf.INQUIRY_ID "
                     + " WHERE ri.exam_session = '" + examSession + "' AND rf.INQUIRYSTATUS_ID = "+inquiryStatusId+" AND ri.user_id = "+userId;
 //            if (inspiratorId >= 0 && userId == 2) {
 //                queryPssExamReport = queryPssExamReport + " AND ri.inspirator_id = " + inspiratorId;
 //            } else if (inspiratorId > 0) {
 //                queryPssExamReport = queryPssExamReport + " AND ri.inspirator_id = " + inspiratorId;
 //            }
-            if(reportType == 1) {
-                queryPssExamReport = queryPssExamReport + " group by inspiration_id, level_id order by inspiration_id, level_id";
-            } else if(reportType == 3) {
-                queryPssExamReport = queryPssExamReport + " group by inspirator_id, inspiration_id, level_id order by inspirator_id, inspiration_id, level_id";
-            } else {
-                queryPssExamReport = queryPssExamReport + " group by level_id order by level_id";
+            switch (reportType) {
+                case 1:
+                    queryPssExamReport = queryPssExamReport + " group by inspiration_id, level_id order by inspiration_id, level_id";
+                    break;
+                case 3:
+                    queryPssExamReport = queryPssExamReport + " group by inspirator_id, inspiration_id, level_id order by inspirator_id, inspiration_id, level_id";
+                    break;
+                default:
+                    queryPssExamReport = queryPssExamReport + " group by level_id order by level_id";
+                    break;
             }
             PreparedStatement statement = connection.prepareStatement(queryPssExamReport);
             ResultSet record = statement.executeQuery();
@@ -569,7 +573,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 } else {
                     reportBean.setEducatorId(0);
                 }
-                if(reportType == 1) {
+                if(reportType == 1 || reportType == 3) {
                     reportBean.setSubjectId(record.getInt("subjectId"));
                 } else {
                     reportBean.setSubjectId(0);
