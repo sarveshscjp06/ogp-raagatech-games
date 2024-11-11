@@ -27,6 +27,7 @@ public class UserDataBean {
     private char gender;
     private int mobileVerified;
     private Set<String> inspiratorSet = new HashSet<>();
+    private int discount; 
 
     /**
      * @return the userName
@@ -208,6 +209,20 @@ public class UserDataBean {
      */
     public void setInspiratorSet(Set<String> inspiratorSet) {
         this.inspiratorSet = inspiratorSet;
+    }
+
+    /**
+     * @return the discount
+     */
+    public int getDiscount() {
+        return discount;
+    }
+
+    /**
+     * @param discount the discount to set
+     */
+    public void setDiscount(int discount) {
+        this.discount = discount;
     }    
             
 }

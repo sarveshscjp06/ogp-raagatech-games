@@ -18,7 +18,7 @@ public interface RaagatechMusicDataSourceInterface {
     public UserDataBean getUserData(String username, String password) throws Exception;
 
     public int insertUser(String username, String password, String email, long mobileNo,
-            String gender, String postalAddress, String pincode, int inspirator_id) throws Exception;
+            String gender, String postalAddress, String pincode, int inspirator_id, int discount) throws Exception;
 
     public boolean updateUserForEmailVerification(int userId, String email) throws Exception;
 
@@ -56,13 +56,13 @@ public interface RaagatechMusicDataSourceInterface {
     public InquiryBean getInquiryDetails(String email, long mobileNo) throws Exception;
 
     public boolean updateUserData(String username, String password, long mobileNo,
-            String gender, String postalAddress, String pincode, int userId, int inspiratorId) throws Exception;
+            String gender, String postalAddress, String pincode, int userId, int inspiratorId, int discount) throws Exception;
 
     public ArrayList<UserDataBean> getUsersList(String username, String password) throws Exception;
 
     public ArrayList<UserDataBean> listOverAllContacts(String dob) throws Exception;
 
-    public UserDataBean getUserData(int userId) throws Exception;
+    public UserDataBean getUserData(int userId, int inspiratorId) throws Exception;
 
     public boolean updateInquiryForEmailVerification(int inquiryId, String email) throws Exception;
 
@@ -76,4 +76,9 @@ public interface RaagatechMusicDataSourceInterface {
 
     public ArrayList<PssExamReportBean> generatePssExamReport(int userId, int inspiratorId, String examSession,
     int inquiryStatusId, int reportType) throws Exception;
+
+    public boolean createEducator(String username, String password, String email, long mobileNo,
+            String gender, String postalAddress, String pincode, int inspirator_id, int discount) throws Exception;
+
+    public ArrayList<UserDataBean> listUsers(int userId, String examSession) throws Exception;
 }

@@ -30,7 +30,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
 
     @Override
     public int insertUser(String username, String password, String email, long mobileNo,
-            String gender, String postalAddress, String pincode, int inspiratorId) throws Exception {
+            String gender, String postalAddress, String pincode, int inspiratorId, int discount) throws Exception {
 
         // With AutoCloseable, the connection is closed automatically.
         int id = oracleDataSource.generateNextPrimaryKey("raagatech_user", "user_id");
@@ -341,7 +341,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
 
     @Override
     public boolean updateUserData(String username, String password, long mobileNo,
-            String gender, String postalAddress, String pincode, int userId, int inspiratorId) throws Exception {
+            String gender, String postalAddress, String pincode, int userId, int inspiratorId, int discount) throws Exception {
         boolean updateStatus = Boolean.FALSE;
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
@@ -354,6 +354,12 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             int records = statement.executeUpdate();
             if (records > 0) {
                 updateStatus = Boolean.TRUE;
+            }
+            if(updateStatus && discount > 0 && inspiratorId > 0) {
+                queryUpdateUser = "UPDATE raagatech_inspiratormaster set pss_discount = " + discount
+                    + " WHERE inspirator_id = " + inspiratorId;
+                statement = connection.prepareStatement(queryUpdateUser);
+                records = statement.executeUpdate();
             }
         }
         return updateStatus;
@@ -408,7 +414,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
     }
 
     @Override
-    public UserDataBean getUserData(int userId) throws Exception {
+    public UserDataBean getUserData(int userId, int inspiratorId) throws Exception {
         UserDataBean userData = null;
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
@@ -586,5 +592,58 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             }
         }
         return subjectWiseReportList;
+    }
+
+    @Override
+    public ArrayList<UserDataBean> listUsers(int userId, String examSession) throws Exception {
+        ArrayList<UserDataBean> usersList = new ArrayList<>();
+        UserDataBean userData;
+        // With AutoCloseable, the connection is closed automatically.
+        try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
+            String querySelectEducators = "SELECT ru.user_id, rim.* FROM RAAGATECH_USER ru right join RAAGATECH_INSPIRATORMASTER rim "
+            +" ON ru.email = rim.email AND ru.mobile = rim.MOBILE ";
+            
+            PreparedStatement statement = connection.prepareStatement(querySelectInquiries);
+            ResultSet record = statement.executeQuery();
+            while (record.next()) {
+                userData = new UserDataBean();
+                userData.setName(record.getString("firstname"));
+                userData.setEmail(record.getString("email"));                
+                userData.setMobile(record.getLong("mobile"));
+                userData.setInspiratorId(record.getInt("inspirator_id"));
+                if(record.getString("user_id") != null) {                
+                    userData.setUserId(record.getInt("user_id"));                    
+                }
+                userData.setDiscount(record.getInt("pss_discount"));                
+                usersList.add(userData);
+            }
+        }
+        return usersList;
+    }
+
+    @Override
+    public boolean createEducator(String username, String password, String email, long mobileNo,
+            String gender, String postalAddress, String pincode, int inspiratorId, int discount) throws Exception {
+
+        // With AutoCloseable, the connection is closed automatically.
+        int id = oracleDataSource.generateNextPrimaryKey("raagatech_inspiratormaster", "inspirator_id");
+        try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
+            char sex = gender.equals("Male") ? 'M' : 'F';
+            String queryInsertUser = "INSERT into raagatech_inspiratormaster (inspirator_id, first_name, date_of_birth, email, country_code, mobile,"
+                    + ", address_line1, address_line2, inspirator_id, specialization, pss_discount, date_of_joining) "
+                    + "VALUES (" + id + ", '" + username + "',?, '" + email + "', 091, " + mobileNo 
+                    + ",  '" + postalAddress + "', " + pincode + ", " + inspiratorId + ", 1, "+discount+", ?)";
+            PreparedStatement statement = connection.prepareStatement(queryInsertUser);
+            statement.setTimestamp(1, getCurrentTimeStamp());
+            statement.setTimestamp(2, getCurrentTimeStamp());
+            boolean isInserted = statement.executeQuery();
+            if (isInserted) {
+                String queryUpdateUser = "UPDATE raagatech_user set inspirator_id = " + id
+                        + " WHERE email = '" + email + "' AND mobileNo = " + mobileNo;
+                statement = connection.prepareStatement(queryUpdateUser);
+                statement.executeUpdate();
+            }
+        }
+        return isInserted;
     }
 }

@@ -64,10 +64,10 @@ public class RaagatechMusicApplication {
         return response;
     }
 
-    @GetMapping(path = "/dogetuserdata/{userId}")
-    public String doGetUserData(@PathVariable int userId) throws Exception {
+    @GetMapping(path = "/dogetuserdata/{userId}/{inspiratorId}")
+    public String doGetUserData(@PathVariable int userId@PathVariable int inspiratorId) throws Exception {
         String response = null;
-        UserDataBean userDataBean = musicDataSource.getUserData(userId);
+        UserDataBean userDataBean = musicDataSource.getUserData(userId, inspiratorId);
         if (userDataBean != null) {
             JSONObject jsonObject = new JSONObject(userDataBean);
             response = jsonObject.toString();
@@ -79,12 +79,12 @@ public class RaagatechMusicApplication {
     public String updateUserData(@RequestParam("regName") String username, @RequestParam("regPassword") String password,
             @RequestParam("regEmail") String email, @RequestParam("regMobile") String mobileNo, @RequestParam("regGender") String gender,
             @RequestParam("regPostalAddress") String postalAddress, @RequestParam("regPincode") String pincode,
-            @RequestParam("userId") int userId, @RequestParam("regInspiratorId") int inspiratorId) {
+            @RequestParam("userId") int userId, @RequestParam("regInspiratorId") int inspiratorId, @RequestParam("discount") int discount) {
         String response = "false";
         if (commonUtilities.isNotNull(username) && commonUtilities.isNotNull(password)) {
             try {
                 musicDataSource.updateUserData(username, password, Long.parseLong(mobileNo),
-                        gender, postalAddress, pincode, userId, inspiratorId);
+                        gender, postalAddress, pincode, userId, inspiratorId, discount);
                 response = "true";
             } catch (Exception e) {
                 Logger.getLogger(RaagatechMusicApplication.class.getName()).log(Level.SEVERE, null, e);
@@ -96,16 +96,22 @@ public class RaagatechMusicApplication {
     @RequestMapping(value = "/doregister", method = RequestMethod.POST)
     public String doRegister(@RequestParam("regName") String username, @RequestParam("regPassword") String password,
             @RequestParam("regEmail") String email, @RequestParam("regMobile") String mobileNo, @RequestParam("regGender") String gender,
-            @RequestParam("regPostalAddress") String postalAddress, @RequestParam("regPincode") String pincode, @RequestParam("regInspiratorId") int inspiratorId) {
+            @RequestParam("regPostalAddress") String postalAddress, @RequestParam("regPincode") String pincode, 
+            @RequestParam("regInspiratorId") int inspiratorId, @RequestParam("discount") int discount,
+            , @RequestParam("userId") int user_id) {
 
         String response = "false";
         try {
-            int userId = musicDataSource.insertUser(username, password, email, Long.parseLong(mobileNo), gender, postalAddress, pincode, inspiratorId);
-            if (userId > 0) {
-                String body = "<p>Kindly click / tap on below link to verify your email address.</p>"
-                        + "<a href=http://140.238.250.40:8080/resources/music/doemailverification?userId=" + userId + "&email=" + email + "><b>" + password + "</b></a>";
-                emailUtility.sendEmail(email, "raagatech: email verification", body);
-                response = "true";
+            if(user_id == 2) {
+                response = musicDataSource.createEducator(username, password, email, Long.parseLong(mobileNo), gender, postalAddress, pincode, inspiratorId, discount);
+            } else {
+                int userId = musicDataSource.insertUser(username, password, email, Long.parseLong(mobileNo), gender, postalAddress, pincode, inspiratorId, discount);
+                if (userId > 0) {
+                    String body = "<p>Kindly click / tap on below link to verify your email address.</p>"
+                            + "<a href=http://140.238.250.40:8080/resources/music/doemailverification?userId=" + userId + "&email=" + email + "><b>" + password + "</b></a>";
+                    emailUtility.sendEmail(email, "raagatech: email verification", body);
+                    response = "true";
+                }
             }
         } catch (Exception ex) {
             Logger.getLogger(RaagatechMusicApplication.class.getName()).log(Level.SEVERE, null, ex);
@@ -355,6 +361,18 @@ public class RaagatechMusicApplication {
         ArrayList<PssExamReportBean> pssExamReport = musicDataSource.generatePssExamReport(userId, inspiratorId, examSession, inquiryStatusId, reportType);
         if (!pssExamReport.isEmpty()) {
             JSONArray jsonArray = new JSONArray(pssExamReport);
+            response = jsonArray.toString();
+        }
+        return response;
+    }
+
+    @RequestMapping(value = "/dolistusers", method = RequestMethod.GET)
+    public String doListUsers(@RequestParam("userId") int userId, @RequestParam("examSession") String examSession) throws Exception {
+        String response = null;
+
+        ArrayList<UserDataBean> usersList = musicDataSource.listUsers(userId, examSession);
+        if (!usersList.isEmpty()) {
+            JSONArray jsonArray = new JSONArray(usersList);
             response = jsonArray.toString();
         }
         return response;
