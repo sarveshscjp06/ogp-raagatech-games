@@ -64,10 +64,10 @@ public class RaagatechMusicApplication {
         return response;
     }
 
-    @GetMapping(path = "/dogetuserdata/{userId}/{inspiratorId}")
-    public String doGetUserData(@PathVariable int userId@PathVariable int inspiratorId) throws Exception {
+    @GetMapping(path = "/dogetuserdata/{userId}")
+    public String doGetUserData(@PathVariable int userId) throws Exception {
         String response = null;
-        UserDataBean userDataBean = musicDataSource.getUserData(userId, inspiratorId);
+        UserDataBean userDataBean = musicDataSource.getUserData(userId);
         if (userDataBean != null) {
             JSONObject jsonObject = new JSONObject(userDataBean);
             response = jsonObject.toString();
@@ -96,14 +96,16 @@ public class RaagatechMusicApplication {
     @RequestMapping(value = "/doregister", method = RequestMethod.POST)
     public String doRegister(@RequestParam("regName") String username, @RequestParam("regPassword") String password,
             @RequestParam("regEmail") String email, @RequestParam("regMobile") String mobileNo, @RequestParam("regGender") String gender,
-            @RequestParam("regPostalAddress") String postalAddress, @RequestParam("regPincode") String pincode, 
+            @RequestParam("regPostalAddress") String postalAddress, @RequestParam("regPincode") String pincode,
             @RequestParam("regInspiratorId") int inspiratorId, @RequestParam("discount") int discount,
-            , @RequestParam("userId") int user_id) {
+            @RequestParam("userId") int user_id) {
 
         String response = "false";
         try {
-            if(user_id == 2) {
-                response = musicDataSource.createEducator(username, password, email, Long.parseLong(mobileNo), gender, postalAddress, pincode, inspiratorId, discount);
+            if (user_id == 2) {
+                if(musicDataSource.createEducator(username, password, email, Long.parseLong(mobileNo), gender, postalAddress, pincode, inspiratorId, discount)){
+                    response = "true";
+                }
             } else {
                 int userId = musicDataSource.insertUser(username, password, email, Long.parseLong(mobileNo), gender, postalAddress, pincode, inspiratorId, discount);
                 if (userId > 0) {
@@ -374,6 +376,17 @@ public class RaagatechMusicApplication {
         if (!usersList.isEmpty()) {
             JSONArray jsonArray = new JSONArray(usersList);
             response = jsonArray.toString();
+        }
+        return response;
+    }
+
+    @GetMapping(path = "/dogeteducatordata/{userId}/{inspiratorId}")
+    public String doGetEducatorData(@PathVariable int userId, @PathVariable int inspiratorId) throws Exception {
+        String response = null;
+        UserDataBean userDataBean = musicDataSource.getEducatorData(userId, inspiratorId);
+        if (userDataBean != null) {
+            JSONObject jsonObject = new JSONObject(userDataBean);
+            response = jsonObject.toString();
         }
         return response;
     }

@@ -39,7 +39,7 @@ public interface RaagatechMusicDataSourceInterface {
     public boolean updateInquiry(int inquiry_id, String inquiryname, int inspirationid, String email, long mobileNo,
             int levelid, String address, String followupDetails, String nationality, String dob, long telOther, String image,
             String gender, int inspirator_id, String comfortability, String primaryskill,
-             int userId, int pinCode, String examSession, String fatherName, String motherName, int examFees, int inquiryStatusId) throws Exception;
+            int userId, int pinCode, String examSession, String fatherName, String motherName, int examFees, int inquiryStatusId) throws Exception;
 
     public LinkedHashMap<Integer, String> selectInquiryStatus() throws Exception;
 
@@ -62,7 +62,7 @@ public interface RaagatechMusicDataSourceInterface {
 
     public ArrayList<UserDataBean> listOverAllContacts(String dob) throws Exception;
 
-    public UserDataBean getUserData(int userId, int inspiratorId) throws Exception;
+    public UserDataBean getUserData(int userId) throws Exception;
 
     public boolean updateInquiryForEmailVerification(int inquiryId, String email) throws Exception;
 
@@ -75,10 +75,12 @@ public interface RaagatechMusicDataSourceInterface {
     public List<Feedback> getFollowUps(int inquiryStatusId) throws Exception;
 
     public ArrayList<PssExamReportBean> generatePssExamReport(int userId, int inspiratorId, String examSession,
-    int inquiryStatusId, int reportType) throws Exception;
+            int inquiryStatusId, int reportType) throws Exception;
 
     public boolean createEducator(String username, String password, String email, long mobileNo,
             String gender, String postalAddress, String pincode, int inspirator_id, int discount) throws Exception;
 
     public ArrayList<UserDataBean> listUsers(int userId, String examSession) throws Exception;
+    
+    public UserDataBean getEducatorData(int userId, int inspiratorId) throws Exception;
 }
