@@ -335,6 +335,18 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 userData.setAddress(record.getString("postaladdress"));
                 userData.setMobileVerified(record.getInt("mobileverification"));
             }
+
+            Set<String> inspiratorSet = new HashSet<>();
+            String querySelectEducators = "SELECT ru.user_id as user_id, rim.* FROM RAAGATECH_USER ru right join RAAGATECH_INSPIRATORMASTER rim "
+                    + " ON ru.email = rim.email AND ru.mobile = rim.MOBILE ";
+
+            PreparedStatement statement = connection.prepareStatement(querySelectEducators);
+            ResultSet record = statement.executeQuery();
+            while (record.next()) {
+                String inspiratorData = record.getInt("inspirator_id") +"/"+ record.getString("first_name")+" "+record.getString("last_name")+"/"+record.getInt("pss_discount");
+                inspiratorSet.add(inspiratorData);
+            }
+            userData.setInspiratorSet(inspiratorSet);
         }
         return userData;
     }
@@ -607,7 +619,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             ResultSet record = statement.executeQuery();
             while (record.next()) {
                 userData = new UserDataBean();
-                userData.setUserName(record.getString("first_name"));
+                userData.setUserName(record.getString("first_name")+" "+record.getString("last_name"));
                 userData.setEmail(record.getString("email"));
                 userData.setMobile(record.getLong("mobile"));
                 userData.setInspiratorId(record.getInt("inspirator_id"));
