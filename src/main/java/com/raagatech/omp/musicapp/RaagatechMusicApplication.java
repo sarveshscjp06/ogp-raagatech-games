@@ -103,7 +103,7 @@ public class RaagatechMusicApplication {
         String response = "false";
         try {
             if (user_id == 2) {
-                if(musicDataSource.createEducator(username, password, email, Long.parseLong(mobileNo), gender, postalAddress, pincode, inspiratorId, discount)){
+                if (musicDataSource.createEducator(username, password, email, Long.parseLong(mobileNo), gender, postalAddress, pincode, inspiratorId, discount)) {
                     response = "true";
                 }
             } else {
@@ -368,11 +368,11 @@ public class RaagatechMusicApplication {
         return response;
     }
 
-    @RequestMapping(value = "/dolistusers", method = RequestMethod.GET)
-    public String doListUsers(@RequestParam("userId") int userId, @RequestParam("examSession") String examSession) throws Exception {
+    @RequestMapping(value = "/dolisteducators", method = RequestMethod.GET)
+    public String doListEducators(@RequestParam("userId") int userId, @RequestParam("examSession") String examSession) throws Exception {
         String response = null;
 
-        ArrayList<UserDataBean> usersList = musicDataSource.listUsers(userId, examSession);
+        ArrayList<UserDataBean> usersList = musicDataSource.listEducators(userId, examSession);
         if (!usersList.isEmpty()) {
             JSONArray jsonArray = new JSONArray(usersList);
             response = jsonArray.toString();

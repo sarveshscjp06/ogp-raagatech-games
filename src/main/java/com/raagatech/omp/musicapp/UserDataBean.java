@@ -4,9 +4,9 @@
  */
 package com.raagatech.omp.musicapp;
 
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 /**
  *
@@ -26,8 +26,8 @@ public class UserDataBean {
     private int inspiratorId;
     private char gender;
     private int mobileVerified;
-    private Set<String> inspiratorSet = new HashSet<>();
-    private int discount; 
+    private List<String> inspiratorList;
+    private int discount;
 
     /**
      * @return the userName
@@ -181,7 +181,7 @@ public class UserDataBean {
      */
     public void setGender(char gender) {
         this.gender = gender;
-    }    
+    }
 
     /**
      * @return the mobileVerified
@@ -198,17 +198,17 @@ public class UserDataBean {
     }
 
     /**
-     * @return the inspiratorSet
+     * @return the inspiratorList
      */
-    public Set<String> getInspiratorSet() {
-        return inspiratorSet;
+    public List<String> getInspiratorList() {
+        return inspiratorList;
     }
 
     /**
-     * @param inspiratorSet the inspiratorSet to set
+     * @param inspiratorList the inspiratorList to list
      */
-    public void setInspiratorSet(Set<String> inspiratorSet) {
-        this.inspiratorSet = inspiratorSet;
+    public void setInspiratorList(List<String> inspiratorList) {
+        this.inspiratorList = inspiratorList;
     }
 
     /**
@@ -223,6 +223,6 @@ public class UserDataBean {
      */
     public void setDiscount(int discount) {
         this.discount = discount;
-    }    
-            
+    }
+
 }

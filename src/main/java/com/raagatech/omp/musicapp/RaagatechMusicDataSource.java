@@ -306,7 +306,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
 
     @Override
     public UserDataBean getUserData(String username, String password) throws Exception {
-        UserDataBean userData = null;
+        UserDataBean userData = new UserDataBean();
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
             String queryInsertUser = "SELECT ru.*, rim.INSPIRATOR_ID as rim_id FROM RAAGATECH_USER ru left join RAAGATECH_INSPIRATORMASTER rim "
@@ -317,7 +317,6 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             PreparedStatement statement = connection.prepareStatement(queryInsertUser);
             ResultSet record = statement.executeQuery();
             while (record.next()) {
-                userData = new UserDataBean();
                 userData.setUserName(record.getString("username"));
                 userData.setPassword(record.getString("password"));
                 userData.setEmail(record.getString("email"));
@@ -336,17 +335,17 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 userData.setMobileVerified(record.getInt("mobileverification"));
             }
 
-            Set<String> inspiratorSet = new HashSet<>();
+            List<String> inspiratorList = new ArrayList<>();
             String querySelectEducators = "SELECT ru.user_id as user_id, rim.* FROM RAAGATECH_USER ru right join RAAGATECH_INSPIRATORMASTER rim "
                     + " ON ru.email = rim.email AND ru.mobile = rim.MOBILE ";
 
-            PreparedStatement statement = connection.prepareStatement(querySelectEducators);
-            ResultSet record = statement.executeQuery();
+            statement = connection.prepareStatement(querySelectEducators);
+            record = statement.executeQuery();
             while (record.next()) {
-                String inspiratorData = record.getInt("inspirator_id") +"/"+ record.getString("first_name")+" "+record.getString("last_name")+"/"+record.getInt("pss_discount");
-                inspiratorSet.add(inspiratorData);
+                String inspiratorData = record.getInt("inspirator_id") + "/" + record.getString("first_name") + " " + record.getString("last_name") + "/" + record.getInt("pss_discount");
+                inspiratorList.add(inspiratorData);
             }
-            userData.setInspiratorSet(inspiratorSet);
+            userData.setInspiratorList(inspiratorList);
         }
         return userData;
     }
@@ -607,7 +606,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
     }
 
     @Override
-    public ArrayList<UserDataBean> listUsers(int userId, String examSession) throws Exception {
+    public ArrayList<UserDataBean> listEducators(int userId, String examSession) throws Exception {
         ArrayList<UserDataBean> usersList = new ArrayList<>();
         UserDataBean userData;
         // With AutoCloseable, the connection is closed automatically.
@@ -619,7 +618,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             ResultSet record = statement.executeQuery();
             while (record.next()) {
                 userData = new UserDataBean();
-                userData.setUserName(record.getString("first_name")+" "+record.getString("last_name"));
+                userData.setUserName(record.getString("first_name") + " " + record.getString("last_name"));
                 userData.setEmail(record.getString("email"));
                 userData.setMobile(record.getLong("mobile"));
                 userData.setInspiratorId(record.getInt("inspirator_id"));
@@ -659,7 +658,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         }
         return isInserted;
     }
-    
+
     @Override
     public UserDataBean getEducatorData(int userId, int inspiratorId) throws Exception {
         UserDataBean userData = null;

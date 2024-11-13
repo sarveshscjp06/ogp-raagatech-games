@@ -80,7 +80,7 @@ public interface RaagatechMusicDataSourceInterface {
     public boolean createEducator(String username, String password, String email, long mobileNo,
             String gender, String postalAddress, String pincode, int inspirator_id, int discount) throws Exception;
 
-    public ArrayList<UserDataBean> listUsers(int userId, String examSession) throws Exception;
+    public ArrayList<UserDataBean> listEducators(int userId, String examSession) throws Exception;
     
     public UserDataBean getEducatorData(int userId, int inspiratorId) throws Exception;
 }
