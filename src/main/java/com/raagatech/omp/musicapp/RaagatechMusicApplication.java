@@ -102,18 +102,12 @@ public class RaagatechMusicApplication {
 
         String response = "false";
         try {
-            if (user_id == 2) {
-                if (musicDataSource.createEducator(username, password, email, Long.parseLong(mobileNo), gender, postalAddress, pincode, inspiratorId, discount)) {
-                    response = "true";
-                }
-            } else {
-                int userId = musicDataSource.insertUser(username, password, email, Long.parseLong(mobileNo), gender, postalAddress, pincode, inspiratorId, discount);
-                if (userId > 0) {
-                    String body = "<p>Kindly click / tap on below link to verify your email address.</p>"
-                            + "<a href=http://140.238.250.40:8080/resources/music/doemailverification?userId=" + userId + "&email=" + email + "><b>" + password + "</b></a>";
-                    emailUtility.sendEmail(email, "raagatech: email verification", body);
-                    response = "true";
-                }
+            int userId = musicDataSource.insertUser(username, password, email, Long.parseLong(mobileNo), gender, postalAddress, pincode, inspiratorId, discount);
+            if (userId > 0) {
+                String body = "<p>Kindly click / tap on below link to verify your email address.</p>"
+                        + "<a href=http://140.238.250.40:8080/resources/music/doemailverification?userId=" + userId + "&email=" + email + "><b>" + password + "</b></a>";
+                emailUtility.sendEmail(email, "raagatech: email verification", body);
+                response = "true";
             }
         } catch (Exception ex) {
             Logger.getLogger(RaagatechMusicApplication.class.getName()).log(Level.SEVERE, null, ex);
@@ -387,6 +381,42 @@ public class RaagatechMusicApplication {
         if (userDataBean != null) {
             JSONObject jsonObject = new JSONObject(userDataBean);
             response = jsonObject.toString();
+        }
+        return response;
+    }
+
+    @RequestMapping(value = "/doregistereducator", method = RequestMethod.POST)
+    public String doRegisterEducator(@RequestParam("eduName") String username, @RequestParam("eduSpecialisation") String specialisation,
+            @RequestParam("eduEmail") String email, @RequestParam("eduMobile") String mobileNo, @RequestParam("eduGender") String gender,
+            @RequestParam("eduPostalAddress") String postalAddress, @RequestParam("eduPincode") String pincode,
+            @RequestParam("discount") int discount, @RequestParam("userId") int userId) {
+
+        String response = "false";
+        try {
+            if (musicDataSource.createEducator(username, specialisation, email, Long.parseLong(mobileNo), gender, postalAddress, pincode, userId, discount)) {
+                response = "true";
+            }
+
+        } catch (Exception ex) {
+            Logger.getLogger(RaagatechMusicApplication.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return response;
+    }
+    
+    @RequestMapping(value = "/doupdateeducatordata", method = RequestMethod.POST)
+    public String doUpdateEducator(@RequestParam("eduName") String username, @RequestParam("eduSpecialisation") String specialisation,
+            @RequestParam("eduEmail") String email, @RequestParam("eduMobile") String mobileNo, @RequestParam("eduGender") String gender,
+            @RequestParam("eduPostalAddress") String postalAddress, @RequestParam("eduPincode") String pincode,
+            @RequestParam("userId") int userId, @RequestParam("eduInspiratorId") int eduInspiratorId, @RequestParam("eduDiscount") int discount) {
+
+        String response = "false";
+        try {
+            if (musicDataSource.updateEducator(username, specialisation, email, Long.parseLong(mobileNo), gender, postalAddress, pincode, userId, eduInspiratorId, discount)) {
+                response = "true";
+            }
+
+        } catch (Exception ex) {
+            Logger.getLogger(RaagatechMusicApplication.class.getName()).log(Level.SEVERE, null, ex);
         }
         return response;
     }

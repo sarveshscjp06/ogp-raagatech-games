@@ -634,7 +634,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
 
     @Override
     public boolean createEducator(String username, String password, String email, long mobileNo,
-            String gender, String postalAddress, String pincode, int inspiratorId, int discount) throws Exception {
+            String gender, String postalAddress, String pincode, int userId, int discount) throws Exception {
 
         boolean isInserted;
         // With AutoCloseable, the connection is closed automatically.
@@ -642,9 +642,9 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
             char sex = gender.equals("Male") ? 'M' : 'F';
             String queryInsertUser = "INSERT into raagatech_inspiratormaster (inspirator_id, first_name, date_of_birth, email, country_code, mobile,"
-                    + ", address_line1, address_line2, inspirator_id, specialization, pss_discount, date_of_joining) "
+                    + ", address_line1, address_line2, specialization, pss_discount, date_of_joining) "
                     + "VALUES (" + id + ", '" + username + "',?, '" + email + "', 091, " + mobileNo
-                    + ",  '" + postalAddress + "', " + pincode + ", " + inspiratorId + ", 1, " + discount + ", ?)";
+                    + ",  '" + postalAddress + "', " + pincode + ", 1, " + discount + ", ?)";
             PreparedStatement statement = connection.prepareStatement(queryInsertUser);
             statement.setTimestamp(1, getCurrentTimeStamp());
             statement.setTimestamp(2, getCurrentTimeStamp());
@@ -664,25 +664,39 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         UserDataBean userData = null;
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
-            String queryInsertUser = "SELECT * FROM raagatech_user WHERE user_id = " + userId + " AND emailverification = 1";
-            PreparedStatement statement = connection.prepareStatement(queryInsertUser);
+            String querySelectEducator = "SELECT * FROM raagatech_inspiratormaster WHERE inspirator_id = " + inspiratorId;
+            PreparedStatement statement = connection.prepareStatement(querySelectEducator);
             ResultSet record = statement.executeQuery();
             while (record.next()) {
                 userData = new UserDataBean();
-                userData.setUserName(record.getString("username"));
-                userData.setPassword(record.getString("password"));
+                userData.setUserName(record.getString("first_name") + " " + record.getString("last_name"));
+                userData.setSpecialization(record.getString("specialization"));
                 userData.setEmail(record.getString("email"));
-                userData.setCreationDate(record.getDate("creation_date"));
-                userData.setCountryCode(record.getInt("country_code"));
                 userData.setMobile(record.getLong("mobile"));
-                userData.setUserId(record.getInt("user_id"));
-                userData.setPincode(record.getInt("pincode"));
+                userData.setPincode(record.getString("address_line2") == null ? 0 : Integer.parseInt(record.getString("address_line2")));
                 userData.setInspiratorId(record.getInt("inspirator_id"));
-                userData.setGender(record.getString("gender").equals("M") ? 'M' : 'F');
-                userData.setAddress(record.getString("postaladdress"));
-                userData.setMobileVerified(record.getInt("mobileverification"));
+//                userData.setGender(record.getString("gender").equals("M") ? 'M' : 'F');
+                userData.setAddress(record.getString("address_line1"));
+                userData.setDiscount(record.getInt("pss_discount"));
             }
         }
         return userData;
+    }
+
+    @Override
+    public boolean updateEducator(String username, String specialisation, String email, long mobileNo,
+            String gender, String postalAddress, String pincode, int userId, int inspiratorId, int discount) throws Exception {
+
+        int record;
+        // With AutoCloseable, the connection is closed automatically.
+        try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
+            char sex = gender.equals("Male") ? 'M' : 'F';
+            String queryUpdateEducator = "UPDATE raagatech_inspiratormaster set "
+                    + "first_name = '" + username + "', email = '" + email + "', mobile = " + mobileNo
+                    + ", address_line1 = '" + postalAddress + "', address_line2 = '" + pincode + "', pss_discount = " + discount + " WHERE inspirator_id = " + inspiratorId;
+            PreparedStatement statement = connection.prepareStatement(queryUpdateEducator);
+            record = statement.executeUpdate();
+        }
+        return record == 1;
     }
 }

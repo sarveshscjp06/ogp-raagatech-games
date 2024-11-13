@@ -28,6 +28,7 @@ public class UserDataBean {
     private int mobileVerified;
     private List<String> inspiratorList;
     private int discount;
+    private String specialization;
 
     /**
      * @return the userName
@@ -225,4 +226,18 @@ public class UserDataBean {
         this.discount = discount;
     }
 
+    /**
+     * @return the specialization
+     */
+    public String getSpecialization() {
+        return specialization;
+    }
+
+    /**
+     * @param specialization the specialization to set
+     */
+    public void setSpecialization(String specialization) {
+        this.specialization = specialization;
+    }
+    
 }
