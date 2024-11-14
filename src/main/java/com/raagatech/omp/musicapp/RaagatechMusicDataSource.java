@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import oracle.jdbc.OracleConnection;
@@ -22,12 +23,12 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterface {
-
+    
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
-
+    
     @Autowired
     private OracleDatabaseInterface oracleDataSource;
-
+    
     @Override
     public int insertUser(String username, String password, String email, long mobileNo,
             String gender, String postalAddress, String pincode, int inspiratorId, int discount) throws Exception {
@@ -54,7 +55,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         }
         return id;
     }
-
+    
     @Override
     public boolean updateUserForEmailVerification(int userId, String email) throws Exception {
         boolean updateStatus = Boolean.FALSE;
@@ -72,7 +73,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         }
         return updateStatus;
     }
-
+    
     @Override
     public boolean insertInquiry(String inquiryname, int inspirationid, String email, long mobileNo,
             int levelid, String address, String followupDetails, String nationality,
@@ -128,17 +129,17 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         }
         return insertStatus;
     }
-
+    
     @Override
     public LinkedHashMap<Integer, String> selectLevel() throws Exception {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
-
+    
     @Override
     public LinkedHashMap<Integer, String> selectInspiration() throws Exception {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
-
+    
     @Override
     public ArrayList<InquiryBean> listInquiry(int userId, int inspiratorId, String examSession, int inquiryStatusId) throws Exception {
         ArrayList<InquiryBean> inquiryList = new ArrayList<>();
@@ -176,19 +177,19 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 inquiry.setMobileVerified(record.getInt("mobileverification"));
                 inquiry.setExamFees(record.getInt("exam_fees"));
                 inquiry.setFeesPaidStatus(record.getInt("fees_paid_status"));
-
+                
                 if (record.getString("flpid") == null) {
                     inquiry.setFollowup_details("0");
                 } else {
                     inquiry.setFollowup_details(record.getString("flpid"));
                 }
-
+                
                 inquiryList.add(inquiry);
             }
         }
         return inquiryList;
     }
-
+    
     @Override
     public boolean updateInquiry(int inquiry_id, String inquiryname, int inspirationid, String email, long mobileNo,
             int levelid, String address, String followupDetails, String nationality,
@@ -204,7 +205,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                     + " pincode = " + pinCode + ", exam_session = '" + examSession + "', primaryskill = '" + primaryskill + "'" + ", date_of_birth = to_date(?, 'dd-mm-yyyy')"
                     + ", father_name = '" + fatherName + "' " + ", mother_name = '" + motherName + "', exam_fees = " + examFees + ", inspirator_id = " + inspirator_id
                     + " WHERE inquiry_id = " + inquiry_id;
-
+            
             PreparedStatement statement = connection.prepareStatement(queryUpdateInquiry);
             statement.setString(1, dob);
             int records = statement.executeUpdate();
@@ -220,17 +221,17 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         }
         return updateStatus;
     }
-
+    
     @Override
     public LinkedHashMap<Integer, String> selectInquiryStatus() throws Exception {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
-
+    
     @Override
     public boolean updateFollowup(int inquiry_id, int inquirystatus_id, String followupDetails) throws Exception {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
-
+    
     @Override
     public InquiryBean getInquiryById(int inquiryId, String followUpId) throws Exception {
         InquiryBean inquiry = null;
@@ -274,36 +275,36 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             }
         }
         return inquiry;
-
+        
     }
-
+    
     @Override
     public int generateNextPrimaryKey(String tableName, String columnName) throws Exception {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
-
+    
     @Override
     public ArrayList<SliderImageBean> listSliderImage() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
-
+    
     @Override
     public int selectInquiry(String email, long mobileNo) throws Exception {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
-
+    
     @Override
     public InquiryBean getInquiryDetails(String email, long mobileNo) throws Exception {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
-
+    
     private java.sql.Timestamp getCurrentTimeStamp() {
-
+        
         java.util.Date today = new java.util.Date();
         return new java.sql.Timestamp(today.getTime());
-
+        
     }
-
+    
     @Override
     public UserDataBean getUserData(String username, String password) throws Exception {
         UserDataBean userData = new UserDataBean();
@@ -313,7 +314,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                     + "ON ru.email = rim.email AND ru.mobile = rim.MOBILE "
                     + "WHERE (ru.email = '" + username + "' OR ru.username = '" + username + "') "
                     + "AND ru.password = '" + password + "' AND ru.emailverification = 1";
-
+            
             PreparedStatement statement = connection.prepareStatement(queryInsertUser);
             ResultSet record = statement.executeQuery();
             while (record.next()) {
@@ -334,11 +335,11 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 userData.setAddress(record.getString("postaladdress"));
                 userData.setMobileVerified(record.getInt("mobileverification"));
             }
-
+            
             List<String> inspiratorList = new ArrayList<>();
             String querySelectEducators = "SELECT ru.user_id as user_id, rim.* FROM RAAGATECH_USER ru right join RAAGATECH_INSPIRATORMASTER rim "
                     + " ON ru.email = rim.email AND ru.mobile = rim.MOBILE ";
-
+            
             statement = connection.prepareStatement(querySelectEducators);
             record = statement.executeQuery();
             while (record.next()) {
@@ -346,10 +347,37 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 inspiratorList.add(inspiratorData);
             }
             userData.setInspiratorList(inspiratorList);
+            
+            List<String> inspirationList = new ArrayList<>();
+            inspirationList.add("");
+            String querySelectInspiration = "SELECT * FROM RAAGATECH_INSPIRATIONMASTER order by inspiration_id";
+            
+            statement = connection.prepareStatement(querySelectInspiration);
+            record = statement.executeQuery();
+            while (record.next()) {
+                inspirationList.add(record.getString("inspirationname"));
+            }
+            userData.setInspirationList(inspirationList);
+            
+            List<String> examFeesList = new ArrayList<>();
+            examFeesList.add("0/NaN/0");
+            String querySelectExamFees = "select * from RAAGATECH_LEVELMASTER order by level_id";
+            
+            statement = connection.prepareStatement(querySelectExamFees);
+            record = statement.executeQuery();
+            while (record.next()) {
+                String examFeesData = record.getInt("level_id") + "/" + record.getString("levelname") + "/" + record.getInt("exam_fees");
+                examFeesList.add(examFeesData);
+            }
+            userData.setExamFeesList(examFeesList);
+            userData.setInspirationList(inspirationList);
         }
+        
+        List<String> inquiryStatusList = Arrays.asList("", "Inquiry", "Leads", "Follow-up", "Aspirant", "Registration", "Admission", "Feedback", "PSS Exam", "Certified", "Meeting", "Contacts");
+        userData.setInquiryStatusList(inquiryStatusList);
         return userData;
     }
-
+    
     @Override
     public boolean updateUserData(String username, String password, long mobileNo,
             String gender, String postalAddress, String pincode, int userId, int inspiratorId, int discount) throws Exception {
@@ -375,7 +403,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         }
         return updateStatus;
     }
-
+    
     @Override
     public ArrayList<UserDataBean> getUsersList(String username, String password) throws Exception {
         ArrayList<UserDataBean> usersList = new ArrayList<>();
@@ -398,10 +426,10 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         }
         return usersList;
     }
-
+    
     @Override
     public ArrayList<UserDataBean> listOverAllContacts(String dob) throws Exception {
-
+        
         ArrayList<UserDataBean> contactsList = new ArrayList<>();
         UserDataBean userData;
         // With AutoCloseable, the connection is closed automatically.
@@ -423,7 +451,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         }
         return contactsList;
     }
-
+    
     @Override
     public UserDataBean getUserData(int userId) throws Exception {
         UserDataBean userData = null;
@@ -450,7 +478,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         }
         return userData;
     }
-
+    
     @Override
     public boolean updateUserForMobileVerification(int userId, String email, long mobileNo) throws Exception {
         boolean updateStatus = Boolean.FALSE;
@@ -465,7 +493,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         }
         return updateStatus;
     }
-
+    
     @Override
     public boolean updateInquiryForEmailVerification(int inquiryId, String email) throws Exception {
         boolean updateStatus = Boolean.FALSE;
@@ -480,7 +508,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         }
         return updateStatus;
     }
-
+    
     @Override
     public boolean updateInquiryForMobileVerification(int inquiryId, long mobileNo) throws Exception {
         boolean updateStatus = Boolean.FALSE;
@@ -495,7 +523,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         }
         return updateStatus;
     }
-
+    
     @Override
     public boolean updateInquiryForFeesPaidStatus(int inquiryId, int amount) throws Exception {
         boolean updateStatus = Boolean.FALSE;
@@ -510,14 +538,14 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         }
         return updateStatus;
     }
-
+    
     @Override
     public boolean addFollowUps(String name, String email, long mobile, String followupDetails, int inquiryStatusId) throws Exception {
         boolean insertStatus;
 
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
-
+            
             int followup_id = oracleDataSource.generateNextPrimaryKey("raagatech_followupdetails", "followup_id");
             String queryInsertFollowupDetails = "INSERT into raagatech_followupdetails (followup_id, name, mobile, followup_details, followup_date, inquiry_id, inquirystatus_id) "
                     + "VALUES (" + followup_id + ", '" + name + "', " + mobile + ", '" + followupDetails + "',?, 1, " + inquiryStatusId + ")";
@@ -527,7 +555,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         }
         return insertStatus;
     }
-
+    
     @Override
     public List<Feedback> getFollowUps(int inquiryStatusId) throws Exception {
         List<Feedback> feedbackList = new ArrayList();
@@ -548,10 +576,10 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         }
         return feedbackList;
     }
-
+    
     @Override
     public ArrayList<PssExamReportBean> generatePssExamReport(int userId, int inspiratorId, String examSession, int inquiryStatusId, int reportType) throws Exception {
-
+        
         ArrayList<PssExamReportBean> subjectWiseReportList = new ArrayList<>();
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
@@ -604,7 +632,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         }
         return subjectWiseReportList;
     }
-
+    
     @Override
     public ArrayList<UserDataBean> listEducators(int userId, String examSession) throws Exception {
         ArrayList<UserDataBean> usersList = new ArrayList<>();
@@ -613,7 +641,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
             String querySelectEducators = "SELECT ru.user_id as user_id, rim.* FROM RAAGATECH_USER ru right join RAAGATECH_INSPIRATORMASTER rim "
                     + " ON ru.email = rim.email AND ru.mobile = rim.MOBILE ";
-
+            
             PreparedStatement statement = connection.prepareStatement(querySelectEducators);
             ResultSet record = statement.executeQuery();
             while (record.next()) {
@@ -631,11 +659,11 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         }
         return usersList;
     }
-
+    
     @Override
     public boolean createEducator(String username, String password, String email, long mobileNo,
             String gender, String postalAddress, String pincode, int userId, int discount) throws Exception {
-
+        
         boolean isInserted;
         // With AutoCloseable, the connection is closed automatically.
         int id = oracleDataSource.generateNextPrimaryKey("raagatech_inspiratormaster", "inspirator_id");
@@ -658,7 +686,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         }
         return isInserted;
     }
-
+    
     @Override
     public UserDataBean getEducatorData(int userId, int inspiratorId) throws Exception {
         UserDataBean userData = null;
@@ -682,11 +710,11 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         }
         return userData;
     }
-
+    
     @Override
     public boolean updateEducator(String username, String specialisation, String email, long mobileNo,
             String gender, String postalAddress, String pincode, int userId, int inspiratorId, int discount) throws Exception {
-
+        
         int record;
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {

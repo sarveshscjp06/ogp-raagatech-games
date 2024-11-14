@@ -4,7 +4,6 @@
  */
 package com.raagatech.omp.musicapp;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -29,6 +28,9 @@ public class UserDataBean {
     private List<String> inspiratorList;
     private int discount;
     private String specialization;
+    private List<String> inspirationList;
+    private List<String> examFeesList;
+    private List<String> inquiryStatusList;
 
     /**
      * @return the userName
@@ -239,5 +241,47 @@ public class UserDataBean {
     public void setSpecialization(String specialization) {
         this.specialization = specialization;
     }
-    
+
+    /**
+     * @return the inspirationList
+     */
+    public List<String> getInspirationList() {
+        return inspirationList;
+    }
+
+    /**
+     * @param inspirationList the inspirationList to set
+     */
+    public void setInspirationList(List<String> inspirationList) {
+        this.inspirationList = inspirationList;
+    }
+
+    /**
+     * @return the examFeesList
+     */
+    public List<String> getExamFeesList() {
+        return examFeesList;
+    }
+
+    /**
+     * @param examFeesList the examFeesList to set
+     */
+    public void setExamFeesList(List<String> examFeesList) {
+        this.examFeesList = examFeesList;
+    }
+
+    /**
+     * @return the inquiryStatusList
+     */
+    public List<String> getInquiryStatusList() {
+        return inquiryStatusList;
+    }
+
+    /**
+     * @param inquiryStatusList the inquiryStatusList to set
+     */
+    public void setInquiryStatusList(List<String> inquiryStatusList) {
+        this.inquiryStatusList = inquiryStatusList;
+    }
+
 }
