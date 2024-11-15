@@ -389,7 +389,7 @@ public class RaagatechMusicApplication {
     public String doRegisterEducator(@RequestParam("eduName") String username, @RequestParam("eduSpecialisation") String specialisation,
             @RequestParam("eduEmail") String email, @RequestParam("eduMobile") String mobileNo, @RequestParam("eduGender") String gender,
             @RequestParam("eduPostalAddress") String postalAddress, @RequestParam("eduPincode") String pincode,
-            @RequestParam("discount") int discount, @RequestParam("userId") int userId) {
+            @RequestParam("eduDiscount") int discount, @RequestParam("userId") int userId) {
 
         String response = "false";
         try {

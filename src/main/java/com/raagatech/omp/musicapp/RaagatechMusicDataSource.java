@@ -337,8 +337,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             }
             
             List<String> inspiratorList = new ArrayList<>();
-            String querySelectEducators = "SELECT ru.user_id as user_id, rim.* FROM RAAGATECH_USER ru right join RAAGATECH_INSPIRATORMASTER rim "
-                    + " ON ru.email = rim.email AND ru.mobile = rim.MOBILE ";
+            String querySelectEducators = "SELECT * from RAAGATECH_INSPIRATORMASTER order by inspirator_id ";
             
             statement = connection.prepareStatement(querySelectEducators);
             record = statement.executeQuery();
@@ -640,16 +639,18 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
             String querySelectEducators = "SELECT ru.user_id as user_id, rim.* FROM RAAGATECH_USER ru right join RAAGATECH_INSPIRATORMASTER rim "
-                    + " ON ru.email = rim.email AND ru.mobile = rim.MOBILE ";
+                    + " ON ru.email = rim.email AND ru.mobile = rim.MOBILE order by rim.inspirator_id";
             
             PreparedStatement statement = connection.prepareStatement(querySelectEducators);
             ResultSet record = statement.executeQuery();
             while (record.next()) {
                 userData = new UserDataBean();
-                userData.setUserName(record.getString("first_name") + " " + record.getString("last_name"));
+                userData.setUserName(record.getString("first_name"));
+                userData.setAddress(record.getString("address_line1"));
                 userData.setEmail(record.getString("email"));
                 userData.setMobile(record.getLong("mobile"));
                 userData.setInspiratorId(record.getInt("inspirator_id"));
+                userData.setSpecialization(record.getString("specialization"));
                 if (record.getString("user_id") != null) {
                     userData.setUserId(record.getInt("user_id"));
                 }
@@ -669,8 +670,8 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         int id = oracleDataSource.generateNextPrimaryKey("raagatech_inspiratormaster", "inspirator_id");
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
             char sex = gender.equals("Male") ? 'M' : 'F';
-            String queryInsertUser = "INSERT into raagatech_inspiratormaster (inspirator_id, first_name, date_of_birth, email, country_code, mobile,"
-                    + ", address_line1, address_line2, specialization, pss_discount, date_of_joining) "
+            String queryInsertUser = "INSERT into raagatech_inspiratormaster (inspirator_id, first_name, date_of_birth, email, country_code, mobile, "
+                    + "address_line1, address_line2, specialization, pss_discount, date_of_joining) "
                     + "VALUES (" + id + ", '" + username + "',?, '" + email + "', 091, " + mobileNo
                     + ",  '" + postalAddress + "', " + pincode + ", 1, " + discount + ", ?)";
             PreparedStatement statement = connection.prepareStatement(queryInsertUser);
@@ -697,7 +698,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             ResultSet record = statement.executeQuery();
             while (record.next()) {
                 userData = new UserDataBean();
-                userData.setUserName(record.getString("first_name") + " " + record.getString("last_name"));
+                userData.setUserName(record.getString("first_name"));
                 userData.setSpecialization(record.getString("specialization"));
                 userData.setEmail(record.getString("email"));
                 userData.setMobile(record.getLong("mobile"));
