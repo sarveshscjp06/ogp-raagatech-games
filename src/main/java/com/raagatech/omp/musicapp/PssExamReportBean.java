@@ -4,7 +4,6 @@
  */
 package com.raagatech.omp.musicapp;
 
-import java.util.ArrayList;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,5 +24,6 @@ public class PssExamReportBean {
     private Integer yearId;
     private Integer totalForms;
     private Integer totalFees;
+    private Integer totalPssFees;
     private Integer totalFeesCollectedCount;
 }

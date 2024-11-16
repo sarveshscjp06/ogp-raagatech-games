@@ -359,13 +359,13 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             userData.setInspirationList(inspirationList);
             
             List<String> examFeesList = new ArrayList<>();
-            examFeesList.add("0/NaN/0");
+            examFeesList.add("0/NaN/0/0");
             String querySelectExamFees = "select * from RAAGATECH_LEVELMASTER order by level_id";
             
             statement = connection.prepareStatement(querySelectExamFees);
             record = statement.executeQuery();
             while (record.next()) {
-                String examFeesData = record.getInt("level_id") + "/" + record.getString("levelname") + "/" + record.getInt("exam_fees");
+                String examFeesData = record.getInt("level_id") + "/" + record.getString("levelname") + "/" + record.getInt("exam_fees") + "/" + record.getInt("pss_exam_fees");
                 examFeesList.add(examFeesData);
             }
             userData.setExamFeesList(examFeesList);
@@ -582,30 +582,36 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         ArrayList<PssExamReportBean> subjectWiseReportList = new ArrayList<>();
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
-            String queryPssExamReport = "SELECT level_id as yearId, count(ri.inspiration_id) as totalforms, sum(ri.EXAM_FEES) as totalfees, "
-                    + " sum(ri.FEES_PAID_STATUS) as feescollectedcount ";
+            String queryPssExamReport = "SELECT ri.level_id as yearId, count(ri.inspiration_id) as totalforms, sum(ri.EXAM_FEES) as totalfees, "
+                    + " sum(ri.FEES_PAID_STATUS) as feescollectedcount, sum(rl.pss_exam_fees) as totalpssfees ";
             if (reportType == 1) {
-                queryPssExamReport = queryPssExamReport + " , inspiration_id as subjectId  ";
+                queryPssExamReport = queryPssExamReport + " , ri.inspiration_id as subjectId  ";
             }
             if (reportType == 3) {
-                queryPssExamReport = queryPssExamReport + " , inspirator_id as educatorId , inspiration_id as subjectId ";
+                queryPssExamReport = queryPssExamReport + " , ri.inspirator_id as educatorId , ri.inspiration_id as subjectId ";
             }
-            queryPssExamReport = queryPssExamReport + " FROM raagatech_inquiry ri  LEFT JOIN RAAGATECH_FOLLOWUPDETAILS rf ON ri.INQUIRY_ID = rf.INQUIRY_ID "
+            queryPssExamReport = queryPssExamReport + " FROM raagatech_inquiry ri "
+                    + " join RAAGATECH_LEVELMASTER rl on ri.LEVEL_ID = rl.LEVEL_ID "
+                    + " LEFT JOIN RAAGATECH_FOLLOWUPDETAILS rf ON ri.INQUIRY_ID = rf.INQUIRY_ID "
                     + " WHERE ri.exam_session = '" + examSession + "' AND rf.INQUIRYSTATUS_ID = " + inquiryStatusId + " AND ri.user_id = " + userId;
-//            if (inspiratorId >= 0 && userId == 2) {
-//                queryPssExamReport = queryPssExamReport + " AND ri.inspirator_id = " + inspiratorId;
-//            } else if (inspiratorId > 0) {
-//                queryPssExamReport = queryPssExamReport + " AND ri.inspirator_id = " + inspiratorId;
-//            }
+
+            if(reportType == 4) {
+                queryPssExamReport = "SELECT count(ri.inquiry_id) as totalforms, sum(ri.EXAM_FEES) as totalfees, "
+                    + " sum(ri.FEES_PAID_STATUS) as feescollectedcount , sum(rl.pss_exam_fees) as totalpssfees "
+                        + " FROM raagatech_inquiry ri join RAAGATECH_LEVELMASTER rl on ri.LEVEL_ID = rl.LEVEL_ID "
+                        + " WHERE ri.exam_session = '" + examSession + "' AND ri.user_id = " + userId + " AND ri.inspirator_id > 0 ";
+            }
             switch (reportType) {
                 case 1:
-                    queryPssExamReport = queryPssExamReport + " group by inspiration_id, level_id order by inspiration_id, level_id";
+                    queryPssExamReport = queryPssExamReport + " group by ri.inspiration_id, ri.level_id order by ri.inspiration_id, ri.level_id";
                     break;
                 case 3:
-                    queryPssExamReport = queryPssExamReport + " group by inspirator_id, inspiration_id, level_id order by inspirator_id, inspiration_id, level_id";
+                    queryPssExamReport = queryPssExamReport + " group by ri.inspirator_id, ri.inspiration_id, ri.level_id order by ri.inspirator_id, ri.inspiration_id, ri.level_id";
+                    break;
+                case 2:
+                    queryPssExamReport = queryPssExamReport + " group by ri.level_id order by ri.level_id";
                     break;
                 default:
-                    queryPssExamReport = queryPssExamReport + " group by level_id order by level_id";
                     break;
             }
             PreparedStatement statement = connection.prepareStatement(queryPssExamReport);
@@ -622,9 +628,14 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 } else {
                     reportBean.setSubjectId(0);
                 }
-                reportBean.setYearId(record.getInt("yearId"));
+                if (reportType != 4) {
+                    reportBean.setYearId(record.getInt("yearId"));
+                } else {
+                    reportBean.setYearId(0);
+                }
                 reportBean.setTotalForms(record.getInt("totalforms"));
                 reportBean.setTotalFees(record.getInt("totalfees"));
+                reportBean.setTotalPssFees(record.getInt("totalpssfees"));                                    
                 reportBean.setTotalFeesCollectedCount(record.getInt("feescollectedcount"));
                 subjectWiseReportList.add(reportBean);
             }
