@@ -583,18 +583,22 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
             String queryPssExamReport = "SELECT ri.level_id as yearId, count(ri.inspiration_id) as totalforms, sum(ri.EXAM_FEES) as totalfees, "
-                    + " sum(ri.FEES_PAID_STATUS) as feescollectedcount, sum(rl.pss_exam_fees) as totalpssfees ";
+                    + " sum(ri.FEES_PAID_STATUS) as feescollectedcount, sum(rl.pss_exam_fees) as totalpssfees , sum(rim.pss_discount) as totaldiscount ";
             if (reportType == 1) {
                 queryPssExamReport = queryPssExamReport + " , ri.inspiration_id as subjectId  ";
             }
             if (reportType == 3) {
                 queryPssExamReport = queryPssExamReport + " , ri.inspirator_id as educatorId , ri.inspiration_id as subjectId ";
             }
-            if (reportType == 4) {
+            if (reportType == 4 || reportType == 5) {
                 queryPssExamReport = "SELECT count(ri.inquiry_id) as totalforms, sum(ri.EXAM_FEES) as totalfees, "
-                        + " sum(ri.FEES_PAID_STATUS) as feescollectedcount , sum(rl.pss_exam_fees) as totalpssfees ";
+                        + " sum(ri.FEES_PAID_STATUS) as feescollectedcount , sum(rl.pss_exam_fees) as totalpssfees, sum(rim.pss_discount) as totaldiscount ";
+            }
+            if (reportType == 5) {
+                queryPssExamReport = queryPssExamReport + " , rim.inspirator_id as educatorId, rim.pss_discount";
             }
             queryPssExamReport = queryPssExamReport + " FROM raagatech_inquiry ri "
+                    + " join RAAGATECH_INSPIRATORMASTER rim on ri.inspirator_id = rim.inspirator_id "
                     + " join RAAGATECH_LEVELMASTER rl on ri.LEVEL_ID = rl.LEVEL_ID "
                     + " LEFT JOIN RAAGATECH_FOLLOWUPDETAILS rf ON ri.INQUIRY_ID = rf.INQUIRY_ID "
                     + " WHERE ri.exam_session = '" + examSession + "' AND ri.inspirator_id > 0 AND rf.INQUIRYSTATUS_ID = 1 AND ri.user_id = " + userId;
@@ -609,6 +613,9 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 case 2:
                     queryPssExamReport = queryPssExamReport + " group by ri.level_id order by ri.level_id";
                     break;
+                case 5:
+                    queryPssExamReport = queryPssExamReport + " group by rim.inspirator_id, rim.pss_discount order by rim.inspirator_id";
+                    break;
                 default:
                     break;
             }
@@ -616,7 +623,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             ResultSet record = statement.executeQuery();
             while (record.next()) {
                 PssExamReportBean reportBean = new PssExamReportBean();
-                if (reportType == 3) {
+                if (reportType == 3 || reportType == 5) {
                     reportBean.setEducatorId(record.getInt("educatorId"));
                 } else {
                     reportBean.setEducatorId(0);
@@ -626,7 +633,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 } else {
                     reportBean.setSubjectId(0);
                 }
-                if (reportType != 4) {
+                if (reportType < 4) {
                     reportBean.setYearId(record.getInt("yearId"));
                 } else {
                     reportBean.setYearId(0);
@@ -635,6 +642,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 reportBean.setTotalFees(record.getInt("totalfees"));
                 reportBean.setTotalPssFees(record.getInt("totalpssfees"));
                 reportBean.setTotalFeesCollectedCount(record.getInt("feescollectedcount"));
+                reportBean.setTotalDiscount(record.getInt("totaldiscount"));
                 subjectWiseReportList.add(reportBean);
             }
         }
