@@ -149,11 +149,11 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             String querySelectInquiries = "SELECT ri.*, rf.followup_id as flpid FROM raagatech_inquiry ri "
                     + " LEFT JOIN RAAGATECH_FOLLOWUPDETAILS rf ON ri.INQUIRY_ID = rf.INQUIRY_ID "
                     + " WHERE ri.exam_session = '" + examSession + "' ";
-            if (inspiratorId >= 0 && userId == 2) {
+            /*if (inspiratorId >= 0 && userId == 2) {
                 querySelectInquiries = querySelectInquiries + " AND ri.inspirator_id = " + inspiratorId;
-            } else if (inspiratorId > 0) {
+            } else*/ if (inspiratorId > 0) {
                 querySelectInquiries = querySelectInquiries + " AND ri.inspirator_id = " + inspiratorId;
-            } else {
+            } else if (userId != 2) {
                 querySelectInquiries = querySelectInquiries + " AND ri.user_id = " + userId;
             }
             if (inquiryStatusId >= 1) {
