@@ -26,4 +26,6 @@ public class PssExamReportBean {
     private Integer totalFees;
     private Integer totalPssFees;
     private Integer totalFeesCollectedCount;
+    private Integer totalDiscount;
+    private Integer discount;
 }
