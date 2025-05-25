@@ -28,7 +28,7 @@ public class DatabaseSource implements OracleDatabaseInterface {
 
     final static String DB_URL = "jdbc:oracle:thin:@(description= (retry_count=20)(retry_delay=3)(address=(protocol=tcps)(port=1521)(host=adb.ap-mumbai-1.oraclecloud.com))(connect_data=(service_name=ge9bf8133738252_raagatechdb_high.adb.oraclecloud.com))(security=(ssl_server_dn_match=yes)))";
     final static String DB_USER = "ADMIN";
-    final static String DB_PASSWORD = "Samriddhi12345";
+    final static String DB_PASSWORD = "Rudransh12345";
     protected char delimiter = ' ';
     final static String CONN_FACTORY_CLASS_NAME = "oracle.jdbc.pool.OracleDataSource";
 
