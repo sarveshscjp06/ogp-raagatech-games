@@ -4,6 +4,9 @@
  */
 package com.raagatech.omp.musicapp;
 
+import com.raagatech.omp.musicbean.UserDataBean;
+import com.raagatech.omp.musicbean.PssExamReportBean;
+import com.raagatech.omp.musicbean.InquiryBean;
 import com.raagatech.common.datasource.CommonUtilitiesInterface;
 import com.raagatech.common.datasource.EmailUtilityInterface;
 import java.util.ArrayList;

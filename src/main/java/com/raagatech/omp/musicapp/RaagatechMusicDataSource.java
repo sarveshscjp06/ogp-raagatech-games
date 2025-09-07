@@ -4,6 +4,10 @@
  */
 package com.raagatech.omp.musicapp;
 
+import com.raagatech.omp.musicbean.UserDataBean;
+import com.raagatech.omp.musicbean.SliderImageBean;
+import com.raagatech.omp.musicbean.PssExamReportBean;
+import com.raagatech.omp.musicbean.InquiryBean;
 import com.raagatech.Feedback;
 import com.raagatech.common.datasource.OracleDatabaseInterface;
 import java.sql.PreparedStatement;
@@ -342,7 +346,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             statement = connection.prepareStatement(querySelectEducators);
             record = statement.executeQuery();
             while (record.next()) {
-                String inspiratorData = record.getInt("inspirator_id") + "/" + record.getString("first_name") + " " + record.getString("last_name") + "/" + record.getInt("pss_discount");
+                String inspiratorData = record.getInt("inspirator_id") + "/" + record.getString("first_name") + "/" + record.getInt("pss_discount");
                 inspiratorList.add(inspiratorData);
             }
             userData.setInspiratorList(inspiratorList);

@@ -4,6 +4,10 @@
  */
 package com.raagatech.omp.musicapp;
 
+import com.raagatech.omp.musicbean.UserDataBean;
+import com.raagatech.omp.musicbean.SliderImageBean;
+import com.raagatech.omp.musicbean.PssExamReportBean;
+import com.raagatech.omp.musicbean.InquiryBean;
 import com.raagatech.Feedback;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
