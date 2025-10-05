@@ -42,6 +42,7 @@ public class InquiryBean {
     private int examFees;
     private int feesPaidStatus;
     private int inspiratorId;
+    private int formNo;
 
     /**
      * @return the inquiry_id
@@ -448,5 +449,19 @@ public class InquiryBean {
     public void setInspiratorId(int inspiratorId) {
         this.inspiratorId = inspiratorId;
     }
-    
+
+    /**
+     * @return the formNo
+     */
+    public int getFormNo() {
+        return formNo;
+    }
+
+    /**
+     * @param formNo the formNo to set
+     */
+    public void setFormNo(int formNo) {
+        this.formNo = formNo;
+    }
+        
 }

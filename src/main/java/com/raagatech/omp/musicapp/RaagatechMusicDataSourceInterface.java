@@ -43,13 +43,13 @@ public interface RaagatechMusicDataSourceInterface {
     public boolean updateInquiry(int inquiry_id, String inquiryname, int inspirationid, String email, long mobileNo,
             int levelid, String address, String followupDetails, String nationality, String dob, long telOther, String image,
             String gender, int inspirator_id, String comfortability, String primaryskill,
-            int userId, int pinCode, String examSession, String fatherName, String motherName, int examFees, int inquiryStatusId) throws Exception;
+            int userId, int pinCode, String examSession, String fatherName, String motherName, int examFees, int inquiryStatusId, int formNo) throws Exception;
 
     public LinkedHashMap<Integer, String> selectInquiryStatus() throws Exception;
 
     public boolean updateFollowup(int inquiry_id, int inquirystatus_id, String followupDetails) throws Exception;
 
-    public InquiryBean getInquiryById(int inquiryId, String followUpId) throws Exception;
+    public InquiryBean getInquiryById(int inquiryId, String followUpId, int formNo) throws Exception;
 
     public int generateNextPrimaryKey(String tableName, String columnName) throws Exception;
 
@@ -72,7 +72,7 @@ public interface RaagatechMusicDataSourceInterface {
 
     public boolean updateInquiryForMobileVerification(int inquiryId, long mobileNo) throws Exception;
 
-    public boolean updateInquiryForFeesPaidStatus(int inquiryId, int amount) throws Exception;
+    public boolean updateInquiryForFeesPaidStatus(int inquiryId, int amount, String examSession, int formNo) throws Exception;
 
     public boolean addFollowUps(String name, String email, long mobile, String followupDetails, int inquiryStatusId) throws Exception;
 

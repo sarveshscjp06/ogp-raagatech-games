@@ -14,7 +14,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import oracle.jdbc.OracleConnection;
@@ -85,6 +84,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             int inspiratorId, String comfortability, String primaryskill, int userId, int pinCode,
             String examSession, String fatherName, String motherName, int examFees, int inquiryStatusId) throws Exception {
         boolean insertStatus = Boolean.FALSE;
+        int records;
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
             char sex = gender.equals("Male") ? 'M' : 'F';
@@ -94,31 +94,45 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 inspiratorId = 1;
                 inspirationid = 1;
             }
-            int inquiry_id = oracleDataSource.generateNextPrimaryKey("raagatech_inquiry", "inquiry_id");
-            String queryInsertInquiry = "INSERT into raagatech_inquiry (inquiry_id, firstname, inspiration_id, inquiry_date, email, mobile"
-                    + ", level_id, address_line1, nationality, date_of_birth, photo"
-                    + ", gender, inspirator_id, comfortability, primaryskill, user_id, pincode, exam_session, father_name, mother_name, exam_fees) "
-                    + "VALUES (" + inquiry_id + ", '" + inquiryname + "'," + inspirationid + ",?, '" + email + "', " + mobileNo + ","
-                    + levelid + ", '" + address + "', '" + nationality + "', to_date(?, 'dd-mm-yyyy'), '" + image + "', '"
-                    + sex + "', " + inspiratorId + ", '" + comfortability + "', '" + primaryskill + "', " + userId + ", " + pinCode + ", '" + examSession + "'"
-                    + ", '" + fatherName + "', '" + motherName + "', " + examFees + ")";
-            PreparedStatement statement = connection.prepareStatement(queryInsertInquiry);
-            statement.setTimestamp(1, getCurrentTimeStamp());
-            statement.setString(2, dob);
-            int records = statement.executeUpdate();
-            if (records > 0) {
-                int followup_id = oracleDataSource.generateNextPrimaryKey("raagatech_followupdetails", "followup_id");
-                String queryInsertFollowupDetails = "INSERT into raagatech_followupdetails (followup_id, inquiry_id, inquirystatus_id, followup_details, followup_date) "
-                        + "VALUES (" + followup_id + ", " + inquiry_id + ", " + inquiryStatusId + ", '" + followupDetails + "',?)";
-                PreparedStatement statement2 = connection.prepareStatement(queryInsertFollowupDetails);
-                statement2.setTimestamp(1, getCurrentTimeStamp());
-                records = statement2.executeUpdate();
+            int inquiry_id = 0;
+            //upgrade to reduce data redundancy
+            String selectInquiryQuery = "select inquiry_id from raagatech_inquiry WHERE upper(trim(firstname)) = upper(trim('" + inquiryname + "')) "
+                    + "AND upper(trim(father_name)) = upper(trim('" + fatherName + "')) AND upper(trim(mother_name)) = upper(trim('" + motherName + "')) AND date_of_birth = TO_DATE('" + dob + "', 'DD-MM-YYYY')";
+            PreparedStatement statement = connection.prepareStatement(selectInquiryQuery);
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                inquiry_id = rs.getInt("inquiry_id");
+            }
+            if (inquiry_id == 0) {
+                inquiry_id = oracleDataSource.generateNextPrimaryKey("raagatech_inquiry", "inquiry_id");
+                String queryInsertInquiry = "INSERT into raagatech_inquiry (inquiry_id, firstname, inspiration_id, inquiry_date, email, mobile"
+                        + ", level_id, address_line1, nationality, date_of_birth, photo"
+                        + ", gender, inspirator_id, comfortability, primaryskill, user_id, pincode, exam_session, father_name, mother_name, exam_fees) "
+                        + "VALUES (" + inquiry_id + ", '" + inquiryname + "'," + inspirationid + ",?, '" + email + "', " + mobileNo + ","
+                        + levelid + ", '" + address + "', '" + nationality + "', to_date(?, 'dd-mm-yyyy'), '" + image + "', '"
+                        + sex + "', " + inspiratorId + ", '" + comfortability + "', '" + primaryskill + "', " + userId + ", " + pinCode + ", '" + examSession + "'"
+                        + ", '" + fatherName + "', '" + motherName + "', " + examFees + ")";
+                statement = connection.prepareStatement(queryInsertInquiry);
+                statement.setTimestamp(1, getCurrentTimeStamp());
+                statement.setString(2, dob);
+                records = statement.executeUpdate();
                 if (records > 0) {
-                    insertStatus = Boolean.TRUE;
+                    int followup_id = oracleDataSource.generateNextPrimaryKey("raagatech_followupdetails", "followup_id");
+                    String queryInsertFollowupDetails = "INSERT into raagatech_followupdetails (followup_id, inquiry_id, inquirystatus_id, followup_details, followup_date) "
+                            + "VALUES (" + followup_id + ", " + inquiry_id + ", " + inquiryStatusId + ", '" + followupDetails + "',?)";
+                    PreparedStatement statement2 = connection.prepareStatement(queryInsertFollowupDetails);
+                    statement2.setTimestamp(1, getCurrentTimeStamp());
+                    records = statement2.executeUpdate();
+                    if (records > 0) {
+                        insertStatus = Boolean.TRUE;
+                    }
                 }
+            }
+
+            if (inquiry_id > 0) {
                 String selectUserQuery = "select user_id from raagatech_user WHERE email = '" + email + "' AND mobile = " + mobileNo;
                 statement = connection.prepareStatement(selectUserQuery);
-                ResultSet rs = statement.executeQuery();
+                rs = statement.executeQuery();
                 int existingUserId = 0;
                 while (rs.next()) {
                     existingUserId = rs.getInt("user_id");
@@ -128,6 +142,20 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                             + " WHERE email = '" + email + "' AND mobileNo = " + mobileNo;
                     statement = connection.prepareStatement(queryUpdateInquiry);
                     statement.executeUpdate();
+                }
+            }
+            if (Integer.parseInt(examSession.split("-")[1]) > 2025 && inquiry_id > 0) {
+                int form_no = oracleDataSource.generateNextPrimaryKey("raagatech_pss_exam_session", "form_no");
+                String queryInsertExamForm = "INSERT into raagatech_pss_exam_session (form_no, examinee_id, subject_id, submission_date "
+                        + ", course_id, trainer_id, user_id, exam_session, fee, pss_exam_fee) "
+                        + "VALUES (" + form_no + ", " + inquiry_id + "," + inspirationid + ",?,"
+                        + levelid + ", " + inspiratorId + ", " + userId + ", '" + examSession + "', " + examFees + ", 0)";
+
+                statement = connection.prepareStatement(queryInsertExamForm);
+                statement.setTimestamp(1, getCurrentTimeStamp());
+                records = statement.executeUpdate();
+                if (records > 0) {
+                    insertStatus = Boolean.TRUE;
                 }
             }
         }
@@ -153,6 +181,17 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             String querySelectInquiries = "SELECT ri.*, rf.followup_id as flpid FROM raagatech_inquiry ri "
                     + " LEFT JOIN RAAGATECH_FOLLOWUPDETAILS rf ON ri.INQUIRY_ID = rf.INQUIRY_ID "
                     + " WHERE ri.exam_session = '" + examSession + "' ";
+
+            if (Integer.parseInt(examSession.split("-")[1]) > 2025) {
+                querySelectInquiries = "SELECT rpes.form_no as formNo, rpes.exam_session as exam_session, rpes.fee as exam_fees, rpes.pss_exam_fee as pssExamFee, "
+                        + " ri.firstname, ri.gender, ri.email, ri.inquiry_date, ri.nationality, ri.mobile, ri.inquiry_id, ri.primaryskill, ri.emailverification, "
+                        + " ri.mobileverification, ri.fees_paid_status, "
+                        + " rf.followup_id as flpid "
+                        + " FROM raagatech_pss_exam_session rpes join raagatech_inquiry ri ON rpes.examinee_id = ri.INQUIRY_ID "
+                        + " LEFT JOIN RAAGATECH_FOLLOWUPDETAILS rf ON ri.INQUIRY_ID = rf.INQUIRY_ID "
+                        + " WHERE rpes.exam_session = '" + examSession + "' ";
+            }
+
             /*if (inspiratorId >= 0 && userId == 2) {
                 querySelectInquiries = querySelectInquiries + " AND ri.inspirator_id = " + inspiratorId;
             } else*/ if (inspiratorId > 0) {
@@ -187,7 +226,12 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 } else {
                     inquiry.setFollowup_details(record.getString("flpid"));
                 }
-
+                if (Integer.parseInt(examSession.split("-")[1]) > 2025) {
+                    inquiry.setFormNo(record.getInt("formNo"));                    
+                    if (record.getInt("pssExamFee") > 0) {
+                        inquiry.setFeesPaidStatus(1);
+                    }
+                }
                 inquiryList.add(inquiry);
             }
         }
@@ -199,7 +243,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             int levelid, String address, String followupDetails, String nationality,
             String dob, long telOther, String image, String gender, int inspirator_id,
             String comfortability, String primaryskill, int userId, int pinCode,
-            String examSession, String fatherName, String motherName, int examFees, int inquiryStatusId) throws Exception {
+            String examSession, String fatherName, String motherName, int examFees, int inquiryStatusId, int formNo) throws Exception {
         boolean updateStatus = Boolean.FALSE;
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
@@ -210,9 +254,27 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                     + ", father_name = '" + fatherName + "' " + ", mother_name = '" + motherName + "', exam_fees = " + examFees + ", inspirator_id = " + inspirator_id
                     + " WHERE inquiry_id = " + inquiry_id;
 
+            if (Integer.parseInt(examSession.split("-")[1]) > 2025) {
+                queryUpdateInquiry = "UPDATE raagatech_inquiry set firstname = '" + inquiryname+"' "
+                        + ", email = '" + email + "', mobile = " + mobileNo + ", address_line1 = '" + address + "', gender = '" + sex + "',"
+                        + " pincode = " + pinCode + ", primaryskill = '" + primaryskill + "'" + ", date_of_birth = to_date(?, 'dd-mm-yyyy')"
+                        + ", father_name = '" + fatherName + "', mother_name = '" + motherName + "'"
+                        + " WHERE inquiry_id = " + inquiry_id;
+            }
+
             PreparedStatement statement = connection.prepareStatement(queryUpdateInquiry);
             statement.setString(1, dob);
             int records = statement.executeUpdate();
+
+            if (formNo > 0) {
+                String queryInsertExamForm = "UPDATE raagatech_pss_exam_session SET subject_id = " + inspirationid
+                        + ", course_id = " + levelid + ", trainer_id = " + inspirator_id + ", fee = " + examFees
+                        + " WHERE form_no = " + formNo + " AND examinee_id = " + inquiry_id + " AND exam_session = '" + examSession + "'";
+
+                PreparedStatement statement1 = connection.prepareStatement(queryInsertExamForm);
+                records = statement1.executeUpdate();
+            }
+
             if (records > 0) {
                 String queryUpdateFollowupDetails = "UPDATE raagatech_followupdetails set followup_details = '" + followupDetails + "', inquirystatus_id = " + inquiryStatusId
                         + " WHERE inquiry_id = " + inquiry_id;
@@ -237,15 +299,24 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
     }
 
     @Override
-    public InquiryBean getInquiryById(int inquiryId, String followUpId) throws Exception {
+    public InquiryBean getInquiryById(int inquiryId, String followUpId, int formNo) throws Exception {
         InquiryBean inquiry = null;
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
             String queryInsertUser = "SELECT ri.*, rf.followup_details, rf.inquirystatus_id "
                     + "FROM raagatech_inquiry ri join raagatech_followupdetails rf on ri.inquiry_id = rf.inquiry_id "
                     + "WHERE ri.inquiry_id = " + inquiryId;
+
+            if (formNo > 0) {
+                queryInsertUser = "SELECT rpes.subject_id as subjectId, rpes.course_id as levelId, rpes.trainer_id as trainerId, rpes.fee as examFees, rpes.exam_session as examSession, rpes.pss_exam_fee as pssExamFee, "
+                        + "ri.*, rf.followup_details, rf.inquirystatus_id "
+                        + "FROM raagatech_pss_exam_session rpes join raagatech_inquiry ri ON rpes.examinee_id = ri.inquiry_id "
+                        + "join raagatech_followupdetails rf on ri.inquiry_id = rf.inquiry_id "
+                        + "WHERE form_no = " + formNo + " AND examinee_id = " + inquiryId;
+            }
+
             if (followUpId != null) {
-                queryInsertUser = queryInsertUser + "AND rf.followup_id = " + followUpId;
+                queryInsertUser = queryInsertUser + " AND rf.followup_id = " + followUpId;
             }
             PreparedStatement statement = connection.prepareStatement(queryInsertUser);
             ResultSet record = statement.executeQuery();
@@ -276,6 +347,16 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 inquiry.setFeesPaidStatus(record.getInt("fees_paid_status"));
                 inquiry.setInquirystatus_id(record.getInt("inquirystatus_id"));
                 inquiry.setInspiratorId(record.getInt("inspirator_id"));
+                if (formNo > 0) {
+                    inquiry.setInspiration_id(record.getInt("subjectId"));
+                    inquiry.setLevel_id(record.getInt("levelId"));
+                    inquiry.setExamFees(record.getInt("examFees"));
+                    inquiry.setInspiratorId(record.getInt("trainerId"));
+                    inquiry.setExamSession(record.getString("examSession"));
+                    if (record.getInt("pssExamFee") > 0) {
+                        inquiry.setFeesPaidStatus(1);
+                    }
+                }
             }
         }
         return inquiry;
@@ -341,18 +422,18 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             }
 
             List<String> inspiratorList = new ArrayList<>();
+            inspiratorList.add("All Inquiries/0");
             String querySelectEducators = "SELECT * from RAAGATECH_INSPIRATORMASTER order by inspirator_id ";
-
             statement = connection.prepareStatement(querySelectEducators);
             record = statement.executeQuery();
             while (record.next()) {
-                String inspiratorData = record.getInt("inspirator_id") + "/" + record.getString("first_name") + "/" + record.getInt("pss_discount");
+                String inspiratorData = record.getString("first_name") + "/" + record.getInt("pss_discount");
                 inspiratorList.add(inspiratorData);
             }
             userData.setInspiratorList(inspiratorList);
 
             List<String> inspirationList = new ArrayList<>();
-            inspirationList.add("");
+            inspirationList.add("Select");
             String querySelectInspiration = "SELECT * FROM RAAGATECH_INSPIRATIONMASTER order by inspiration_id";
 
             statement = connection.prepareStatement(querySelectInspiration);
@@ -363,21 +444,29 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             userData.setInspirationList(inspirationList);
 
             List<String> examFeesList = new ArrayList<>();
-            examFeesList.add("0/NaN/0/0");
+            examFeesList.add("Select/0/0");
             String querySelectExamFees = "select * from RAAGATECH_LEVELMASTER order by level_id";
 
             statement = connection.prepareStatement(querySelectExamFees);
             record = statement.executeQuery();
             while (record.next()) {
-                String examFeesData = record.getInt("level_id") + "/" + record.getString("levelname") + "/" + record.getInt("exam_fees") + "/" + record.getInt("pss_exam_fees");
+                String examFeesData = record.getString("levelname") + "/" + record.getInt("exam_fees") + "/" + record.getInt("pss_exam_fees");
                 examFeesList.add(examFeesData);
             }
             userData.setExamFeesList(examFeesList);
-            userData.setInspirationList(inspirationList);
-        }
+            
+            List<String> inquiryStatusList = new ArrayList<>();
+            inquiryStatusList.add("Select/Select/Select");
+            String querySelectInquiryStatus = "SELECT * FROM RAAGATECH_INQUIRYSTATUSMASTER order by INQUIRYSTATUS_ID";
 
-        List<String> inquiryStatusList = Arrays.asList("", "Inquiry", "Leads", "Follow-up", "Aspirant", "Registration", "Admission", "Feedback", "PSS Exam", "Certified", "Meeting", "Contacts");
-        userData.setInquiryStatusList(inquiryStatusList);
+            statement = connection.prepareStatement(querySelectInquiryStatus);
+            record = statement.executeQuery();
+            while (record.next()) {
+                String inquiryStatusData = record.getString("label_text") + "/" + record.getString("label_color") + "/" + record.getString("description");
+                inquiryStatusList.add(inquiryStatusData);
+            }
+            userData.setInquiryStatusList(inquiryStatusList);
+        }        
         return userData;
     }
 
@@ -528,12 +617,40 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
     }
 
     @Override
-    public boolean updateInquiryForFeesPaidStatus(int inquiryId, int amount) throws Exception {
+    public boolean updateInquiryForFeesPaidStatus(int inquiryId, int amount, String examSession, int formNo) throws Exception {
         boolean updateStatus = Boolean.FALSE;
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
             String queryUpdateUser = "update raagatech_inquiry set fees_paid_status = 1 where inquiry_id = " + inquiryId + " AND EXAM_FEES = " + amount;
-            PreparedStatement statement = connection.prepareStatement(queryUpdateUser);
+            PreparedStatement statement;
+            if (Integer.parseInt(examSession.split("-")[1]) > 2025) {
+
+                String selectPssExamFeeQuery = "select rpes.course_id, rpes.inspirator_id, rlm.exam_fees as examFees, rlm.pss_exam_fees as pssExamFees, rim.pss_discount as discount "
+                        + "from raagatech_pss_exam_session rpes "
+                        + "JOIN raagatech_levelmaster rlm ON rpes.subject_id = rlm.level_id "
+                        + "JOIN raagatech_inspiratormaster rim ON rpes.trainer_id = rim.inspirator_id "
+                        + "where rpes.examinee_id = " + inquiryId + " AND rpes.formNo = " + formNo + " AND rpes.exam_session = " + examSession;
+                statement = connection.prepareStatement(selectPssExamFeeQuery);
+                ResultSet record = statement.executeQuery();
+                int examFees = 0;
+                int pssExamFees = 0;
+                int trainerFees = 0;
+                while (record.next()) {
+                    examFees = record.getInt("examFees");
+                    pssExamFees = record.getInt("pssExamFees");
+                    trainerFees = record.getInt("discount");
+                }
+                if (amount >= examFees
+                        && amount > pssExamFees
+                        && (amount - pssExamFees) > trainerFees
+                        && (amount - pssExamFees - trainerFees) > 0) {
+                    int raagatechFees = amount - pssExamFees - trainerFees;
+                    queryUpdateUser = "update raagatech_pss_exam_session set fee = " + amount + ", pss_exam_fee = "
+                            + pssExamFees + ", trainer_fee = " + trainerFees + ", raagatech_fee = " + raagatechFees
+                            + " where examinee_id = " + inquiryId + " AND formNo = " + formNo;
+                }
+            }
+            statement = connection.prepareStatement(queryUpdateUser);
             int records = statement.executeUpdate();
             if (records > 0) {
                 updateStatus = Boolean.TRUE;
