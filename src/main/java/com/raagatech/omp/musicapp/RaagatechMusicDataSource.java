@@ -127,6 +127,20 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                         insertStatus = Boolean.TRUE;
                     }
                 }
+            } else {
+                String queryUpdateInquiry = "UPDATE raagatech_inquiry set firstname = '" + inquiryname + "' "
+                        + ", email = '" + email + "', mobile = " + mobileNo + ", address_line1 = '" + address + "', gender = '" + sex + "',"
+                        + " pincode = " + pinCode + ", primaryskill = '" + primaryskill + "'" + ", date_of_birth = to_date(?, 'dd-mm-yyyy')"
+                        + ", father_name = '" + fatherName + "', mother_name = '" + motherName + "'"
+                        + " WHERE inquiry_id = " + inquiry_id;
+                statement = connection.prepareStatement(queryUpdateInquiry);
+                statement.setString(1, dob);
+                statement.executeUpdate();
+
+                String queryUpdateFollowupDetails = "UPDATE raagatech_followupdetails set followup_details = '" + followupDetails + "', inquirystatus_id = " + inquiryStatusId
+                        + " WHERE inquiry_id = " + inquiry_id;
+                statement = connection.prepareStatement(queryUpdateFollowupDetails);
+                statement.executeUpdate();
             }
 
             if (inquiry_id > 0) {
@@ -227,7 +241,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                     inquiry.setFollowup_details(record.getString("flpid"));
                 }
                 if (Integer.parseInt(examSession.split("-")[1]) > 2025) {
-                    inquiry.setFormNo(record.getInt("formNo"));                    
+                    inquiry.setFormNo(record.getInt("formNo"));
                     if (record.getInt("pssExamFee") > 0) {
                         inquiry.setFeesPaidStatus(1);
                     }
@@ -255,7 +269,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                     + " WHERE inquiry_id = " + inquiry_id;
 
             if (Integer.parseInt(examSession.split("-")[1]) > 2025) {
-                queryUpdateInquiry = "UPDATE raagatech_inquiry set firstname = '" + inquiryname+"' "
+                queryUpdateInquiry = "UPDATE raagatech_inquiry set firstname = '" + inquiryname + "' "
                         + ", email = '" + email + "', mobile = " + mobileNo + ", address_line1 = '" + address + "', gender = '" + sex + "',"
                         + " pincode = " + pinCode + ", primaryskill = '" + primaryskill + "'" + ", date_of_birth = to_date(?, 'dd-mm-yyyy')"
                         + ", father_name = '" + fatherName + "', mother_name = '" + motherName + "'"
@@ -454,7 +468,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 examFeesList.add(examFeesData);
             }
             userData.setExamFeesList(examFeesList);
-            
+
             List<String> inquiryStatusList = new ArrayList<>();
             inquiryStatusList.add("Select/Select/Select");
             String querySelectInquiryStatus = "SELECT * FROM RAAGATECH_INQUIRYSTATUSMASTER order by INQUIRYSTATUS_ID";
@@ -466,7 +480,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 inquiryStatusList.add(inquiryStatusData);
             }
             userData.setInquiryStatusList(inquiryStatusList);
-        }        
+        }
         return userData;
     }
 
