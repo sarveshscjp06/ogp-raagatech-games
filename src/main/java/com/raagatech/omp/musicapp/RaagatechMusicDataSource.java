@@ -209,7 +209,11 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             /*if (inspiratorId >= 0 && userId == 2) {
                 querySelectInquiries = querySelectInquiries + " AND ri.inspirator_id = " + inspiratorId;
             } else*/ if (inspiratorId > 0) {
-                querySelectInquiries = querySelectInquiries + " AND ri.inspirator_id = " + inspiratorId;
+                if (Integer.parseInt(examSession.split("-")[1]) > 2025) {
+                    querySelectInquiries = querySelectInquiries + " AND rpes.trainer_id = " + inspiratorId;
+                } else {
+                    querySelectInquiries = querySelectInquiries + " AND ri.inspirator_id = " + inspiratorId;
+                }
             } else if (userId != 2) {
                 querySelectInquiries = querySelectInquiries + " AND ri.user_id = " + userId;
             }
