@@ -723,37 +723,85 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
             String queryPssExamReport = "SELECT ri.level_id as yearId, count(ri.inspiration_id) as totalforms, sum(ri.EXAM_FEES) as totalfees, "
                     + " sum(ri.FEES_PAID_STATUS) as feescollectedcount, sum(rl.pss_exam_fees) as totalpssfees , sum(rim.pss_discount) as totaldiscount ";
+
+            if (Integer.parseInt(examSession.split("-")[1]) > 2025 && userId > 0) {
+                queryPssExamReport = "SELECT rpes.course_id as yearId, count(rpes.subject_id) as totalforms, sum(rpes.fee) as totalfees, "
+                        + " sum(ri.FEES_PAID_STATUS) as feescollectedcount, sum(rl.pss_exam_fees) as totalpssfees , sum(rim.pss_discount) as totaldiscount ";
+            }
+
             if (reportType == 1) {
-                queryPssExamReport = queryPssExamReport + " , ri.inspiration_id as subjectId  ";
+                if (Integer.parseInt(examSession.split("-")[1]) > 2025 && userId > 0) {
+                    queryPssExamReport = queryPssExamReport + " , rpes.subject_id as subjectId  ";
+                } else {
+                    queryPssExamReport = queryPssExamReport + " , ri.inspiration_id as subjectId  ";
+                }
             }
             if (reportType == 3) {
-                queryPssExamReport = queryPssExamReport + " , ri.inspirator_id as educatorId , ri.inspiration_id as subjectId ";
+                if (Integer.parseInt(examSession.split("-")[1]) > 2025 && userId > 0) {
+                    queryPssExamReport = queryPssExamReport + " , rpes.trainer_id as educatorId , rpes.subject_id as subjectId ";
+                } else {
+                    queryPssExamReport = queryPssExamReport + " , ri.inspirator_id as educatorId , ri.inspiration_id as subjectId ";
+                }
             }
             if (reportType == 4 || reportType == 5) {
-                queryPssExamReport = "SELECT count(ri.inquiry_id) as totalforms, sum(ri.EXAM_FEES) as totalfees, "
-                        + " sum(ri.FEES_PAID_STATUS) as feescollectedcount , sum(rl.pss_exam_fees) as totalpssfees, sum(rim.pss_discount) as totaldiscount ";
+                if (Integer.parseInt(examSession.split("-")[1]) > 2025 && userId > 0) {
+                    queryPssExamReport = "SELECT count(rpes.form_no) as totalforms, sum(rpes.FEE) as totalfees, "
+                            + " sum(ri.FEES_PAID_STATUS) as feescollectedcount , sum(rl.pss_exam_fees) as totalpssfees, sum(rim.pss_discount) as totaldiscount ";
+                } else {
+                    queryPssExamReport = "SELECT count(ri.inquiry_id) as totalforms, sum(ri.EXAM_FEES) as totalfees, "
+                            + " sum(ri.FEES_PAID_STATUS) as feescollectedcount , sum(rl.pss_exam_fees) as totalpssfees, sum(rim.pss_discount) as totaldiscount ";
+                }
             }
             if (reportType == 5) {
-                queryPssExamReport = queryPssExamReport + " , rim.inspirator_id as educatorId, rim.pss_discount";
+                if (Integer.parseInt(examSession.split("-")[1]) > 2025 && userId > 0) {
+                    queryPssExamReport = queryPssExamReport + " , rpes.trainer_id as educatorId, rim.pss_discount";
+                } else {
+                    queryPssExamReport = queryPssExamReport + " , rim.inspirator_id as educatorId, rim.pss_discount";
+                }
             }
-            queryPssExamReport = queryPssExamReport + " FROM raagatech_inquiry ri "
-                    + " join RAAGATECH_INSPIRATORMASTER rim on ri.inspirator_id = rim.inspirator_id "
-                    + " join RAAGATECH_LEVELMASTER rl on ri.LEVEL_ID = rl.LEVEL_ID "
-                    + " LEFT JOIN RAAGATECH_FOLLOWUPDETAILS rf ON ri.INQUIRY_ID = rf.INQUIRY_ID "
-                    + " WHERE ri.exam_session = '" + examSession + "' AND ri.inspirator_id > 0 AND rf.INQUIRYSTATUS_ID = 1 AND ri.user_id = " + userId;
+
+            if (Integer.parseInt(examSession.split("-")[1]) > 2025 && userId > 0) {
+                queryPssExamReport = queryPssExamReport + " from raagatech_pss_exam_session rpes join raagatech_inquiry ri on rpes.examinee_id = ri.INQUIRY_ID "
+                        + " join RAAGATECH_INSPIRATORMASTER rim on rpes.trainer_id = rim.inspirator_id "
+                        + " join RAAGATECH_LEVELMASTER rl on rpes.course_id = rl.LEVEL_ID "
+                        + " LEFT JOIN RAAGATECH_FOLLOWUPDETAILS rf ON rpes.examinee_id = rf.INQUIRY_ID "
+                        + " WHERE rpes.exam_session = '" + examSession + "' AND rpes.trainer_id > 0 AND rf.INQUIRYSTATUS_ID = 8 AND ri.user_id = " + userId;
+            } else {
+                queryPssExamReport = queryPssExamReport + " FROM raagatech_inquiry ri "
+                        + " join RAAGATECH_INSPIRATORMASTER rim on ri.inspirator_id = rim.inspirator_id "
+                        + " join RAAGATECH_LEVELMASTER rl on ri.LEVEL_ID = rl.LEVEL_ID "
+                        + " LEFT JOIN RAAGATECH_FOLLOWUPDETAILS rf ON ri.INQUIRY_ID = rf.INQUIRY_ID "
+                        + " WHERE ri.exam_session = '" + examSession + "' AND ri.inspirator_id > 0 AND rf.INQUIRYSTATUS_ID = 1 AND ri.user_id = " + userId;
+            }
 
             switch (reportType) {
                 case 1:
-                    queryPssExamReport = queryPssExamReport + " group by ri.inspiration_id, ri.level_id order by ri.inspiration_id, ri.level_id";
+                    if (Integer.parseInt(examSession.split("-")[1]) > 2025 && userId > 0) {
+                        queryPssExamReport = queryPssExamReport + " group by rpes.subject_id, rpes.course_id order by rpes.subject_id, rpes.course_id";
+                    } else {
+                        queryPssExamReport = queryPssExamReport + " group by ri.inspiration_id, ri.level_id order by ri.inspiration_id, ri.level_id";
+                    }
                     break;
                 case 3:
-                    queryPssExamReport = queryPssExamReport + " group by ri.inspirator_id, ri.inspiration_id, ri.level_id order by ri.inspirator_id, ri.inspiration_id, ri.level_id";
+                    if (Integer.parseInt(examSession.split("-")[1]) > 2025 && userId > 0) {
+                        queryPssExamReport = queryPssExamReport + " group by rpes.trainer_id, rpes.subject_id, rpes.course_id order by rpes.trainer_id, rpes.subject_id, rpes.course_id";
+                    } else {
+                        queryPssExamReport = queryPssExamReport + " group by ri.inspirator_id, ri.inspiration_id, ri.level_id order by ri.inspirator_id, ri.inspiration_id, ri.level_id";
+                    }
                     break;
                 case 2:
-                    queryPssExamReport = queryPssExamReport + " group by ri.level_id order by ri.level_id";
+                    if (Integer.parseInt(examSession.split("-")[1]) > 2025 && userId > 0) {
+                        queryPssExamReport = queryPssExamReport + " group by rpes.course_id order by rpes.course_id";
+                    } else {
+                        queryPssExamReport = queryPssExamReport + " group by ri.level_id order by ri.level_id";
+                    }
                     break;
                 case 5:
-                    queryPssExamReport = queryPssExamReport + " group by rim.inspirator_id, rim.pss_discount order by rim.inspirator_id";
+                    if (Integer.parseInt(examSession.split("-")[1]) > 2025 && userId > 0) {
+                        queryPssExamReport = queryPssExamReport + " group by rpes.trainer_id, rim.pss_discount order by rpes.trainer_id";
+                    } else {
+                        queryPssExamReport = queryPssExamReport + " group by rim.inspirator_id, rim.pss_discount order by rim.inspirator_id";
+                    }
                     break;
                 default:
                     break;
@@ -823,8 +871,8 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
 
         boolean isInserted;
         // With AutoCloseable, the connection is closed automatically.
-        int id = oracleDataSource.generateNextPrimaryKey("raagatech_inspiratormaster", "inspirator_id");
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
+            int id = oracleDataSource.generateNextPrimaryKey("raagatech_inspiratormaster", "inspirator_id");
             char sex = gender.equals("Male") ? 'M' : 'F';
             String queryInsertUser = "INSERT into raagatech_inspiratormaster (inspirator_id, first_name, date_of_birth, email, country_code, mobile, "
                     + "address_line1, address_line2, specialization, pss_discount, date_of_joining) "
@@ -837,8 +885,8 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             if (isInserted) {
                 String queryUpdateUser = "UPDATE raagatech_user set inspirator_id = " + id
                         + " WHERE email = '" + email + "' AND mobileNo = " + mobileNo;
-                statement = connection.prepareStatement(queryUpdateUser);
-                statement.executeUpdate();
+                PreparedStatement statement2 = connection.prepareStatement(queryUpdateUser);
+                statement2.executeUpdate();
             }
         }
         return isInserted;
