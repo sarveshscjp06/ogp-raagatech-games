@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Spring Boot Video Chat</title>
+</head>
+<body>
+  <h3>Video Chat</h3>
+  <video id="localVideo" autoplay playsinline></video>
+  <video id="remoteVideo" autoplay playsinline></video>
+
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+
+  <script>
+    const socket = new SockJS('/videochat');
+    const stompClient = Stomp.over(socket);
+
+    const pc = new RTCPeerConnection();
+
+    navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
+        document.getElementById('localVideo').srcObject = stream;
+        stream.getTracks().forEach(track => pc.addTrack(track, stream));
+    });
+
+    pc.ontrack = event => {
+        document.getElementById('remoteVideo').srcObject = event.streams[0];
+    };
+
+    stompClient.connect({}, () => {
+        stompClient.subscribe('/topic/signaling', message => {
+            const data = JSON.parse(message.body);
+            if (data.type === 'offer') handleOffer(data);
+            else if (data.type === 'answer') handleAnswer(data);
+            else if (data.type === 'candidate') handleCandidate(data);
+        });
+    });
+
+    async function createOffer() {
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+        sendMessage('offer', JSON.stringify(offer));
+    }
+
+    async function handleOffer(data) {
+        const offer = JSON.parse(data.data);
+        await pc.setRemoteDescription(new RTCSessionDescription(offer));
+        const answer = await pc.createAnswer();
+        await pc.setLocalDescription(answer);
+        sendMessage('answer', JSON.stringify(answer));
+    }
+
+    async function handleAnswer(data) {
+        const answer = JSON.parse(data.data);
+        await pc.setRemoteDescription(new RTCSessionDescription(answer));
+    }
+
+    function handleCandidate(data) {
+        const candidate = JSON.parse(data.data);
+        pc.addIceCandidate(new RTCIceCandidate(candidate));
+    }
+
+    pc.onicecandidate = event => {
+        if (event.candidate) sendMessage('candidate', JSON.stringify(event.candidate));
+    };
+
+    function sendMessage(type, data) {
+        stompClient.send("/app/signal", {}, JSON.stringify({ type, data }));
+    }
+
+    // Delay offer creation to ensure signaling is connected
+    setTimeout(createOffer, 2000);
+  </script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+.hero {
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+}
+.card h5 {
+  color: #007bff;
+}
+#videoContainer video {
+  width: 80%;
+  max-width: 500px;
+}
