@@ -17,25 +17,11 @@ function startJitsi() {
     alert('Please enter a class room name.');
     return;
   }
-  document.getElementById('jitsiContainer').style.display = 'block';
-  if (window.jitsiApi) {
-    window.jitsiApi.dispose();
-  }
-  window.jitsiApi = new JitsiMeetExternalAPI("meet.jit.si", {
-    roomName: room,
-    width: "100%",
-    height: 500,
-    parentNode: document.getElementById('jitsiContainer'),
-    interfaceConfigOverwrite: {
-      TILE_VIEW_ENABLED: true
-    }
-  });
+  
+  // Open Jitsi in new window
+  const jitsiUrl = `https://meet.jit.si/${room}`;
+  window.open(jitsiUrl, '_blank', 'width=1200,height=700');
 }
-
-// Load Jitsi Meet API
-const script = document.createElement('script');
-script.src = 'https://meet.jit.si/external_api.js';
-document.head.appendChild(script);
 
 //appointment
 document.addEventListener("DOMContentLoaded", () => {
