@@ -54,7 +54,8 @@ public class RaagatechMusicApplication {
         if (commonUtilities.isNotNull(userName) && commonUtilities.isNotNull(password)) {
             try {
                 UserDataBean userData = musicDataSource.getUserData(userName, password);
-                if (userData != null) {
+                if (userData != null && userData.getPassword().equals(password)
+                         && userData.getEmail().equals(userName)) {
                     List<UserDataBean> userDataList = new ArrayList<>();
                     userDataList.add(userData);
                     JSONArray jsonArray = new JSONArray(userDataList);
