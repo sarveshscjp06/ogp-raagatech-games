@@ -153,7 +153,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 }
                 if (existingUserId > 0) {
                     String queryUpdateInquiry = "UPDATE raagatech_inquiry set user_id = " + existingUserId
-                            + " WHERE email = '" + email + "' AND mobileNo = " + mobileNo;
+                            + " WHERE email = '" + email + "' AND mobile = " + mobileNo;
                     statement = connection.prepareStatement(queryUpdateInquiry);
                     statement.executeUpdate();
                 }
@@ -765,13 +765,19 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                         + " join RAAGATECH_INSPIRATORMASTER rim on rpes.trainer_id = rim.inspirator_id "
                         + " join RAAGATECH_LEVELMASTER rl on rpes.course_id = rl.LEVEL_ID "
                         + " LEFT JOIN RAAGATECH_FOLLOWUPDETAILS rf ON rpes.examinee_id = rf.INQUIRY_ID "
-                        + " WHERE rpes.exam_session = '" + examSession + "' AND rpes.trainer_id > 0 AND rf.INQUIRYSTATUS_ID = 8 AND ri.user_id = " + userId;
+                        + " WHERE rpes.exam_session = '" + examSession + "' AND rpes.trainer_id > 0 AND rf.INQUIRYSTATUS_ID = 8 ";
+                if(userId != 2) {
+                    queryPssExamReport = queryPssExamReport + " AND ri.user_id = " + userId;
+                }
             } else {
                 queryPssExamReport = queryPssExamReport + " FROM raagatech_inquiry ri "
                         + " join RAAGATECH_INSPIRATORMASTER rim on ri.inspirator_id = rim.inspirator_id "
                         + " join RAAGATECH_LEVELMASTER rl on ri.LEVEL_ID = rl.LEVEL_ID "
                         + " LEFT JOIN RAAGATECH_FOLLOWUPDETAILS rf ON ri.INQUIRY_ID = rf.INQUIRY_ID "
-                        + " WHERE ri.exam_session = '" + examSession + "' AND ri.inspirator_id > 0 AND rf.INQUIRYSTATUS_ID = 1 AND ri.user_id = " + userId;
+                        + " WHERE ri.exam_session = '" + examSession + "' AND ri.inspirator_id > 0 AND rf.INQUIRYSTATUS_ID = 1 ";
+                if(userId != 2) {
+                    queryPssExamReport = queryPssExamReport + " AND ri.user_id = " + userId;
+                }
             }
 
             switch (reportType) {
