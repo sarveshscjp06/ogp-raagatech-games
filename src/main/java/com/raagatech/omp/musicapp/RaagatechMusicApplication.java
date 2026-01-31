@@ -83,12 +83,12 @@ public class RaagatechMusicApplication {
     public String updateUserData(@RequestParam("regName") String username, @RequestParam("regPassword") String password,
             @RequestParam("regEmail") String email, @RequestParam("regMobile") String mobileNo, @RequestParam("regGender") String gender,
             @RequestParam("regPostalAddress") String postalAddress, @RequestParam("regPincode") String pincode,
-            @RequestParam("userId") int userId, @RequestParam("regInspiratorId") int inspiratorId, @RequestParam("discount") int discount) {
+            @RequestParam("userId") int userId, @RequestParam("regInspiratorId") int inspiratorId) {
         String response = "false";
         if (commonUtilities.isNotNull(username) && commonUtilities.isNotNull(password)) {
             try {
                 musicDataSource.updateUserData(username, password, Long.parseLong(mobileNo),
-                        gender, postalAddress, pincode, userId, inspiratorId, discount);
+                        gender, postalAddress, pincode, userId, inspiratorId);
                 response = "true";
             } catch (Exception e) {
                 Logger.getLogger(RaagatechMusicApplication.class.getName()).log(Level.SEVERE, null, e);
@@ -101,12 +101,11 @@ public class RaagatechMusicApplication {
     public String doRegister(@RequestParam("regName") String username, @RequestParam("regPassword") String password,
             @RequestParam("regEmail") String email, @RequestParam("regMobile") String mobileNo, @RequestParam("regGender") String gender,
             @RequestParam("regPostalAddress") String postalAddress, @RequestParam("regPincode") String pincode,
-            @RequestParam("regInspiratorId") int inspiratorId, @RequestParam("discount") int discount,
-            @RequestParam("userId") int user_id) {
+            @RequestParam("regInspiratorId") int inspiratorId, @RequestParam("userId") int user_id) {
 
         String response = "false";
         try {
-            int userId = musicDataSource.insertUser(username, password, email, Long.parseLong(mobileNo), gender, postalAddress, pincode, inspiratorId, discount);
+            int userId = musicDataSource.insertUser(username, password, email, Long.parseLong(mobileNo), gender, postalAddress, pincode, inspiratorId);
             if (userId > 0) {
                 String body = "<p>Kindly click / tap on below link to verify your email address.</p>"
                         + "<a href=http://140.238.250.40:8080/resources/music/doemailverification?userId=" + userId + "&email=" + email + "><b>" + password + "</b></a>";
@@ -341,10 +340,10 @@ public class RaagatechMusicApplication {
 
     @RequestMapping(value = "/doinquiryfeespaidstatus", method = RequestMethod.GET)
     public String doUpdateFeesPaidStatus(@RequestParam("inquiryId") int inquiryId, @RequestParam("userId") int userId, @RequestParam("amount") int amount,
-             @RequestParam("examSession") String examSession, @RequestParam("formNo") int formNo) {
+             @RequestParam("examSession") String examSession, @RequestParam("formNo") int formNo, @RequestParam("txnId") String txnId) {
         String verificationStatus = "Exam Fees Payment successful. Thank you!";
         try {
-            if (userId == 2 && !musicDataSource.updateInquiryForFeesPaidStatus(inquiryId, amount, examSession, formNo)) {
+            if (!musicDataSource.updateInquiryForFeesPaidStatus(inquiryId, amount, examSession, formNo, txnId)) {
                 verificationStatus = "Exam Fees Payment failure. May be server is down. "
                         .concat("Kindly contact to admin on mobile: 9891029284.");
             }

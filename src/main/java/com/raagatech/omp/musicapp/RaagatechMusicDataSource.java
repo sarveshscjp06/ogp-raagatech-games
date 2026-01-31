@@ -34,7 +34,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
 
     @Override
     public int insertUser(String username, String password, String email, long mobileNo,
-            String gender, String postalAddress, String pincode, int inspiratorId, int discount) throws Exception {
+            String gender, String postalAddress, String pincode, int inspiratorId) throws Exception {
 
         // With AutoCloseable, the connection is closed automatically.
         int id = oracleDataSource.generateNextPrimaryKey("raagatech_user", "user_id");
@@ -490,7 +490,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
 
     @Override
     public boolean updateUserData(String username, String password, long mobileNo,
-            String gender, String postalAddress, String pincode, int userId, int inspiratorId, int discount) throws Exception {
+            String gender, String postalAddress, String pincode, int userId, int inspiratorId) throws Exception {
         boolean updateStatus = Boolean.FALSE;
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
@@ -503,12 +503,6 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             int records = statement.executeUpdate();
             if (records > 0) {
                 updateStatus = Boolean.TRUE;
-            }
-            if (updateStatus && discount > 0 && inspiratorId > 0) {
-                queryUpdateUser = "UPDATE raagatech_inspiratormaster set pss_discount = " + discount
-                        + " WHERE inspirator_id = " + inspiratorId;
-                statement = connection.prepareStatement(queryUpdateUser);
-                statement.executeUpdate();
             }
         }
         return updateStatus;
@@ -635,7 +629,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
     }
 
     @Override
-    public boolean updateInquiryForFeesPaidStatus(int inquiryId, int amount, String examSession, int formNo) throws Exception {
+    public boolean updateInquiryForFeesPaidStatus(int inquiryId, int amount, String examSession, int formNo, String txnId) throws Exception {
         boolean updateStatus = Boolean.FALSE;
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
@@ -664,7 +658,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                         && (amount - pssExamFees - trainerFees) > 0) {
                     int raagatechFees = amount - pssExamFees - trainerFees;
                     queryUpdateUser = "update raagatech_pss_exam_session set fee = " + amount + ", pss_exam_fee = "
-                            + pssExamFees + ", trainer_fee = " + trainerFees + ", raagatech_fee = " + raagatechFees
+                            + pssExamFees + ", trainer_fee = " + trainerFees + ", raagatech_fee = " + raagatechFees + ", fees_paid_status = '" + txnId+"' "
                             + " where examinee_id = " + inquiryId + " AND formNo = " + formNo;
                 }
             }

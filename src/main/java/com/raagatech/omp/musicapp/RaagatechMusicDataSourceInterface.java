@@ -22,7 +22,7 @@ public interface RaagatechMusicDataSourceInterface {
     public UserDataBean getUserData(String username, String password) throws Exception;
 
     public int insertUser(String username, String password, String email, long mobileNo,
-            String gender, String postalAddress, String pincode, int inspirator_id, int discount) throws Exception;
+            String gender, String postalAddress, String pincode, int inspirator_id) throws Exception;
 
     public boolean updateUserForEmailVerification(int userId, String email) throws Exception;
 
@@ -60,7 +60,7 @@ public interface RaagatechMusicDataSourceInterface {
     public InquiryBean getInquiryDetails(String email, long mobileNo) throws Exception;
 
     public boolean updateUserData(String username, String password, long mobileNo,
-            String gender, String postalAddress, String pincode, int userId, int inspiratorId, int discount) throws Exception;
+            String gender, String postalAddress, String pincode, int userId, int inspiratorId) throws Exception;
 
     public ArrayList<UserDataBean> getUsersList(String username, String password) throws Exception;
 
@@ -72,7 +72,7 @@ public interface RaagatechMusicDataSourceInterface {
 
     public boolean updateInquiryForMobileVerification(int inquiryId, long mobileNo) throws Exception;
 
-    public boolean updateInquiryForFeesPaidStatus(int inquiryId, int amount, String examSession, int formNo) throws Exception;
+    public boolean updateInquiryForFeesPaidStatus(int inquiryId, int amount, String examSession, int formNo, String txnId) throws Exception;
 
     public boolean addFollowUps(String name, String email, long mobile, String followupDetails, int inquiryStatusId) throws Exception;
 
