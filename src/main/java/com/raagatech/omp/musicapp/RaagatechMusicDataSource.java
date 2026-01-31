@@ -637,11 +637,11 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             PreparedStatement statement;
             if (Integer.parseInt(examSession.split("-")[1]) > 2025) {
 
-                String selectPssExamFeeQuery = "select rpes.course_id, rpes.inspirator_id, rlm.exam_fees as examFees, rlm.pss_exam_fees as pssExamFees, rim.pss_discount as discount "
+                String selectPssExamFeeQuery = "select rpes.course_id, rpes.trainer_id, rlm.exam_fees as examFees, rlm.pss_exam_fees as pssExamFees, rim.pss_discount as discount "
                         + "from raagatech_pss_exam_session rpes "
                         + "JOIN raagatech_levelmaster rlm ON rpes.subject_id = rlm.level_id "
                         + "JOIN raagatech_inspiratormaster rim ON rpes.trainer_id = rim.inspirator_id "
-                        + "where rpes.examinee_id = " + inquiryId + " AND rpes.formNo = " + formNo + " AND rpes.exam_session = " + examSession;
+                        + "where rpes.examinee_id = " + inquiryId + " AND rpes.form_no = " + formNo + " AND rpes.exam_session = '" + examSession +"'";
                 statement = connection.prepareStatement(selectPssExamFeeQuery);
                 ResultSet record = statement.executeQuery();
                 int examFees = 0;
@@ -652,16 +652,16 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                     pssExamFees = record.getInt("pssExamFees");
                     trainerFees = record.getInt("discount");
                 }
-                if (amount >= examFees
-                        && amount > pssExamFees
-                        && (amount - pssExamFees) > trainerFees
-                        && (amount - pssExamFees - trainerFees) > 0) {
+//                if (amount >= examFees
+//                        && amount > pssExamFees
+//                        && (amount - pssExamFees) > trainerFees
+//                        && (amount - pssExamFees - trainerFees) > 0) {
                     int raagatechFees = amount - pssExamFees - trainerFees;
                     queryUpdateUser = "update raagatech_pss_exam_session set fee = " + amount + ", pss_exam_fee = "
                             + pssExamFees + ", trainer_fee = " + trainerFees + ", raagatech_fee = " + raagatechFees + ", fees_paid_status = '" + txnId+"' "
-                            + " where examinee_id = " + inquiryId + " AND formNo = " + formNo;
+                            + " where examinee_id = " + inquiryId + " AND form_no = " + formNo;
                 }
-            }
+//            }
             statement = connection.prepareStatement(queryUpdateUser);
             int records = statement.executeUpdate();
             if (records > 0) {
