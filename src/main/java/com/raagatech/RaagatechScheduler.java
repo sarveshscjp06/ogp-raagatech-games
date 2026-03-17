@@ -40,16 +40,17 @@ public class RaagatechScheduler {
         Logger.getLogger(RaagatechScheduler.class.getName()).log(Level.SEVERE, null, "raagatech hbd job executed at "+strDate);
     }
 
-    @Scheduled(cron = "0 0 17 ? * 5")
+    @Scheduled(cron = "0 0 17 1 * *")
     public void raagatechMusicAd() throws IOException {
-        //every friday 17:00
+        //every Friday 17:00 = 0 0 17 ? 5 *
+        //every 1st day of month 17:00
         SimpleDateFormat dateFormat = new SimpleDateFormat(
             "dd-MM-yyyy HH:mm:ss.SSS");
 
         String strDate = dateFormat.format(new Date());
 
-        String subject = "raagatech :: learn music";
-        String followupDetails = "Greetings!, learn music and get certificate from Prayag Sangit Samiti! Kindly ignore you are already associated woth us!!\n\n";
+        String subject = "raagatech :: Learn Music & Dance";
+        String followupDetails = "Greetings!, learn music and get certificate from Prayag Sangit Samiti! Kindly ignore if you are already pursuing!!\n\n";
         emailUtility.executeCronJob(subject, followupDetails);
         Logger.getLogger(RaagatechScheduler.class.getName()).log(Level.SEVERE, null, "raagatech Ad job executed at "+strDate);
     }

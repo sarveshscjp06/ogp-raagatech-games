@@ -196,7 +196,7 @@ public class EmailUtils implements EmailUtilityInterface {
             msg.addRecipients(Message.RecipientType.TO, addresses);
             // true = multipart message
             MimeMessageHelper helper = new MimeMessageHelper(msg);
-            helper.setBcc("sarvesh.new@gmail.com");
+            //helper.setBcc("sarvesh.new@gmail.com");
             msg.setSubject(subject);
 
             String bodyText = "<h1>The World Of Music Education & Performance!</h1>"

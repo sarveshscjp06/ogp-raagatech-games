@@ -541,10 +541,11 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             String querySelectUser = " select DISTINCT ri.FIRSTNAME as name, ri.EMAIL as email, ri.MOBILE as mobile from RAAGATECH_INQUIRY ri";
             if (dob != null) {
                 querySelectUser = querySelectUser.concat(" WHERE TO_CHAR(ri.date_of_birth, 'dd-MM') = '" + dob + "'  AND ri.MOBILEVERIFICATION = 1 AND ri.EMAILVERIFICATION = 1 ");
-            }
-            querySelectUser = querySelectUser.concat(" UNION select DISTINCT rim.FIRST_NAME as name, rim.EMAIL as email, rim.MOBILE from RAAGATECH_INSPIRATORMASTER rim ");
-            if (dob != null) {
+                querySelectUser = querySelectUser.concat(" UNION select DISTINCT rim.FIRST_NAME as name, rim.EMAIL as email, rim.MOBILE from RAAGATECH_INSPIRATORMASTER rim ");
                 querySelectUser = querySelectUser.concat(" WHERE TO_CHAR(rim.date_of_birth, 'dd-MM') = '" + dob + "'");
+            } else {
+                querySelectUser = querySelectUser.concat(" JOIN raagatech_followupdetails rfd ON ri.inquiry_id = rfd.inquiry_id where rfd.inquirystatus_id = 1 OR rfd.inquirystatus_id = 11 
+                AND (ri.MOBILEVERIFICATION = 1 OR ri.EMAILVERIFICATION = 1)");
             }
 
             PreparedStatement statement = connection.prepareStatement(querySelectUser);
