@@ -31,6 +31,7 @@ public class UserDataBean {
     private List<String> inspirationList;
     private List<String> examFeesList;
     private List<String> inquiryStatusList;
+    private int userLevel;//1 super user, 2 admin or inspirator, 3 end user
 
     /**
      * @return the userName
@@ -284,4 +285,17 @@ public class UserDataBean {
         this.inquiryStatusList = inquiryStatusList;
     }
 
+    /**
+     * @return the userLevel
+     */
+    public int getUserLevel() {
+        return userLevel;
+    }
+
+    /**
+     * @param userLevel the userLevel to set
+     */
+    public void setUserLevel(int userLevel) {
+        this.userLevel = userLevel;
+    }
 }

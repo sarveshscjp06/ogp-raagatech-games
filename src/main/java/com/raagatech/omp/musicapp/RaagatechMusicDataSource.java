@@ -430,7 +430,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 userData.setUserId(record.getInt("user_id"));
                 userData.setPincode(record.getInt("pincode"));
                 if (record.getString("rim_id") == null) {
-                    userData.setInspiratorId(0);
+                    userData.setInspiratorId(1);
                 } else {
                     userData.setInspiratorId(record.getInt("rim_id"));
                 }
@@ -438,16 +438,33 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 userData.setAddress(record.getString("postaladdress"));
                 userData.setMobileVerified(record.getInt("mobileverification"));
             }
-
+            //start: check user level  //1 super user, 2 admin or inspirator, 3 end user
+            userData.setUserLevel(3);
+            String querySelectEducators = "SELECT * from RAAGATECH_INSPIRATORMASTER where EMAIL = '" + userData.getEmail() + "'";
+            statement = connection.prepareStatement(querySelectEducators);
+            record = statement.executeQuery();
+            while (record.next()) {
+                if (userData.getEmail().equals("raksha.alld@gmail.com")) {
+                    userData.setUserLevel(1);
+                } else {
+                    userData.setUserLevel(2);
+                }
+            }
+            //end: check user level
             List<String> inspiratorList = new ArrayList<>();
             inspiratorList.add("All Inquiries/0");
-            String querySelectEducators = "SELECT * from RAAGATECH_INSPIRATORMASTER order by inspirator_id ";
+            if (userData.getUserLevel() == 1) {
+                querySelectEducators = "SELECT * from RAAGATECH_INSPIRATORMASTER order by inspirator_id ";
+            } else {
+                querySelectEducators = "SELECT * from RAAGATECH_INSPIRATORMASTER where inspirator_id = " + userData.getInspiratorId();
+            }
             statement = connection.prepareStatement(querySelectEducators);
             record = statement.executeQuery();
             while (record.next()) {
                 String inspiratorData = record.getString("first_name") + "/" + record.getInt("pss_discount");
                 inspiratorList.add(inspiratorData);
             }
+
             userData.setInspiratorList(inspiratorList);
 
             List<String> inspirationList = new ArrayList<>();
@@ -476,7 +493,9 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             List<String> inquiryStatusList = new ArrayList<>();
             inquiryStatusList.add("Select/Select/Select");
             String querySelectInquiryStatus = "SELECT * FROM RAAGATECH_INQUIRYSTATUSMASTER order by INQUIRYSTATUS_ID";
-
+            if(userData.getUserLevel() != 1) {
+                querySelectInquiryStatus = "SELECT * FROM RAAGATECH_INQUIRYSTATUSMASTER where INQUIRYSTATUS_ID != 12 order by INQUIRYSTATUS_ID";
+            }
             statement = connection.prepareStatement(querySelectInquiryStatus);
             record = statement.executeQuery();
             while (record.next()) {
@@ -544,8 +563,8 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 querySelectUser = querySelectUser.concat(" UNION select DISTINCT rim.FIRST_NAME as name, rim.EMAIL as email, rim.MOBILE from RAAGATECH_INSPIRATORMASTER rim ");
                 querySelectUser = querySelectUser.concat(" WHERE TO_CHAR(rim.date_of_birth, 'dd-MM') = '" + dob + "'");
             } else {
-                querySelectUser = querySelectUser.concat(" JOIN raagatech_followupdetails rfd ON ri.inquiry_id = rfd.inquiry_id where rfd.inquirystatus_id = 1 OR rfd.inquirystatus_id = 11 
-                AND (ri.MOBILEVERIFICATION = 1 OR ri.EMAILVERIFICATION = 1)");
+                querySelectUser = querySelectUser.concat(" JOIN raagatech_followupdetails rfd ON ri.inquiry_id = rfd.inquiry_id where rfd.inquirystatus_id = 1 OR rfd.inquirystatus_id = 11 "
+                        + " AND (ri.MOBILEVERIFICATION = 1 OR ri.EMAILVERIFICATION = 1)");
             }
 
             PreparedStatement statement = connection.prepareStatement(querySelectUser);
