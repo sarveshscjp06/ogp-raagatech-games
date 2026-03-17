@@ -133,7 +133,7 @@ public class EmailUtils implements EmailUtilityInterface {
     @Override
     public void executeHbdJob(String subject, String followupDetails) throws UnsupportedEncodingException, IOException {
         try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM");
             String strDate = dateFormat.format(new Date());
             List<UserDataBean> contactList = musicDataSource.listOverAllContacts(strDate);
             int contactSize = contactList.size();

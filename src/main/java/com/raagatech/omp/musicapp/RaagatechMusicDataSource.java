@@ -538,18 +538,22 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         UserDataBean userData;
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
-            String querySelectUser = "select DISTINCT ru.USERNAME as name, ru.EMAIL as email from RAAGATECH_USER ru"
-                    + " UNION"
-                    + " select DISTINCT ri.FIRSTNAME as name, ri.EMAIL as email from RAAGATECH_INQUIRY ri";
+            String querySelectUser = " select DISTINCT ri.FIRSTNAME as name, ri.EMAIL as email, ri.MOBILE as mobile from RAAGATECH_INQUIRY ri";
             if (dob != null) {
-                querySelectUser = querySelectUser.concat(" WHERE date_of_birth = '" + dob + "'");
+                querySelectUser = querySelectUser.concat(" WHERE TO_CHAR(ri.date_of_birth, 'dd-MM') = '" + dob + "'  AND ri.MOBILEVERIFICATION = 1 AND ri.EMAILVERIFICATION = 1 ");
             }
+            querySelectUser = querySelectUser.concat(" UNION select DISTINCT rim.FIRST_NAME as name, rim.EMAIL as email, rim.MOBILE from RAAGATECH_INSPIRATORMASTER rim ");
+            if (dob != null) {
+                querySelectUser = querySelectUser.concat(" WHERE TO_CHAR(rim.date_of_birth, 'dd-MM') = '" + dob + "'");
+            }
+
             PreparedStatement statement = connection.prepareStatement(querySelectUser);
             ResultSet record = statement.executeQuery();
             while (record.next()) {
                 userData = new UserDataBean();
                 userData.setUserName(record.getString("name"));
                 userData.setEmail(record.getString("email"));
+                userData.setMobile(record.getLong("mobile"));
                 contactsList.add(userData);
             }
         }
@@ -641,7 +645,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                         + "from raagatech_pss_exam_session rpes "
                         + "JOIN raagatech_levelmaster rlm ON rpes.subject_id = rlm.level_id "
                         + "JOIN raagatech_inspiratormaster rim ON rpes.trainer_id = rim.inspirator_id "
-                        + "where rpes.examinee_id = " + inquiryId + " AND rpes.form_no = " + formNo + " AND rpes.exam_session = '" + examSession +"'";
+                        + "where rpes.examinee_id = " + inquiryId + " AND rpes.form_no = " + formNo + " AND rpes.exam_session = '" + examSession + "'";
                 statement = connection.prepareStatement(selectPssExamFeeQuery);
                 ResultSet record = statement.executeQuery();
                 int examFees = 0;
@@ -656,11 +660,11 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
 //                        && amount > pssExamFees
 //                        && (amount - pssExamFees) > trainerFees
 //                        && (amount - pssExamFees - trainerFees) > 0) {
-                    int raagatechFees = amount - pssExamFees - trainerFees;
-                    queryUpdateUser = "update raagatech_pss_exam_session set fee = " + amount + ", pss_exam_fee = "
-                            + pssExamFees + ", trainer_fee = " + trainerFees + ", raagatech_fee = " + raagatechFees + ", fees_paid_status = '" + txnId+"' "
-                            + " where examinee_id = " + inquiryId + " AND form_no = " + formNo;
-                }
+                int raagatechFees = amount - pssExamFees - trainerFees;
+                queryUpdateUser = "update raagatech_pss_exam_session set fee = " + amount + ", pss_exam_fee = "
+                        + pssExamFees + ", trainer_fee = " + trainerFees + ", raagatech_fee = " + raagatechFees + ", fees_paid_status = '" + txnId + "' "
+                        + " where examinee_id = " + inquiryId + " AND form_no = " + formNo;
+            }
 //            }
             statement = connection.prepareStatement(queryUpdateUser);
             int records = statement.executeUpdate();
@@ -760,7 +764,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                         + " join RAAGATECH_LEVELMASTER rl on rpes.course_id = rl.LEVEL_ID "
                         + " LEFT JOIN RAAGATECH_FOLLOWUPDETAILS rf ON rpes.examinee_id = rf.INQUIRY_ID "
                         + " WHERE rpes.exam_session = '" + examSession + "' AND rpes.trainer_id > 0 AND rf.INQUIRYSTATUS_ID = 8 ";
-                if(userId != 2) {
+                if (userId != 2) {
                     queryPssExamReport = queryPssExamReport + " AND ri.user_id = " + userId;
                 }
             } else {
@@ -769,7 +773,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                         + " join RAAGATECH_LEVELMASTER rl on ri.LEVEL_ID = rl.LEVEL_ID "
                         + " LEFT JOIN RAAGATECH_FOLLOWUPDETAILS rf ON ri.INQUIRY_ID = rf.INQUIRY_ID "
                         + " WHERE ri.exam_session = '" + examSession + "' AND ri.inspirator_id > 0 AND rf.INQUIRYSTATUS_ID = 1 ";
-                if(userId != 2) {
+                if (userId != 2) {
                     queryPssExamReport = queryPssExamReport + " AND ri.user_id = " + userId;
                 }
             }

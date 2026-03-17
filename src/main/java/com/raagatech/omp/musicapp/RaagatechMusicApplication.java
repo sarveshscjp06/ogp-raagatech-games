@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class RaagatechMusicApplication {
 
     @Autowired
-    private RaagatechMusicDataSource musicDataSource;
+    private RaagatechMusicDataSourceInterface musicDataSource;
     @Autowired
     private CommonUtilitiesInterface commonUtilities;
     @Autowired
