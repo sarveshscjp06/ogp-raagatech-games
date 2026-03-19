@@ -439,15 +439,16 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 userData.setMobileVerified(record.getInt("mobileverification"));
             }
             //start: check user level  //1 super user, 2 admin or inspirator, 3 end user
-            userData.setUserLevel(3);
-            String querySelectEducators = "SELECT * from RAAGATECH_INSPIRATORMASTER where EMAIL = '" + userData.getEmail() + "'";
-            statement = connection.prepareStatement(querySelectEducators);
-            record = statement.executeQuery();
-            while (record.next()) {
-                if (userData.getEmail().equals("raksha.alld@gmail.com")) {
-                    userData.setUserLevel(1);
-                } else {
-                    userData.setUserLevel(2);
+            String querySelectEducators;            
+            if(userData.getUserId() == 1) {
+                userData.setUserLevel(1);
+            } else {
+                userData.setUserLevel(3);
+                querySelectEducators = "SELECT * from RAAGATECH_INSPIRATORMASTER where EMAIL = '" + userData.getEmail() + "'";
+                statement = connection.prepareStatement(querySelectEducators);
+                record = statement.executeQuery();
+                while (record.next()) {
+                        userData.setUserLevel(2);
                 }
             }
             //end: check user level
@@ -493,9 +494,6 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             List<String> inquiryStatusList = new ArrayList<>();
             inquiryStatusList.add("Select/Select/Select");
             String querySelectInquiryStatus = "SELECT * FROM RAAGATECH_INQUIRYSTATUSMASTER order by INQUIRYSTATUS_ID";
-            if(userData.getUserLevel() != 1) {
-                querySelectInquiryStatus = "SELECT * FROM RAAGATECH_INQUIRYSTATUSMASTER where INQUIRYSTATUS_ID != 12 order by INQUIRYSTATUS_ID";
-            }
             statement = connection.prepareStatement(querySelectInquiryStatus);
             record = statement.executeQuery();
             while (record.next()) {
@@ -749,16 +747,16 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
 
             if (reportType == 1) {
                 if (Integer.parseInt(examSession.split("-")[1]) > 2025 && userId > 0) {
-                    queryPssExamReport = queryPssExamReport + " , rpes.subject_id as subjectId  ";
+                    queryPssExamReport.concat(" , rpes.subject_id as subjectId  ");
                 } else {
-                    queryPssExamReport = queryPssExamReport + " , ri.inspiration_id as subjectId  ";
+                    queryPssExamReport.concat(" , ri.inspiration_id as subjectId  ");
                 }
             }
             if (reportType == 3) {
                 if (Integer.parseInt(examSession.split("-")[1]) > 2025 && userId > 0) {
-                    queryPssExamReport = queryPssExamReport + " , rpes.trainer_id as educatorId , rpes.subject_id as subjectId ";
+                    queryPssExamReport.concat(" , rpes.trainer_id as educatorId , rpes.subject_id as subjectId ");
                 } else {
-                    queryPssExamReport = queryPssExamReport + " , ri.inspirator_id as educatorId , ri.inspiration_id as subjectId ";
+                    queryPssExamReport.concat(" , ri.inspirator_id as educatorId , ri.inspiration_id as subjectId ");
                 }
             }
             if (reportType == 4 || reportType == 5) {
@@ -772,28 +770,28 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             }
             if (reportType == 5) {
                 if (Integer.parseInt(examSession.split("-")[1]) > 2025 && userId > 0) {
-                    queryPssExamReport = queryPssExamReport + " , rpes.trainer_id as educatorId, rim.pss_discount";
+                    queryPssExamReport.concat(" , rpes.trainer_id as educatorId, rim.pss_discount");
                 } else {
-                    queryPssExamReport = queryPssExamReport + " , rim.inspirator_id as educatorId, rim.pss_discount";
+                    queryPssExamReport.concat(" , rim.inspirator_id as educatorId, rim.pss_discount");
                 }
             }
 
             if (Integer.parseInt(examSession.split("-")[1]) > 2025 && userId > 0) {
-                queryPssExamReport = queryPssExamReport + " from raagatech_pss_exam_session rpes join raagatech_inquiry ri on rpes.examinee_id = ri.INQUIRY_ID "
+                queryPssExamReport.concat(" from raagatech_pss_exam_session rpes join raagatech_inquiry ri on rpes.examinee_id = ri.INQUIRY_ID "
                         + " join RAAGATECH_INSPIRATORMASTER rim on rpes.trainer_id = rim.inspirator_id "
                         + " join RAAGATECH_LEVELMASTER rl on rpes.course_id = rl.LEVEL_ID "
                         + " LEFT JOIN RAAGATECH_FOLLOWUPDETAILS rf ON rpes.examinee_id = rf.INQUIRY_ID "
-                        + " WHERE rpes.exam_session = '" + examSession + "' AND rpes.trainer_id > 0 AND rf.INQUIRYSTATUS_ID = 8 ";
-                if (userId != 2) {
+                        + " WHERE rpes.exam_session = '" + examSession + "' AND rpes.trainer_id > 0 AND rf.INQUIRYSTATUS_ID = 8 ");
+                if (userId != 1) {
                     queryPssExamReport = queryPssExamReport + " AND ri.user_id = " + userId;
                 }
             } else {
-                queryPssExamReport = queryPssExamReport + " FROM raagatech_inquiry ri "
+                queryPssExamReport.concat(" FROM raagatech_inquiry ri "
                         + " join RAAGATECH_INSPIRATORMASTER rim on ri.inspirator_id = rim.inspirator_id "
                         + " join RAAGATECH_LEVELMASTER rl on ri.LEVEL_ID = rl.LEVEL_ID "
                         + " LEFT JOIN RAAGATECH_FOLLOWUPDETAILS rf ON ri.INQUIRY_ID = rf.INQUIRY_ID "
-                        + " WHERE ri.exam_session = '" + examSession + "' AND ri.inspirator_id > 0 AND rf.INQUIRYSTATUS_ID = 1 ";
-                if (userId != 2) {
+                        + " WHERE ri.exam_session = '" + examSession + "' AND ri.inspirator_id > 0 AND rf.INQUIRYSTATUS_ID = 1 ");
+                if (userId != 1) {
                     queryPssExamReport = queryPssExamReport + " AND ri.user_id = " + userId;
                 }
             }
@@ -801,30 +799,30 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             switch (reportType) {
                 case 1:
                     if (Integer.parseInt(examSession.split("-")[1]) > 2025 && userId > 0) {
-                        queryPssExamReport = queryPssExamReport + " group by rpes.subject_id, rpes.course_id order by rpes.subject_id, rpes.course_id";
+                        queryPssExamReport.concat(" group by rpes.subject_id, rpes.course_id order by rpes.subject_id, rpes.course_id");
                     } else {
-                        queryPssExamReport = queryPssExamReport + " group by ri.inspiration_id, ri.level_id order by ri.inspiration_id, ri.level_id";
+                        queryPssExamReport.concat(" group by ri.inspiration_id, ri.level_id order by ri.inspiration_id, ri.level_id");
                     }
                     break;
                 case 3:
                     if (Integer.parseInt(examSession.split("-")[1]) > 2025 && userId > 0) {
-                        queryPssExamReport = queryPssExamReport + " group by rpes.trainer_id, rpes.subject_id, rpes.course_id order by rpes.trainer_id, rpes.subject_id, rpes.course_id";
+                        queryPssExamReport.concat(" group by rpes.trainer_id, rpes.subject_id, rpes.course_id order by rpes.trainer_id, rpes.subject_id, rpes.course_id");
                     } else {
-                        queryPssExamReport = queryPssExamReport + " group by ri.inspirator_id, ri.inspiration_id, ri.level_id order by ri.inspirator_id, ri.inspiration_id, ri.level_id";
+                        queryPssExamReport.concat(" group by ri.inspirator_id, ri.inspiration_id, ri.level_id order by ri.inspirator_id, ri.inspiration_id, ri.level_id");
                     }
                     break;
                 case 2:
                     if (Integer.parseInt(examSession.split("-")[1]) > 2025 && userId > 0) {
-                        queryPssExamReport = queryPssExamReport + " group by rpes.course_id order by rpes.course_id";
+                        queryPssExamReport.concat(" group by rpes.course_id order by rpes.course_id");
                     } else {
-                        queryPssExamReport = queryPssExamReport + " group by ri.level_id order by ri.level_id";
+                        queryPssExamReport.concat(" group by ri.level_id order by ri.level_id");
                     }
                     break;
                 case 5:
                     if (Integer.parseInt(examSession.split("-")[1]) > 2025 && userId > 0) {
-                        queryPssExamReport = queryPssExamReport + " group by rpes.trainer_id, rim.pss_discount order by rpes.trainer_id";
+                        queryPssExamReport.concat(" group by rpes.trainer_id, rim.pss_discount order by rpes.trainer_id");
                     } else {
-                        queryPssExamReport = queryPssExamReport + " group by rim.inspirator_id, rim.pss_discount order by rim.inspirator_id";
+                        queryPssExamReport.concat(" group by rim.inspirator_id, rim.pss_discount order by rim.inspirator_id");
                     }
                     break;
                 default:
@@ -868,6 +866,9 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
             String querySelectEducators = "SELECT ru.user_id as user_id, rim.* FROM RAAGATECH_USER ru right join RAAGATECH_INSPIRATORMASTER rim "
                     + " ON ru.email = rim.email AND ru.mobile = rim.MOBILE order by rim.inspirator_id";
+            if(userId > 1) {
+                querySelectEducators.concat(" where ru.user_id = "+userId);
+            }
 
             PreparedStatement statement = connection.prepareStatement(querySelectEducators);
             ResultSet record = statement.executeQuery();
