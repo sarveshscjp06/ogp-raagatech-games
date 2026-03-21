@@ -101,7 +101,7 @@ public class RaagatechMusicApplication {
     public String doRegister(@RequestParam("regName") String username, @RequestParam("regPassword") String password,
             @RequestParam("regEmail") String email, @RequestParam("regMobile") String mobileNo, @RequestParam("regGender") String gender,
             @RequestParam("regPostalAddress") String postalAddress, @RequestParam("regPincode") String pincode,
-            @RequestParam("regInspiratorId") int inspiratorId, @RequestParam("userId") int user_id) {
+            @RequestParam("regInspiratorId") int inspiratorId) {
 
         String response = "false";
         try {
