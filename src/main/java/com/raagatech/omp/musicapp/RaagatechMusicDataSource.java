@@ -454,7 +454,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
             //end: check user level
             List<String> inspiratorList = new ArrayList<>();
             inspiratorList.add("All Inquiries/0");
-            if (userData.getUserLevel() == 1) {
+            if (userData.getUserLevel() == 1 || userData.getInspiratorId() == 0) {
                 querySelectEducators = "SELECT * from RAAGATECH_INSPIRATORMASTER order by inspirator_id ";
             } else {
                 querySelectEducators = "SELECT * from RAAGATECH_INSPIRATORMASTER where inspirator_id = " + userData.getInspiratorId();
