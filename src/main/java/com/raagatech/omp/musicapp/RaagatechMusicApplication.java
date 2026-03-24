@@ -201,9 +201,9 @@ public class RaagatechMusicApplication {
     public String doListInquiry(@RequestParam("userId") int userId, @RequestParam("inspiratorId") int inspiratorId,
             @RequestParam("examSession") String examSession, @RequestParam("inquiryStatusId") int inquiryStatusId) throws Exception {
         String response = null;
-        if (inquiryStatusId == 0) {
-            inquiryStatusId = 1;
-        }
+//        if (inquiryStatusId == 0) {
+//            inquiryStatusId = 1;
+//        }
         ArrayList<InquiryBean> inquiryList = musicDataSource.listInquiry(userId, inspiratorId, examSession, inquiryStatusId);
         if (!inquiryList.isEmpty()) {
             JSONArray jsonArray = new JSONArray(inquiryList);

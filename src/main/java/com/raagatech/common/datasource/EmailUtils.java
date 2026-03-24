@@ -65,7 +65,7 @@ public class EmailUtils implements EmailUtilityInterface {
             MimeMessageHelper helper = new MimeMessageHelper(msg);
 
             helper.setTo(toEmail);
-            helper.setBcc("sarvesh.new@gmail.com");
+            //helper.setBcc("sarvesh.new@gmail.com");
             helper.setSubject(subject);
 
             String bodyText = "<h1>The World Of Music Education & Performance!</h1>"
@@ -88,7 +88,7 @@ public class EmailUtils implements EmailUtilityInterface {
             MimeMessageHelper helper = new MimeMessageHelper(msg);
 
             helper.setTo(email);
-            helper.setBcc("sarvesh.new@gmail.com");
+            //helper.setBcc("sarvesh.new@gmail.com");
             helper.setSubject("Inquiry: Music Activities");
 
             String bodyText = "The World Of Music Education & Performance! \n\n"
@@ -168,10 +168,10 @@ public class EmailUtils implements EmailUtilityInterface {
                     "FOR " + vendorBrandName));
             msg.addRecipient(Message.RecipientType.TO,
                     new InternetAddress(fromEmail, vendorBrandName));
-            msg.addRecipient(Message.RecipientType.CC,
-                    new InternetAddress(email, inquiryname));
-            msg.addRecipient(Message.RecipientType.BCC,
-                    new InternetAddress("info@raagatech.com", "for-samcrm"));
+//            msg.addRecipient(Message.RecipientType.CC,
+//                    new InternetAddress(email, inquiryname));
+//            msg.addRecipient(Message.RecipientType.BCC,
+//                    new InternetAddress("info@raagatech.com", "for-samcrm"));
             msg.setSubject("Promotional: " + subject);
 
             String bodyText = "Sales & Marketing - Customer Relationship Management \n" + offer + "\n\n";
