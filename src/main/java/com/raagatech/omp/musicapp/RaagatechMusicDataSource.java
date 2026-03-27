@@ -115,7 +115,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 statement = connection.prepareStatement(queryInsertInquiry);
                 statement.setTimestamp(1, getCurrentTimeStamp());
                 statement.setString(2, dob);
-                statement.executeUpdate();                
+                statement.executeUpdate();
             } else {
                 String queryUpdateInquiry = "UPDATE raagatech_inquiry set firstname = '" + inquiryname + "' "
                         + ", email = '" + email + "', mobile = " + mobileNo + ", address_line1 = '" + address + "', gender = '" + sex + "',"
@@ -157,7 +157,7 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 }
                 int followup_id = oracleDataSource.generateNextPrimaryKey("raagatech_followupdetails", "followup_id");
                 String queryInsertFollowupDetails = "INSERT into raagatech_followupdetails (followup_id, inquiry_id, inquirystatus_id, followup_details, followup_date, form_no ) "
-                        + "VALUES (" + followup_id + ", " + inquiry_id + ", " + inquiryStatusId + ", '" + followupDetails + "', ?, "+form_no+")";
+                        + "VALUES (" + followup_id + ", " + inquiry_id + ", " + inquiryStatusId + ", '" + followupDetails + "', ?, " + form_no + ")";
                 PreparedStatement statement2 = connection.prepareStatement(queryInsertFollowupDetails);
                 statement2.setTimestamp(1, getCurrentTimeStamp());
                 records = statement2.executeUpdate();
@@ -193,10 +193,13 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 querySelectInquiries = "SELECT distinct rpes.form_no as formNo, rpes.exam_session as exam_session, rpes.fee as exam_fees, rpes.pss_exam_fee as pssExamFee, "
                         + " ri.firstname, ri.gender, ri.email, ri.inquiry_date, ri.nationality, ri.mobile, ri.inquiry_id, ri.primaryskill, ri.emailverification, "
                         + " ri.mobileverification, ri.fees_paid_status "
-                        //+ " , rf.followup_id as flpid "
+                        + " , rf.followup_id as flpid "
                         + " FROM raagatech_pss_exam_session rpes join raagatech_inquiry ri ON rpes.examinee_id = ri.INQUIRY_ID "
-                        + " LEFT JOIN RAAGATECH_FOLLOWUPDETAILS rf ON ri.INQUIRY_ID = rf.INQUIRY_ID "
-                        + " WHERE rpes.exam_session = '" + examSession + "' ";
+                        + " LEFT JOIN RAAGATECH_FOLLOWUPDETAILS rf ON ri.INQUIRY_ID = rf.INQUIRY_ID ";
+                if (Integer.parseInt(examSession.split("-")[1]) > 2026) {
+                    querySelectInquiries = querySelectInquiries + " AND rpes.form_no = rf.form_no ";
+                }
+                querySelectInquiries = querySelectInquiries + " WHERE rpes.exam_session = '" + examSession + "' ";
             }
 
             /*if (inspiratorId >= 0 && userId == 2) {
@@ -232,11 +235,11 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
                 inquiry.setExamFees(record.getInt("exam_fees"));
                 inquiry.setFeesPaidStatus(record.getInt("fees_paid_status"));
 
-                //if (record.getString("flpid") == null) {
+                if (record.getString("flpid") == null) {
                     inquiry.setFollowup_details("0");
-//                } else {
-//                    inquiry.setFollowup_details(record.getString("flpid"));
-//                }
+                } else {
+                    inquiry.setFollowup_details(record.getString("flpid"));
+                }
                 if (Integer.parseInt(examSession.split("-")[1]) > 2025) {
                     inquiry.setFormNo(record.getInt("formNo"));
                     if (record.getInt("pssExamFee") > 0) {
