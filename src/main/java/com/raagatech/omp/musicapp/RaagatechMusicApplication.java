@@ -55,7 +55,7 @@ public class RaagatechMusicApplication {
             try {
                 UserDataBean userData = musicDataSource.getUserData(userName, password);
                 if (userData != null && userData.getPassword().equals(password)
-                         && userData.getEmail().equals(userName)) {
+                        && userData.getEmail().equals(userName)) {
                     List<UserDataBean> userDataList = new ArrayList<>();
                     userDataList.add(userData);
                     JSONArray jsonArray = new JSONArray(userDataList);
@@ -64,6 +64,8 @@ public class RaagatechMusicApplication {
             } catch (Exception e) {
                 Logger.getLogger(RaagatechMusicApplication.class.getName()).log(Level.SEVERE, null, e);
             }
+        } else if (commonUtilities.isNotNull(userName) && password.isEmpty()) {
+            response = resendPassword(userName);
         }
         return response;
     }
@@ -89,6 +91,9 @@ public class RaagatechMusicApplication {
             try {
                 musicDataSource.updateUserData(username, password, Long.parseLong(mobileNo),
                         gender, postalAddress, pincode, userId, inspiratorId);
+                String body = "<p>Kindly click / tap on below link to verify your email address on profilr update.</p>"
+                        + "<a href=http://140.238.250.40:8080/resources/music/doemailverification?userId=" + userId + "&email=" + email + "><b>" + password + "</b></a>";
+                emailUtility.sendEmail(email, "raagatech: email verification", body);
                 response = "true";
             } catch (Exception e) {
                 Logger.getLogger(RaagatechMusicApplication.class.getName()).log(Level.SEVERE, null, e);
@@ -340,7 +345,7 @@ public class RaagatechMusicApplication {
 
     @RequestMapping(value = "/doinquiryfeespaidstatus", method = RequestMethod.GET)
     public String doUpdateFeesPaidStatus(@RequestParam("inquiryId") int inquiryId, @RequestParam("userId") int userId, @RequestParam("amount") int amount,
-             @RequestParam("examSession") String examSession, @RequestParam("formNo") int formNo, @RequestParam("txnId") String txnId) {
+            @RequestParam("examSession") String examSession, @RequestParam("formNo") int formNo, @RequestParam("txnId") String txnId) {
         String verificationStatus = "Exam Fees Payment successful. Thank you!";
         try {
             if (!musicDataSource.updateInquiryForFeesPaidStatus(inquiryId, amount, examSession, formNo, txnId)) {
@@ -424,5 +429,24 @@ public class RaagatechMusicApplication {
             Logger.getLogger(RaagatechMusicApplication.class.getName()).log(Level.SEVERE, null, ex);
         }
         return response;
+    }
+
+    private String resendPassword(String email) {
+        String verificationStatus = "Password re-send failure. May be server is down or e-mail is incorrect."
+                .concat("Kindly contact to admin on mobile: 9891029284.");
+        try {
+            ArrayList<UserDataBean> usersList = musicDataSource.getUsersList(email, null);
+
+            if (!usersList.isEmpty()) {
+                UserDataBean userDataBean = usersList.get(0);
+                String body = "<p>Kindly click / tap on below link to verify your email address.</p>"
+                        + "<a href=http://140.238.250.40:8080/resources/music/doemailverification?userId=" + userDataBean.getUserId() + "&email=" + email + "><b>" + userDataBean.getPassword() + "</b></a>";
+                emailUtility.sendEmail(email, "raagatech: know your password", body);
+                verificationStatus = "password sent to you on email. Thank you!";
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(RaagatechMusicApplication.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return verificationStatus;
     }
 }

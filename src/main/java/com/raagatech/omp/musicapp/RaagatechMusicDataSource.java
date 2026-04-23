@@ -531,12 +531,18 @@ public class RaagatechMusicDataSource implements RaagatechMusicDataSourceInterfa
         // With AutoCloseable, the connection is closed automatically.
         try ( OracleConnection connection = (OracleConnection) oracleDataSource.getOracleDataSource().getConnection()) {
             String querySelectUser = "SELECT * FROM raagatech_user WHERE (email = '" + username + "' "
-                    + "OR username = '" + username + "') AND password = '" + password + "' AND emailverification = 1";
+                    + "OR username = '" + username + "') AND emailverification = 1 ";
+            
+            if(password != null) {
+                querySelectUser = querySelectUser + " AND password = '" + password + "'";
+            }
+            
             PreparedStatement statement = connection.prepareStatement(querySelectUser);
             ResultSet record = statement.executeQuery();
             while (record.next()) {
                 userData = new UserDataBean();
                 userData.setUserName(record.getString("username"));
+                userData.setPassword(record.getString("password"));
                 userData.setEmail(record.getString("email"));
                 userData.setMobile(record.getLong("mobile"));
                 userData.setUserId(record.getInt("user_id"));
